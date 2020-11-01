@@ -4,16 +4,11 @@
 
 <script>
 import {throttle} from 'lodash-es'
-import { reactive, computed, inject, onMounted, watch, getCurrentInstance } from "vue"
+import { computed, inject, onMounted, getCurrentInstance } from "vue"
 export default {
   name: "CellSelectingRegion",
   setup() {
     const cursor = inject('$cursor')
-    const selectedRegion = reactive({ start: {}, end: {} })
-    watch([cursor.rowIndex, cursor.columnIndex], ([rowIndex, columnIndex]) => {
-      selectedRegion.start = {rowIndex, columnIndex}
-      selectedRegion.end = {rowIndex, columnIndex}
-    })
     const instance = getCurrentInstance()
     onMounted(async () => {
       const $table = instance.ctx.$parent.$el
@@ -44,14 +39,10 @@ export default {
       const onMouseMove = throttle(function (event) {
         const td = event.target.closest("td")
           if (!td.dataset.columnIndex) return
-          selectedRegion.start = {
-            rowIndex: cursor.rowIndex,
-            columnIndex: cursor.columnIndex,
-          }
-          selectedRegion.end = {
-            rowIndex: parseInt(td.dataset.rowIndex),
-            columnIndex: parseInt(td.dataset.columnIndex),
-          }
+          cursor.selectedRegion.start.rowIndex = cursor.selectedCell.rowIndex
+          cursor.selectedRegion.start.columnIndex = cursor.selectedCell.columnIndex
+          cursor.selectedRegion.end.rowIndex = parseInt(td.dataset.rowIndex)
+          cursor.selectedRegion.end.columnIndex = parseInt(td.dataset.columnIndex)
         }, 20)
           
       function onMouseUp () {
@@ -62,9 +53,9 @@ export default {
     
     const selectedCellRegionStyle = computed(() => {
       const $table = instance.ctx.$parent.$el
-      const cellRegion = selectedRegion
-      const startCellClass = `.cell-${cellRegion?.start.rowIndex}-${cellRegion?.start.columnIndex}`
-      const endCellClass = `.cell-${cellRegion?.end.rowIndex}-${cellRegion?.end.columnIndex}`
+      const cellRegion = cursor.selectedRegion
+      const startCellClass = `.cell-${cellRegion.start.rowIndex}-${cellRegion.start.columnIndex}`
+      const endCellClass = `.cell-${cellRegion.end.rowIndex}-${cellRegion.end.columnIndex}`
       const startCell = $table?.querySelector(startCellClass)
       const endCell = $table?.querySelector(endCellClass)
       // Guard if mouseover el is not cell
@@ -95,7 +86,7 @@ export default {
         height: `${height}px`,
       }
     })
-    return { selectedRegion, selectedCellRegionStyle }
+    return { selectedCellRegionStyle }
   }
 }
 

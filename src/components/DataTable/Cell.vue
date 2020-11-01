@@ -1,7 +1,7 @@
 <template>
   <td
-    @mousedown="selectCell"
-    @dblclick="cellDbClick"
+    @mousedown="onSelectCell"
+    @dblclick="onDbClickCell"
     :data-row-index="rowIndex"
     :data-column-index="columnIndex"
     :class="`cell-${rowIndex}-${columnIndex}`"
@@ -19,16 +19,16 @@ export default {
   },
   setup(props) {
     const $cursor = inject('$cursor')
-    const selectCell = () => {
-      $cursor.rowIndex.value = props.rowIndex
-      $cursor.columnIndex.value = props.columnIndex
+    const onSelectCell = () => {
+      $cursor.selectedCell.rowIndex = props.rowIndex
+      $cursor.selectedCell.columnIndex = props.columnIndex
     }
 
-    const cellDbClick = () => {
+    const onDbClickCell = () => {
       $cursor.editing.value = true
     }
 
-    return {selectCell, cellDbClick}
+    return {onSelectCell, onDbClickCell}
   }
 }
 </script>

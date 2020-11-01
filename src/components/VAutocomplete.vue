@@ -1,43 +1,37 @@
-<template lang="pug">
-  div(v-click-outside="close")
-    input(
+<template>
+  <div class="autocomplete__container">
+    <button v-show="isActive" @click="close" class="btn-close"></button>
+    <input
       type="text"
       v-model="search"
       @keydown.down="arrowDown"
       @keydown.up="arrowUp"
       @keydown.enter="enter"
-      @click="isActive=true")
-    ul(v-show="isActive" class="list")
-      li(v-for="(item, index) in filteredSearch"
+      @click="isActive = true"
+    />
+    <ul v-show="isActive" class="list">
+      <li
+        v-for="(item, index) in filteredSearch"
         :key="index"
-        :class="{'is-active': index===arrowCounter}"
+        :class="{ 'is-active': index === arrowCounter }"
         @click="choose(item)"
-        )
-        | {{item}}
+      >
+        {{ item }}
+      </li>
+    </ul>
+  </div>
 </template>
-
 <script>
-
 export default {
-  directives: {
-    ClickOutside: {
-      bind (el, binding) {
-        el.__ClickOutsideHandler__ = event => {
-          // check if event's target is the el or contained by el
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value(event)
-          }
-        }
-        document.body.addEventListener('click', el.__ClickOutsideHandler__)
-      },
-      unbind (el) {
-        document.body.removeEventListener('click', el.__ClickOutsideHandler__)
-      }
+  name: 'VAutocomplete',
+  props: {
+    value: [String, Number],
+    items: {
+      type: Array,
+      default: () => []
     }
   },
-  name: 'BaseAutocomplete',
   data: () => ({
-    items: ['vue2', 'vue', 'vue3'],
     search: '',
     isActive: false,
     arrowCounter: -1
@@ -71,17 +65,39 @@ export default {
   }
 }
 </script>
-
 <style scoped lang="scss">
+.autocomplete__container {
+  position: relative;
+
+  & .btn-close {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: auto;
+  }
+
+  & input {
+    border: 1px solid gray;
+    width: 100%;
+  }
+}
+
 .list {
   z-index: 1;
+  position: absolute;
 }
+
 ul {
   list-style-type: none;
+  width: 100%;
   & li {
     border: 1px solid gray;
+    cursor: pointer;
+
     &.is-active {
-      background-color: gray;
+      background-color: red;
     }
     &:hover {
       background-color: gray;

@@ -36,18 +36,18 @@ export default {
     const $items = inject('$items')
     const $columns = inject('$columns')
     const $cursor = inject('$cursor')
-    const item = computed(() => $items[$cursor.rowIndex.value])
-    const column = computed(() => $columns[$cursor.columnIndex.value])
+    const item = computed(() => $items[$cursor.selectedCell.rowIndex])
+    const column = computed(() => $columns[$cursor.selectedCell.columnIndex])
     const instance = getCurrentInstance()
     const cell = computed({
       get: () => item.value[column.value.name],
       // make table emit on-input event to the wrapper
-      set: (value) => instance.ctx.$parent.$emit('on-input', {rowIndex: $cursor.rowIndex.value, column: column.value, value})
+      set: (value) => instance.ctx.$parent.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
     })
 
     // Re-focus CellCursor if cursor updated. This is to allow interact with keyboard 
     const cursorRef = ref(null)
-    watch([$cursor.rowIndex, $cursor.columnIndex], async () => {
+    watch($cursor.selectedCell, async () => {
       $cursor.editing.value = false
       // Make sure the browser has finished painting updated style
       requestAnimationFrame(() => {
