@@ -56,11 +56,14 @@ export default {
     })
     // Focus input when $cursor.editing is true
     watch($cursor.editing, async (val) => {
+      console.log('et', val)
       if (val) {
+        console.log('et2')
         await nextTick()
         const input = cursorRef.value.querySelector('input')
         if (document.activeElement !== input) input.focus()
       } else {
+        console.log('et3')
         cursorRef.value.focus()
       }
     })
@@ -195,34 +198,33 @@ export default {
 
       function moveCursorRight({ force = false, nextLineOnEnd = false } = {}) {
         if ($cursor.editing.value && !force) return;
-        const nextIndex = $cursor.columnIndex.value + 1;
+        const nextIndex = $cursor.selectedCell.columnIndex + 1;
         if (columns.length > nextIndex) {
-          $cursor.columnIndex.value = nextIndex
+          $cursor.selectedCell.columnIndex = nextIndex
         } else if (nextLineOnEnd) {
           if (moveCursorDown({ force })) {
-            $cursor.columnIndex.value = 0
+            $cursor.selectedCell.columnIndex = 0
           }
         }
       }
 
       function moveCursorLeft({ force = false, prevLineOnStart = false } = {}) {
         if ($cursor.editing.value && !force) return;
-        const prevIndex = $cursor.columnIndex.value - 1;
+        const prevIndex = $cursor.selectedCell.columnIndex - 1;
         if (prevIndex >= 0) {
-          $cursor.columnIndex.value = prevIndex;
+          $cursor.selectedCell.columnIndex = prevIndex;
         } else if (prevLineOnStart) {
           if (moveCursorUp({ force })) {
-            $cursor.columnIndex = columns.length - 1;
+            $cursor.selectedCell.columnIndex = columns.length - 1;
           }
         }
       }
 
       function moveCursorDown({ force = false } = {}) {
-        console.log('down', $cursor.editing.value)
         if ($cursor.editing.value && !force) return false;
-        const nextIndex = $cursor.rowIndex.value + 1;
+        const nextIndex = $cursor.selectedCell.rowIndex + 1;
         if (items.length > nextIndex) {
-          $cursor.rowIndex.value = nextIndex;
+          $cursor.selectedCell.rowIndex = nextIndex;
           return true;
         }
 
@@ -234,11 +236,10 @@ export default {
        * @returns {boolean}
        */
       function moveCursorUp({ force = false } = {}) {
-        console.log('up', $cursor.editing.value)
         if ($cursor.editing.value && !force) return false;
-        const prevIndex = $cursor.rowIndex.value - 1;
+        const prevIndex = $cursor.selectedCell.rowIndex - 1;
         if (prevIndex >= 0) {
-          $cursor.rowIndex.value = prevIndex;
+          $cursor.selectedCell.rowIndex = prevIndex;
           return true;
         }
         return false;

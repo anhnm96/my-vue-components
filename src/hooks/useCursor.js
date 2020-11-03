@@ -12,6 +12,7 @@ export class Cursor {
     })
 
     watch(this.selectedCell, ({ rowIndex, columnIndex }) => {
+      console.log('watch selectedCell')
       this.selectedRegion.start.rowIndex = rowIndex
       this.selectedRegion.start.columnIndex = columnIndex
       this.selectedRegion.end.rowIndex = -1
@@ -21,6 +22,7 @@ export class Cursor {
 
   get element() {
     return computed(() => {
+      console.log('element')
       return this.containerElementRef.value?.querySelector(`.cell-${this.selectedCell.rowIndex}-${this.selectedCell.columnIndex}`)
     })
   }
