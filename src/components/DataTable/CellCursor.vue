@@ -3,15 +3,19 @@
     ref="cursorRef"
     class="cursor"
     :style="cursorStyle"
-    @keydown.capture="onKeyDown"
+    @keydown="onKeyDown"
     tabindex="0"
+    v-click-outside="clickOutSide"
   >
     <slot
       v-if="editing"
       :name="'cell-input-' + column.name"
       :item="item"
       :column="column"
+      :row-index="rowIndex"
       :cell="cell"
+      :onInput="onInput"
+      class="cell-input"
     >
       <!-- <slot
         :name="'cell-input'"
@@ -19,7 +23,12 @@
         :column="column"
         :cell="cell"
       >-->
-      <v-input v-model="cell" class="cell-input" :style="inputStyle" />
+      <v-input
+        class="cell-input"
+        :style="inputStyle"
+        :modelValue="cell"
+        @update:modelValue="onInput"
+      />
       <!-- </slot> -->
     </slot>
   </span>
@@ -27,23 +36,39 @@
 
 <script>
 import VInput from '../VInput'
-import cursor from '@/hooks/useCursor'
 import {computed, inject, ref, watch, nextTick, getCurrentInstance } from 'vue'
 export default {
   name: 'CellCursor',
   components: {VInput},
-  setup() {
-    const $items = inject('$items')
+  props: {
+    items: Array
+  },
+  directives: {
+    clickOutside: {
+      beforeMount (el, binding) {
+        el.__ClickOutsideHandler__ = event => {
+          // check if event's target is the el or contained by el
+          if (!(el === event.target || el.contains(event.target))) {
+            binding.value(event)
+          }
+        }
+        document.body.addEventListener('click', el.__ClickOutsideHandler__)
+      },
+      beforeUnmount (el) {
+        document.body.removeEventListener('click', el.__ClickOutsideHandler__)
+      }
+    }
+  },
+  setup(props) {
     const $columns = inject('$columns')
     const $cursor = inject('$cursor')
-    const item = computed(() => $items[$cursor.selectedCell.rowIndex])
+    const item = computed(() => props.items[$cursor.selectedCell.rowIndex])
     const column = computed(() => $columns[$cursor.selectedCell.columnIndex])
     const instance = getCurrentInstance()
-    const cell = computed({
-      get: () => item.value[column.value.name],
+    const cell = computed(() => item.value[column.value.name])
+
       // make table emit on-input event to the wrapper
-      set: (value) => instance.ctx.$parent.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
-    })
+    const onInput = (value) => instance.ctx.$parent.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
 
     // Re-focus CellCursor if cursor updated. This is to allow interact with keyboard 
     const cursorRef = ref(null)
@@ -54,49 +79,53 @@ export default {
         cursorRef.value.focus()
       })
     })
+    const clickOutSide = (event) => {
+      if (event.target.dataset.columnIndex == $cursor.selectedCell.columnIndex && event.target.dataset.rowIndex == $cursor.selectedCell.rowIndex ) return
+      setEditMode(false)
+    }
     // Focus input when $cursor.editing is true
-    watch($cursor.editing, async (val) => {
-      console.log('et', val)
-      if (val) {
-        console.log('et2')
-        await nextTick()
-        const input = cursorRef.value.querySelector('input')
-        if (document.activeElement !== input) input.focus()
-      } else {
-        console.log('et3')
-        cursorRef.value.focus()
+    watch($cursor.editing, async (value) => {
+      if (value) {
+        nextTick(() => {
+          const input = cursorRef.value.querySelector('input')
+          if (input && document.activeElement !== input) input.focus()
+        })
       }
     })
     watch($cursor.containerElementRef, () => $cursor.containerElementRef.value.addEventListener('click', () => cursorRef.value.focus()))
 
     // style
+    const td = computed(() => {
+      console.log('element')
+      return $cursor.containerElementRef.value?.querySelector(`.cell-${$cursor.selectedCell.rowIndex}-${$cursor.selectedCell.columnIndex}`)
+    })
     const cursorStyle = computed(() => {
       // Hide the cell when cursor is not on any cell yet
-      if (!$cursor.element.value) {
+      if (!td.value) {
         return {
           display: 'none'
         }
       }
       return {
         // + 2px for border
-        width: $cursor.element.value.offsetWidth + 2 + 'px',
-        height: $cursor.element.value.offsetHeight + 2 + 'px',
-        top: $cursor.element.value.offsetTop + 'px',
-        left: $cursor.element.value.offsetLeft - 1 + 'px'
+        width: td.value.offsetWidth + 2 + 'px',
+        height: td.value.offsetHeight + 2 + 'px',
+        top: td.value.offsetTop + 'px',
+        left: td.value.offsetLeft - 1 + 'px'
       }
     })
 
     const inputStyle = computed(() => {
       // Hide the cell when cursor is not on any cell yet
-      if (!$cursor.element.value) {
+      if (!td.value) {
         return {
           display: 'none'
         }
       }
       return {
         // - 2px for border
-        width: $cursor.element.value.offsetWidth - 2 + 'px',
-        height: $cursor.element.value.offsetHeight - 2 + 'px',
+        width: td.value.offsetWidth - 2 + 'px',
+        height: td.value.offsetHeight - 2 + 'px',
         'padding-left': '1px',
         'padding-right': '1px'
       }
@@ -152,6 +181,7 @@ export default {
             // ) {
             //   break;
             // }
+            console.log('enter')
 
             if (!$cursor.editing.value) {
               // If not in edit mode, enable edit mode
@@ -247,20 +277,20 @@ export default {
 
       return {onKeyDown}
     }
-    const { onKeyDown } = setupNavigation({items: $items, columns: $columns}, setEditMode)
+    const { onKeyDown } = setupNavigation({items: props.items, columns: $columns}, setEditMode)
     
-    return { item, column, cell, cursorRef, cursorStyle, inputStyle, editing: $cursor.editing, onKeyDown, cursor }
+    return { clickOutSide, blur, onInput, item, column, cell, cursorRef, cursorStyle, inputStyle, editing: $cursor.editing, onKeyDown, rowIndex: $cursor.selectedCell.rowIndex }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .cursor {
   position: absolute;
   border: 2px solid rgb(124, 179, 66);
   pointer-events: none;
-}
-::v-deep .cell-input {
-  pointer-events: initial;
+  & > ::v-deep * {
+    pointer-events: initial;
+  }
 }
 </style>

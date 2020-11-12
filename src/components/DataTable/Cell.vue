@@ -5,6 +5,7 @@
     :data-row-index="rowIndex"
     :data-column-index="columnIndex"
     :class="`cell-${rowIndex}-${columnIndex}`"
+    class="text-truncate"
   >
     <slot />
   </td>
@@ -36,5 +37,11 @@ export default {
 td {
   user-select: none;
   overflow: hidden;
+}
+
+.text-truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

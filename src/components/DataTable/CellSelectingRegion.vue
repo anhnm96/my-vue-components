@@ -18,10 +18,9 @@ export default {
         // Return if not found and td
         if (!td) return
         // If user didn't clicked on any regular cell, clear the cell region
-        // if (!td.dataset.columnIndex) {
-        //     selectedRegion = null
-        //     return
-        // }
+        if (!td.dataset.columnIndex) {
+            return
+        }
         // If user right clicked on a regular cell,
         // and the cell is in the current selected region, do not clear the selected region
         // const cellRegion = selectedCellRegionRef.value

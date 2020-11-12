@@ -1,5 +1,5 @@
 import { isEqual, cloneDeep, pick } from 'lodash-es'
-import { computed, watch } from 'vue'
+import { computed, watch, unref } from 'vue'
 
 // state is object
 class Tracker {
@@ -7,54 +7,41 @@ class Tracker {
     this.past = []
     this.state = state
     this.future = []
-    this.initialState = cloneDeep(state)
+    this.current = cloneDeep(unref(state))
     this.unwatch = this.handleWatch()
   }
 
   handleWatch() {
     return watch(this.state, (newState) => {
       if (this.future.length > 0) this.future = []
-      // check if this is the first time
-      if (this.past.length === 0) {
-        this.past.push(this.beforeChanged())
-      } else {
-        this.past.push(this.current)
-      }
-      // if past.length === 0 then first param = undefined => func will use default 1st arg
-      // which is initialState
-      this.current = this.changed(this.past[this.past.length - 1], newState)
+      // this.current now become prevState's snapshot
+      this.past.push(this.current)
+      // save current state's snapshot
+      this.current = cloneDeep(unref(newState))
     })
   }
 
   undo() {
     if (this.past.length === 0) return
     this.unwatch()
-    const lastValue = this.past.pop()
     // save changing state for redo
-    const currentValue = {}
-    for (let prop in lastValue) {
-      currentValue[prop] = this.state[prop]
-    }
-    this.future.push(currentValue)
+    this.future.push(this.current)
     // undo state
+    const lastValue = this.past.pop()
     Object.assign(this.state, lastValue)
-    this.current = lastValue
+    this.current = cloneDeep(unref(this.state))
     this.unwatch = this.handleWatch()
   }
 
   redo() {
     if (this.future.length === 0) return
     this.unwatch()
-    const nextValue = this.future.pop()
     // save changing state for undo
-    const currentValue = {}
-    for (let prop in nextValue) {
-      currentValue[prop] = this.state[prop]
-    }
-    this.past.push(currentValue)
+    this.past.push(this.current)
     // redo state
+    const nextValue = this.future.pop()
     Object.assign(this.state, nextValue)
-    this.current = nextValue
+    this.current = cloneDeep(unref(this.state))
     this.unwatch = this.handleWatch()
   }
 

@@ -19,12 +19,4 @@ export class Cursor {
       this.selectedRegion.end.columnIndex = -1
     })
   }
-
-  get element() {
-    return computed(() => {
-      console.log('element')
-      return this.containerElementRef.value?.querySelector(`.cell-${this.selectedCell.rowIndex}-${this.selectedCell.columnIndex}`)
-    })
-  }
-
 }

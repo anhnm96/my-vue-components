@@ -1,5 +1,31 @@
 <template>
-  <table @copy="copy" @paste="paste" ref="tableRef">
+  <table
+    @copy="copy"
+    @paste="paste"
+    ref="tableRef"
+    @keydown.ctrl.z.exact="undo"
+    @keydown.ctrl.shift.z="redo"
+  >
+    <button @click="itemsTracker.undo()">undo</button>
+    <button @click="itemsTracker.redo()">redo</button>
+    <div>{{ itemsTracker.current }}</div>
+    <div>--------------------</div>
+    <div>
+      <span v-for="(i, ind) in itemsTracker.past.value" :key="`${ind}`">
+        <span v-for="(j, inz) in i" :key="inz"
+          >{{ j.color }}-{{ j.quantity }}</span
+        >
+        **
+      </span>
+    </div>
+    <div>--------------------</div>
+    <div>
+      <span v-for="(i, ind) in itemsTracker.future.value" :key="`${ind}`">
+        <span v-for="(j, inz) in i" :key="inz"
+          >{{ j.color }}-{{ j.quantity }}</span
+        >
+      </span>
+    </div>
     <thead>
       <tr>
         <th></th>
@@ -7,7 +33,7 @@
           v-for="(col, $columnIndex) in columns"
           :key="col.name"
           :class="`datatable__header datatable__header--${col.name}`"
-          @mousedown="select('column', $columnIndex)"
+          @mousedown="selectHeader('column', $columnIndex)"
         >
           {{ col.name }}
         </th>
@@ -15,7 +41,7 @@
     </thead>
     <tbody>
       <tr v-for="(item, $rowIndex) in items" :key="item.id">
-        <td class="datatable__row" @mousedown="select('row', $rowIndex)">
+        <td class="datatable__row" @mousedown="selectHeader('row', $rowIndex)">
           {{ $rowIndex + 1 }}
         </td>
         <Cell
@@ -27,30 +53,71 @@
         >
       </tr>
     </tbody>
-    <cell-cursor>
+    <cell-selecting-region />
+    <cell-cursor :items="items">
       <!-- Pass-through all slots to cell-input component. -->
       <!-- May filter later to only pass cell-input* slots -->
       <template v-for="name of Object.keys($slots)" #[name]="scope">
         <slot :name="name" v-bind="scope" />
       </template>
     </cell-cursor>
-    <cell-selecting-region />
     <context-menu :actions="actions">
       <template #default="scope">
-        <slot name="context-menu" v-bind="scope" :cursor="cursor" />
+        <slot name="context-menu" v-bind="scope" :cursor="cursor">
+          <button
+            class="block w-full p-2 text-left hover:bg-gray-400"
+            :disabled="scope.context.event.target.tagName === 'TH'"
+            @click="
+              insertRow(cursor.selectedCell.rowIndex, scope.context, 'above')
+            "
+          >
+            Add row above
+          </button>
+          <button
+            class="block w-full p-2 text-left hover:bg-gray-400"
+            :disabled="scope.context.event.target.tagName === 'TH'"
+            @click="insertRow(cursor.selectedCell.rowIndex, scope.context)"
+          >
+            Add row below
+          </button>
+          <button
+            class="block w-full p-2 text-left hover:bg-gray-400"
+            :disabled="scope.context.event.target.tagName === 'TD'"
+            @click="
+              insertColumn(
+                cursor.selectedCell.columnIndex,
+                scope.context,
+                'left'
+              )
+            "
+          >
+            Add column left
+          </button>
+          <button
+            class="block w-full p-2 text-left hover:bg-gray-400"
+            :disabled="scope.context.event.target.tagName === 'TD'"
+            @click="
+              insertColumn(cursor.selectedCell.columnIndex, scope.context)
+            "
+          >
+            Add column right
+          </button>
+        </slot>
       </template>
     </context-menu>
   </table>
 </template>
 
 <script>
-import { ref, provide, nextTick, watch, } from 'vue'
+import { ref, provide, nextTick } from 'vue'
 import Cell from './Cell'
 import CellCursor from './CellCursor'
 import CellSelectingRegion from './CellSelectingRegion'
 import {Cursor} from '@/hooks/useCursor'
 import ContextMenu from '@/components/ContextMenu'
 import {getCsvFromClipboardData} from '@/services/utils'
+import Tracker from '@/hooks/useTracker'
+
 export default {
   props: {
     items: Array,
@@ -61,21 +128,54 @@ export default {
     const tableRef = ref(null)
     const cursor = new Cursor(tableRef)
     provide('$cursor', cursor)
-    provide('$items', props.items)
     provide('$columns', props.columns)
 
-    watch(props.items, () => {
-      console.log('items update')
-    })
+    const itemsTracker = new Tracker(props.items)
 
-    const test = () => {
-      console.log('test')
+    const undo = (e) => {
+      itemsTracker.undo()
     }
+
+    const redo = (e) => {
+      itemsTracker.redo()
+    }
+
     const actions = [
       {label: 'Add above' }
     ]
+    const insertRow = (rowIndex, context, position = 'below') => {
+      const posInsert = position === 'below' ? rowIndex + 1 : rowIndex
+      const newArr = [...props.items]
+      
+      newArr.splice(posInsert, 0, dumpItem)
+      console.log(newArr.length)
+      emit('update:items', newArr)
+      nextTick(() => console.log(props.items.length))
+      
+      // update focusing cursor if add row above
+      if (position === 'above')
+        selectHeader('row', rowIndex + 1)
+      context.show = false
+    }
 
-    const select = (type, index) => {
+    const insertColumn = (columnIndex, context, position = 'right') => {
+      console.log('insertColumn', position)
+      // TODO: add column, name column
+      // const posInsert = position === 'left' ? rowIndex + 1 : rowIndex
+      // const newArr = [...props.items]
+      
+      // newArr.splice(posInsert, 0, dumpItem)
+      // console.log(newArr.length)
+      // emit('update:items', newArr)
+      // nextTick(() => console.log(props.items.length))
+      
+      // // update focusing cursor if add row above
+      // if (position === 'above')
+      //   selectHeader('row', rowIndex + 1)
+      // context.show = false
+    }
+
+    const selectHeader = (type, index) => {
       if (type === 'row') {
         // Auto focus first cell when select row
         Object.assign(cursor.selectedCell, {rowIndex: index, columnIndex: 0})
@@ -181,8 +281,24 @@ export default {
       }
     }
 
-    return {tableRef, test, actions, cursor, select, copy, paste}
+    return {itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
   }
+}
+
+const dumpItem = {
+  "color": "",
+  "cutpot": "cut",
+  "family": "",
+  "grade": "",
+  "id": `${Math.random()}`,
+  "note": null,
+  "origin": "",
+  "price": null,
+  "product_id": "",
+  "quantity": null,
+  "unit": "",
+  "variety": "",
+  "$errors": {}
 }
 </script>
 
@@ -207,5 +323,9 @@ td {
 .datatable__row,
 .datatable__header {
   user-select: none;
+}
+
+button:disabled {
+  @apply cursor-not-allowed text-gray-400 italic;
 }
 </style>
