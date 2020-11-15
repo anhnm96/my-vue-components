@@ -1,8 +1,17 @@
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, watch, Ref } from 'vue'
 
+type Cell = { rowIndex: number, columnIndex: number }
+type CellRegion = {
+  start: { rowIndex: number, columnIndex: number },
+  end: { rowIndex: number, columnIndex: number }
+}
 export class Cursor {
+  containerElementRef: HTMLElement
+  editing: Ref<boolean>
+  selectedCell: Cell
+  selectedRegion: CellRegion
 
-  constructor(containerElementRef) {
+  constructor(containerElementRef: HTMLElement) {
     this.containerElementRef = containerElementRef
     this.editing = ref(false)
     this.selectedCell = reactive({ rowIndex: -1, columnIndex: -1 })

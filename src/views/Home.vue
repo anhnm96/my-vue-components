@@ -1,27 +1,18 @@
 <template>
   <div class="home">
-    <table @keydown="keydown" tabindex="0">
-      <tr>
-        <th>Header 1</th>
-        <th>Header 2</th>
-      </tr>
-      <tr>
-        <td><input type="text"></td>
-        <td>Vue</td>
-      </tr>
-    </table>
+    <img alt="Vue logo" src="../assets/logo.png">
+    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component';
+import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
-export default {
-  name: 'Home',
-  methods: {
-    keydown() {
-      console.log('keydown')
-    }
-  }
-}
+@Options({
+  components: {
+    HelloWorld,
+  },
+})
+export default class Home extends Vue {}
 </script>

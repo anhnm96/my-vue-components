@@ -1,4 +1,5 @@
-export function getCsvFromClipboardData(clipboardData) {
+type PastedItems = Array<Array<string>>
+export function getCsvFromClipboardData(clipboardData: DataTransfer): PastedItems {
   let pastedText
   let isHTML = true
   let pastedItems = []
