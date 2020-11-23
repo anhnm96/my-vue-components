@@ -2,14 +2,17 @@
   <div
     class="bg-white shadow-sm context__container"
     v-if="context.show"
+    v-click-outside="() => (context.show = false)"
     :style="{
       left: context.event.clientX + 'px',
       top: context.event.clientY + 'px',
     }"
   >
-    <slot :context="context">
-      <ul>
+    <!-- <button @click="context.show = false" class="btn-close"></button> -->
+    <ul role="menu">
+      <slot :context="context">
         <li
+          role="menuitem"
           class="hover:bg-gray-400"
           v-for="(action, index) in actions"
           :key="`menu-item-${index}`"
@@ -17,9 +20,8 @@
         >
           {{ action.label }}
         </li>
-      </ul>
-    </slot>
-    <button @click="context.show = false" class="btn-close"></button>
+      </slot>
+    </ul>
   </div>
 </template>
 

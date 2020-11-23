@@ -1,11 +1,11 @@
 <template>
-  <span
+  <div
     ref="cursorRef"
     class="cursor"
-    :style="cursorStyle"
-    @keydown="onKeyDown"
     tabindex="0"
     v-click-outside="clickOutSide"
+    :style="cursorStyle"
+    @keydown="onKeyDown"
   >
     <slot
       v-if="editing"
@@ -15,23 +15,14 @@
       :row-index="rowIndex"
       :cell="cell"
       :onInput="onInput"
-      class="cell-input"
     >
-      <!-- <slot
-        :name="'cell-input'"
-        :item="item"
-        :column="column"
-        :cell="cell"
-      >-->
       <v-input
         class="cell-input"
-        :style="inputStyle"
         :modelValue="cell"
         @update:modelValue="onInput"
       />
-      <!-- </slot> -->
     </slot>
-  </span>
+  </div>
 </template>
 
 <script>
@@ -42,22 +33,6 @@ export default {
   components: {VInput},
   props: {
     items: Array
-  },
-  directives: {
-    clickOutside: {
-      beforeMount (el, binding) {
-        el.__ClickOutsideHandler__ = event => {
-          // check if event's target is the el or contained by el
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value(event)
-          }
-        }
-        document.body.addEventListener('click', el.__ClickOutsideHandler__)
-      },
-      beforeUnmount (el) {
-        document.body.removeEventListener('click', el.__ClickOutsideHandler__)
-      }
-    }
   },
   setup(props) {
     const $columns = inject('$columns')
@@ -80,6 +55,9 @@ export default {
       })
     })
     const clickOutSide = (event) => {
+      // Because we've set pointer-events: none. Click on current 
+      // cell will trigger td element instead
+      // so we should return in this case
       if (event.target.dataset.columnIndex == $cursor.selectedCell.columnIndex && event.target.dataset.rowIndex == $cursor.selectedCell.rowIndex ) return
       setEditMode(false)
     }
@@ -88,7 +66,12 @@ export default {
       if (value) {
         nextTick(() => {
           const input = cursorRef.value.querySelector('input')
-          if (input && document.activeElement !== input) input.focus()
+          if (input) {
+            for (let i of Object.keys(inputStyle.value)) {
+              input.style[i] = inputStyle.value[i]
+            }
+            if (document.activeElement !== input) input.focus()
+          }
         })
       }
     })
@@ -96,7 +79,6 @@ export default {
 
     // style
     const td = computed(() => {
-      console.log('element')
       return $cursor.containerElementRef.value?.querySelector(`.cell-${$cursor.selectedCell.rowIndex}-${$cursor.selectedCell.columnIndex}`)
     })
     const cursorStyle = computed(() => {
@@ -131,6 +113,7 @@ export default {
       }
     })
 
+    // handle keyboard
     function setEditMode (state) {
       $cursor.editing.value = state
     }
@@ -181,7 +164,6 @@ export default {
             // ) {
             //   break;
             // }
-            console.log('enter')
 
             if (!$cursor.editing.value) {
               // If not in edit mode, enable edit mode
@@ -279,7 +261,7 @@ export default {
     }
     const { onKeyDown } = setupNavigation({items: props.items, columns: $columns}, setEditMode)
     
-    return { clickOutSide, blur, onInput, item, column, cell, cursorRef, cursorStyle, inputStyle, editing: $cursor.editing, onKeyDown, rowIndex: $cursor.selectedCell.rowIndex }
+    return { clickOutSide, blur, onInput, item, column, cell, cursorRef, cursorStyle, editing: $cursor.editing, onKeyDown, rowIndex: $cursor.selectedCell.rowIndex }
   }
 }
 </script>

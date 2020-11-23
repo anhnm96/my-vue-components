@@ -13,6 +13,11 @@ const routes = [
     component: () => import('../views/Transition.vue')
   },
   {
+    path: '/menu',
+    name: 'DemoMenu',
+    component: () => import('../views/DemoMenu.vue')
+  },
+  {
     path: '/table',
     name: 'DemoTable',
     // route level code-splitting

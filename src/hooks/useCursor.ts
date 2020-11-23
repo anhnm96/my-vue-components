@@ -16,14 +16,11 @@ export class Cursor {
     this.editing = ref(false)
     this.selectedCell = reactive({ rowIndex: -1, columnIndex: -1 })
     this.selectedRegion = reactive({
-      start: { rowIndex: -1, columnIndex: -1 },
+      start: this.selectedCell,
       end: { rowIndex: -1, columnIndex: -1 }
     })
 
-    watch(this.selectedCell, ({ rowIndex, columnIndex }) => {
-      console.log('watch selectedCell')
-      this.selectedRegion.start.rowIndex = rowIndex
-      this.selectedRegion.start.columnIndex = columnIndex
+    watch(this.selectedCell, () => {
       this.selectedRegion.end.rowIndex = -1
       this.selectedRegion.end.columnIndex = -1
     })

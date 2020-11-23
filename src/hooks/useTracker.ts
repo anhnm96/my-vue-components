@@ -1,5 +1,5 @@
 import { isEqual, cloneDeep, pick } from 'lodash-es'
-import { watch, unref, Ref } from 'vue'
+import { watch, unref } from 'vue'
 
 // state is object
 class Tracker {
@@ -9,7 +9,7 @@ class Tracker {
   current: any
   unwatch: Function
 
-  constructor(state: Ref) {
+  constructor(state: any) {
     this.past = []
     this.state = state
     this.future = []

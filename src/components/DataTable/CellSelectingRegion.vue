@@ -10,10 +10,11 @@ export default {
   setup() {
     const cursor = inject('$cursor')
     const instance = getCurrentInstance()
-    onMounted(async () => {
+    // Setup event onMouseDown
+    onMounted(() => {
       const $table = instance.ctx.$parent.$el
       let tbody
-      $table?.addEventListener("mousedown", ($event) => {
+      $table?.addEventListener("mousedown", (event) => {
         const td = event.target.closest("td")
         // Return if not found and td
         if (!td) return
@@ -38,8 +39,8 @@ export default {
       const onMouseMove = throttle(function (event) {
         const td = event.target.closest("td")
           if (!td.dataset.columnIndex) return
-          cursor.selectedRegion.start.rowIndex = cursor.selectedCell.rowIndex
-          cursor.selectedRegion.start.columnIndex = cursor.selectedCell.columnIndex
+          // cursor.selectedRegion.start.rowIndex = cursor.selectedCell.rowIndex
+          // cursor.selectedRegion.start.columnIndex = cursor.selectedCell.columnIndex
           cursor.selectedRegion.end.rowIndex = parseInt(td.dataset.rowIndex)
           cursor.selectedRegion.end.columnIndex = parseInt(td.dataset.columnIndex)
         }, 20)
@@ -49,7 +50,7 @@ export default {
         document.removeEventListener('mouseup', onMouseUp)
       }
     })
-    
+    // Calculate style for region
     const selectedCellRegionStyle = computed(() => {
       const $table = instance.ctx.$parent.$el
       const cellRegion = cursor.selectedRegion
@@ -120,7 +121,7 @@ export default {
 <style scoped>
 .selecting-region {
   position: absolute;
-  background-color: rgba(124, 179, 66, 0.2);
+  background-color: rgba(130, 244, 10, 0.26);
   pointer-events: none;
 }
 </style>

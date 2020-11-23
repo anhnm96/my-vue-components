@@ -1,63 +1,53 @@
 <template>
-  <div class="autocomplete__container" v-click-outside="close">
+  <div
+    role="combobox"
+    :aria-expanded="shown"
+    aria-haspopup="listbox"
+    class="autocomplete__container"
+    v-click-outside="close"
+  >
     <input
       type="text"
+      aria-autocomplete="list"
+      ref="input"
       v-model="inputValue"
-      @keyup.esc.prevent="isActive = false"
+      @keyup.esc.prevent="shown = false"
       @keydown.down.prevent="keyArrows('down')"
       @keydown.up.prevent="keyArrows('up')"
-      @keydown.enter="onEnter($event, adaptedOptions[arrowCounter])"
-      @click="isActive = true"
-      ref="input"
+      @keydown.enter="safeSalect(adaptedOptions[arrowCounter])"
+      @keydown.tab.prevent="safeSalect(adaptedOptions[arrowCounter])"
+      @click="shown = true"
     />
-    <!-- @keydown.enter.stop.prevent="select(adaptedOptions[arrowCounter])" -->
     <div
       class="dropdown-menu"
       ref="dropdown"
       :style="isListInViewportVertically && { bottom: '100%' }"
     >
-      <div
-        role="menu"
+      <ul
+        v-if="shown"
+        role="listbox"
         aria-orientation="vertical"
-        aria-labelledby="options-menu"
-        v-if="isActive"
         class="dropdown-content"
       >
-        <div
-          role="menuitem"
+        <li
           v-for="(item, index) in adaptedOptions"
           :key="index"
+          role="option"
+          :aria-selected="index === arrowCounter"
           :class="{ 'is-active': index === arrowCounter }"
           class="dropdown-item"
-          mousedown.stop
           @click="select(item)"
           @mouseenter="arrowCounter = index"
         >
           {{ item.label }}
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 <script>
 export default {
   name: 'VAutocomplete',
-  directives: {
-    clickOutside: {
-      beforeMount (el, binding) {
-        el.__ClickOutsideHandler__ = event => {
-          // check if event's target is the el or contained by el
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value(event)
-          }
-        }
-        document.body.addEventListener('click', el.__ClickOutsideHandler__)
-      },
-      beforeUnmount (el) {
-        document.body.removeEventListener('click', el.__ClickOutsideHandler__)
-      }
-    }
-  },
   props: {
     input: {
       type: String,
@@ -78,25 +68,27 @@ export default {
         label: value,
         value
       })
+    },
+    localFilter: {
+      type: Boolean,
+      default: true
     }
   },
   mounted() {
-    console.log('mounted')
     this.$nextTick(() => {
-      if (document.activeElement === this.$refs.input) this.isActive = true
+      if (document.activeElement === this.$refs.input) this.shown = true
     })
-    
   },
   data () {
     return {
       localInput: '',
-      isActive: false,
+      shown: false,
       arrowCounter: -1,
       isListInViewportVertically: true
     }
   },
   watch: {
-    isActive(val) {
+    shown(val) {
       if (val) {
         this.calcDropdownInViewportVertical()
       }
@@ -125,7 +117,7 @@ export default {
   },
   methods: {
     close () {
-      this.isActive = false
+      this.shown = false
       this.arrowCounter = -1
       console.log('close')
     },
@@ -133,9 +125,8 @@ export default {
      * Enter key listener.
      * Select the hovered option.
      */
-    onEnter (event, item) {
-      if (this.isActive) {
-        event.stopPropagation()
+    safeSalect (item) {
+      if (this.shown) {
         this.select(item)
       }
     },
@@ -153,7 +144,7 @@ export default {
     */
     keyArrows(direction) {
         const sum = direction === 'down' ? 1 : -1
-        if (this.isActive) {
+        if (this.shown) {
             let index = this.arrowCounter + sum
             index = index >= this.options.length ? this.options.length - 1 : index
             index = index < 0 ? 0 : index
@@ -178,7 +169,7 @@ export default {
                 )
             }
         } else {
-            this.isActive = true
+            this.shown = true
         }
     },
     /**
