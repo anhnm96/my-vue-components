@@ -1,44 +1,41 @@
 <template>
   <button
-    v-show="isOpen"
-    @click="isOpen = false"
+    v-if="active"
     type="button"
     class="fixed inset-0 w-full cursor-default"
+    arial-label="close"
+    @click="active = false"
   ></button>
-  <div v-bind="$attrs" class="dropdown" @mouseenter="onHover">
+  <div
+    v-bind="$attrs"
+    class="dropdown"
+    @mouseenter="onHover(true)"
+    @mouseleave="onHover(false)"
+  >
     <button
-      id="user-menu"
-      type="button"
+      :id="id"
+      ref="dropdownTrigger"
       class="dropdown-trigger"
       :class="[triggerClass, { 'cursor-not-allowed': disabled }]"
       @click="onClick"
       @contextmenu.prevent="onContextMenu"
-      @focus.capture="onFocus"
-      @focus="buttonHasFocus = true"
-      @blur="buttonHasFocus = false"
-      @keydown.esc="isOpen = false"
-      aria-haspopup="true"
+      :aria-haspopup="popupRole"
+      :aria-expanded="active"
       :disabled="disabled"
     >
-      <slot name="trigger" :hasFocus="buttonHasFocus" :isOpen="isOpen"></slot>
+      <slot name="trigger" :active="active"></slot>
     </button>
-    <transition
-      enter-active-class="transition-all duration-75 ease-out"
-      leave-active-class="transition-all duration-100 ease-in"
-      enter-from-class="opacity-0 scale-70"
-      enter-to-class="scale-100 opacity-100"
-      leave-from-class="scale-100 opacity-100"
-      leave-to-class="opacity-0 scale-70"
-    >
-      <div v-show="isOpen" class="dropdown-menu" :aria-hidden="!isOpen">
-        <div
-          :role="ariaRole"
-          aria-orientation="vertical"
-          aria-labelledby="user-menu"
-          class="dropdown-content"
-          :class="containerClass"
-        >
-          <slot name="dropdown"></slot>
+    <transition :name="animation">
+      <div
+        v-if="active"
+        class="dropdown-menu"
+        :role="popupRole"
+        :aria-labelledby="id"
+        :aria-multiselectable="multiple"
+        v-trap-focus
+      >
+        <div class="dropdown-content" :style="containerStyle">
+          <slot name="dropdown" :active="active" :toggle="toggle"></slot>
         </div>
       </div>
     </transition>
@@ -46,6 +43,7 @@
 </template>
 
 <script>
+import {ref, onMounted, onBeforeUnmount, watch, nextTick} from 'vue'
 export default {
   name: 'VDropdown',
   props: {
@@ -53,82 +51,72 @@ export default {
       type: String,
       default: ''
     },
-    containerClass: {
+    containerStyle: {
       type: String,
       default: ''
-    },
-    value: {
-      type: [String, Number, Boolean, Object, Array, Function],
-      default: null
     },
     animation: {
       type: String,
       default: 'fade'
     },
-    ariaRole: {
-      default: 'menu',
-      validator(value) {
-        return ['menu', 'listbox'].indexOf(value) > -1
-      }
+    popupRole: {
+      type: String,
+      default: 'menu'
     },
     triggers: {
       type: Array,
       default: () => ['click']
     },
-    multiple: Boolean,
+    multiple: {
+      type: Boolean,
+      default: null
+    },
     disabled: Boolean
   },
-  data() {
-    return {
-      buttonHasFocus: false,
-      isOpen: false,
-      selected: this.value
+  setup(props) {
+    /** trigger button */
+    const dropdownTrigger = ref(null)
+    const id = `VDropdown__${new Date().getTime()}--trigger`
+    // trigger event setup
+    const onClick = () => {
+      if (props.triggers.indexOf('click') < 0) return
+        toggle()
     }
-  },
-  mounted() {
-    document.addEventListener('keydown', this.onEscape)
-  },
-  beforeUnmount() {
-    document.removeEventListener('keydown', this.onEscape)
-  },
-  methods: {
-    onClick() {
-        if (this.triggers.indexOf('click') < 0) return
-        this.toggle()
-    },
-    onContextMenu() {
-        if (this.triggers.indexOf('contextmenu') < 0) return
-        this.toggle()
-    },
-    onHover() {
-        if (this.triggers.indexOf('hover') < 0) return
-        // this.isHoverable = true
-        this.toggle()
-    },
-    onFocus() {
-        if (this.triggers.indexOf('focus') < 0) return
-        this.toggle()
-    },
-    /**
-    * Toggle dropdown if it's not disabled.
-    */
-    toggle() {
-        if (this.disabled) return
-        this.isOpen = !this.isOpen
-        // if (!this.isActive) {
-        //     // if not active, toggle after clickOutside event
-        //     // this fixes toggling programmatic
-        //     this.$nextTick(() => {
-        //         const value = !this.isActive
-        //         this.isActive = value
-        //         // Vue 2.6.x ???
-        //         setTimeout(() => (this.isActive = value))
-        //     })
-        // } else {
-        //     this.isActive = !this.isActive
-        // }
-    },
-  },
+    const onContextMenu = () => {
+        if (props.triggers.indexOf('contextmenu') < 0) return
+        toggle()
+    }
+    const onHover = (val) => {
+        if (props.triggers.indexOf('hover') < 0) return
+        toggle(val)
+    }
+    const toggle = (val = null) => {
+        if (props.disabled) return
+        if (val !== null) active.value = val
+        else active.value = !active.value
+    }
+    /** dropdown popup */
+    const active = ref(false)
+    function keyPress({ key }) {
+        if (active.value && (key === 'Escape' || key === 'Esc')) {
+            active.value = false
+        }
+    }
+    // re-focus button trigger when close
+    watch(active, (newActive) => {
+      if (!newActive) nextTick(() => dropdownTrigger.value.focus())
+    })
+
+    onMounted(() => {
+      if (typeof window !== 'undefined') {
+          document.addEventListener('keyup', keyPress)
+      }
+    })
+    onBeforeUnmount(() => {
+      document.removeEventListener('keyup', keyPress)
+    })
+    return {dropdownTrigger, id, onClick, onContextMenu, onHover, toggle, active}
+  }
 }
 </script>
 <style scoped>
@@ -141,11 +129,5 @@ export default {
 }
 .dropdown-content {
   @apply py-1 bg-white rounded-md shadow-xs;
-}
-.scale-70 {
-  transform: scale(0.7);
-}
-.scale-100 {
-  transform: scale(1);
 }
 </style>

@@ -12,4 +12,24 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+.scale-enter-active {
+  @apply transform transition-all duration-75 ease-out;
+}
+.scale-leave-active {
+  @apply transform transition-all duration-75 ease-out;
+}
+.scale-enter-from,
+.scale-leave-to {
+  @apply opacity-0 scale-75;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

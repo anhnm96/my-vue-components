@@ -33,12 +33,16 @@
       v-model:selected="selected"
       :options="nameList"
       class="border border-gray-400 border-solid"
+      arialLabel="select name"
     />
-    <v-autocomplete
-      class="border border-gray-400 border-solid"
-      v-model:input="val"
-      :options="countries"
-    />
+    <label>
+      Select country
+      <v-autocomplete
+        class="border border-gray-400 border-solid"
+        v-model:input="val"
+        :options="countries"
+      />
+    </label>
   </div>
 </template>
 

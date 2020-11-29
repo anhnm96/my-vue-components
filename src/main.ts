@@ -2,20 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import trapFocus from './directives/trapFocus.js'
+import clickOutSide from './directives/clickOutSide'
 
 const app = createApp(App)
-app.directive('click-outside', {
-  beforeMount(el, binding) {
-    el.__ClickOutsideHandler__ = (event: Event) => {
-      // check if event's target is the el or contained by el
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value(event)
-      }
-    }
-    document.body.addEventListener('click', el.__ClickOutsideHandler__)
-  },
-  beforeUnmount(el) {
-    document.body.removeEventListener('click', el.__ClickOutsideHandler__)
-  }
-})
+app.directive('click-outside', clickOutSide)
+app.directive('trap-focus', trapFocus)
 app.use(store).use(router).mount('#app')

@@ -2,6 +2,7 @@
   <div
     role="combobox"
     :aria-expanded="shown"
+    :aria-owns="`VAutocomplete__${timeId}--listbox`"
     aria-haspopup="listbox"
     class="autocomplete__container"
     v-click-outside="close"
@@ -17,6 +18,9 @@
       @keydown.enter="safeSalect(adaptedOptions[arrowCounter])"
       @keydown.tab.prevent="safeSalect(adaptedOptions[arrowCounter])"
       @click="shown = true"
+      :aria-controls="`VAutocomplete__${timeId}--listbox`"
+      :aria-activedescendant="`VAutocomplete__${this.timeId}--opt${this.arrowCounter}`"
+      :aria-label="arialLabel"
     />
     <div
       class="dropdown-menu"
@@ -24,14 +28,16 @@
       :style="isListInViewportVertically && { bottom: '100%' }"
     >
       <ul
+        :id="`VAutocomplete__${timeId}--listbox`"
         v-if="shown"
         role="listbox"
-        aria-orientation="vertical"
         class="dropdown-content"
+        :aria-label="arialLabel"
       >
         <li
           v-for="(item, index) in adaptedOptions"
           :key="index"
+          :id="`VAutocomplete__${timeId}--opt${index}`"
           role="option"
           :aria-selected="index === arrowCounter"
           :class="{ 'is-active': index === arrowCounter }"
@@ -72,7 +78,8 @@ export default {
     localFilter: {
       type: Boolean,
       default: true
-    }
+    },
+    arialLabel: String
   },
   mounted() {
     this.$nextTick(() => {
@@ -83,8 +90,9 @@ export default {
     return {
       localInput: '',
       shown: false,
-      arrowCounter: -1,
-      isListInViewportVertically: true
+      arrowCounter: 0,
+      isListInViewportVertically: true,
+      timeId: new Date().getTime()
     }
   },
   watch: {
@@ -118,7 +126,7 @@ export default {
   methods: {
     close () {
       this.shown = false
-      this.arrowCounter = -1
+      this.arrowCounter = 0
       console.log('close')
     },
     /**
