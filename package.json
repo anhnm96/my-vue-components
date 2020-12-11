@@ -14,7 +14,7 @@
     "core-js": "^3.6.5",
     "lodash-es": "^4.17.15",
     "tailwindcss": "^1.9.6",
-    "vue": "^3.0.0",
+    "vue": "^3.0.4",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
