@@ -1,19 +1,25 @@
 <template>
-  <portal to="modals">
-    <div v-if="showModal" class="fixed inset-0 flex items-center justify-center">
+  <teleport :to="attach" :disabled="disableTeleport">
+    <div
+      v-if="showModal"
+      class="fixed inset-0 flex items-center justify-center"
+    >
       <transition
         @before-leave="backdropLeaving = true"
         @after-leave="backdropLeaving = false"
         enter-active-class="transition-all duration-150 ease-out"
         leave-active-class="transition-all duration-200 ease-in"
-        enter-class="opacity-0"
+        enter-from-class="opacity-0"
         enter-to-class="opacity-100"
-        leave-class="opacity-100"
+        leave-from-class="opacity-100"
         leave-to-class="opacity-0"
         appear
       >
-        <div v-if="!hideOverlay && showContent">
-          <div class="absolute inset-0 bg-black opacity-25" @click="!persistent && close()"></div>
+        <div v-if="showContent">
+          <div
+            class="absolute inset-0 bg-black opacity-25"
+            @click="!persistent && close()"
+          ></div>
         </div>
       </transition>
 
@@ -22,78 +28,81 @@
         @after-leave="cardLeaving = false"
         enter-active-class="transition-all duration-150 ease-out"
         leave-active-class="transition-all duration-200 ease-in"
-        enter-class="opacity-0 scale-70"
+        enter-from-class="opacity-0 scale-70"
         enter-to-class="scale-100 opacity-100"
-        leave-class="scale-100 opacity-100"
+        leave-from-class="scale-100 opacity-100"
         leave-to-class="opacity-0 scale-70"
         appear
       >
-        <div v-if="showContent" class="relative">
+        <div
+          class="relative"
+          role="dialog"
+          aria-modal="true"
+          v-if="showContent"
+          v-trap-focus
+          v-bind="$attrs"
+        >
           <slot></slot>
         </div>
       </transition>
     </div>
-  </portal>
+  </teleport>
 </template>
 
 <script>
+import {ref, onMounted, onBeforeUnmount, watch} from 'vue'
 export default {
+  inheritAttrs: false,
   props: {
-    open: Boolean,
-    hideOverlay: Boolean,
+    attach: {
+      type: String,
+      default: undefined
+    },
+    modelValue: Boolean,
     persistent: Boolean
   },
-  data() {
-    return {
-      showModal: false,
-      showContent: false,
-      backdropLeaving: false,
-      cardLeaving: false,
-    }
-  },
-  created() {
-    const onEscape = (e) => {
-      if (this.open && e.keyCode === 27) {
-        this.close()
+  emits: ['close', 'update:modelValue'],
+  setup(props, {emit}) {
+    const showModal = ref(false)
+    const showContent = ref(false)
+    const backdropLeaving = ref(false)
+    const cardLeaving = ref(false)
+    const disableTeleport = props.attach === undefined ? true : false
+    function onEscape (e) {
+      if (props.modelValue && e.keyCode === 27) {
+        close()
       }
     }
-    document.addEventListener('keydown', onEscape)
-    this.$once('hook:destroyed', () => {
+    onMounted(() => {
+      document.addEventListener('keydown', onEscape)
+    })
+
+    onBeforeUnmount(() => {
       document.removeEventListener('keydown', onEscape)
     })
-  },
-  watch: {
-    open: {
-      handler: function (newValue) {
-        if (newValue) {
-          this.show()
+    function show() {
+      showModal.value = true
+      showContent.value = true
+    }
+    function close() { // start closing animation
+      showContent.value = false
+    }
+    watch(() => props.modelValue, (newValue) => {
+      if (newValue) {
+          show()
         } else {
-          this.close()
+          close()
         }
-      },
-      immediate: true
-    },
-    leaving(newValue) {
-      if (newValue === false) {
+    }, {immediate: true})
+    watch([backdropLeaving, cardLeaving], (newValues) => {
+      if (newValues[0] === false && newValues[1] === false) {
         // close modal when leaving animation finished
-        this.showModal = false
-        this.$emit('close')
+        showModal.value = false
+        emit('close')
+        emit('update:modelValue', false)
       }
-    }
-  },
-  computed: {
-    leaving() {
-      return this.backdropLeaving || this.cardLeaving
-    }
-  },
-  methods: {
-    show() {
-      this.showModal = true
-      this.showContent = true
-    },
-    close() { // start closing animation
-      this.showContent = false
-    }
+    })
+    return {showModal, showContent, backdropLeaving, cardLeaving, show, close, disableTeleport}
   }
 }
 </script>

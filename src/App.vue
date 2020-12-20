@@ -3,9 +3,12 @@
     <router-link to="/">Home</router-link>|
     <router-link to="/table">Table</router-link>|
     <router-link to="/toggle">Toggle</router-link>|
+    <router-link to="/dialog">Dialog</router-link>|
     <router-link to="/skeleton">Skeleton</router-link>|
     <router-link to="/menu">Menu</router-link>|
-    <router-link to="/transition">Transition</router-link>
+    <router-link to="/transition">Transition</router-link>|
+    <router-link to="/tang">tang</router-link>|
+    <router-link to="/drag">Drag</router-link>|
   </div>
   <router-view />
 </template>

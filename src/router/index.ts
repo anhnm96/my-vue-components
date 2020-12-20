@@ -23,6 +23,11 @@ const routes = [
     component: () => import('../views/DemoToggle.vue')
   },
   {
+    path: '/dialog',
+    name: 'Dialog',
+    component: () => import('../views/DemoDialog.vue')
+  },
+  {
     path: '/skeleton',
     name: 'DemoSkeleton',
     component: () => import('../views/DemoSkeleton.vue')
@@ -34,7 +39,17 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/DemoTable.vue')
-  }
+  },
+  {
+    path: '/tang',
+    name: 'Tang',
+    component: () => import('../views/tang.vue')
+  },
+  {
+    path: '/drag',
+    name: 'Drag',
+    component: () => import('../views/DemoDnD/index.vue')
+  },
 ]
 
 const router = createRouter({
