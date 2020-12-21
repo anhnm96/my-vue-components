@@ -4,17 +4,7 @@
     <button @click="add2">add</button>
     <button @click="swap">swap</button>
     <DragList :list="list">
-      <DragItem
-        v-for="(i, index) in list"
-        :key="i"
-        :data-transfer="{ index }"
-        @dragentered="dragenter"
-        @dropped="drop"
-      >
-        <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
-          {{ i }}
-        </p>
-      </DragItem>
+      
     </DragList>
 
     <div id="list-complete-demo" class="demo">
@@ -39,6 +29,7 @@ import {shuffle} from 'lodash-es'
 import DragList from '@/components/DragDrop/DragList'
 import DragItem from '@/components/DragDrop/DragItem'
 export default {
+  // eslint-disable-next-line
   components: {DragList, DragItem},
   data() {
     return {
@@ -57,9 +48,9 @@ export default {
     },
     drop({from, to}) {
       // console.log('drop')
-      // const tmp = this.list[from.index]
-      // this.list[from.index] = this.list[to.index]
-      // this.list[to.index] = tmp
+      const tmp = this.list[from.index]
+      this.list[from.index] = this.list[to.index]
+      this.list[to.index] = tmp
     },
     add2() {
       this.list.push(this.text)

@@ -3,7 +3,7 @@
     :is="tag"
     :draggable="draggable"
     @dragstart.self="onDrag"
-    @dragenter.prevent="dragEnter"
+    @dragenter.prevent="dragEntered"
     @dragover.prevent="dragOver"
     @drop.stop="onDrop"
     @dragleave="dragLeave"
@@ -19,6 +19,7 @@
 import {isEqual, throttle} from 'lodash-es'
 import {dragEnter} from './DragState'
 export default {
+  name: 'DragItem',
   props: {
     tag: {
       type: String,
@@ -81,29 +82,30 @@ export default {
     onDrag (e) {
       e.dataTransfer.effectAllowed = this.effectsAllowed
       e.dataTransfer.dropEffect = this.dropEffect
-      e.dataTransfer.setData('draggingItem', JSON.stringify(this.dataTransfer))
+      e.dataTransfer.setData('text', JSON.stringify(this.dataTransfer))
       if (this.mode === 'cut') this.$emit('remove', this.dataTransfer)
     },
     onDrop (e) {
-      const dataTransfer = JSON.parse(e.dataTransfer.getData('draggingItem'))
+      const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
       this.$emit('dropped', {event: e, from: dataTransfer, to: this.dataTransfer})
+      e.dataTransfer.clearData()
     },
-    dragEnter(e) {
+    dragEntered(e) {
       if (this.transitioning) {console.log(this.transitioning);return}
-      const draggingData = JSON.parse(e.dataTransfer.getData('draggingItem'))
       const offset = this.getOffset()
       // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
-        this.$emit('dragentered', {from: draggingData, to: this.dataTransfer})
-      Object.assign(dragEnter, this.dataTransfer)
+        // this.$emit('asd', {from: draggingData, to: this.dataTransfer})
+        this.$emit('dragentered')
+      Object.assign(dragEnter, this.dataTransfer, {ref: this.$el})
     },
     dragOver () {
-      this.$emit('drag-over')
+      // this.$emit('drag-over')
     },
     dragLeave (e) {
-      this.$emit('drag-leave')
+      // this.$emit('drag-leave')
     },
     dragEnd () {
-      this.$emit('drag-end')
+      // this.$emit('drag-end')
     },
     getOffset () {
       const top = this.$el.getBoundingClientRect().top + this.offset.top
