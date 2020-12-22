@@ -95,7 +95,7 @@ export default {
       const offset = this.getOffset()
       // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
         // this.$emit('asd', {from: draggingData, to: this.dataTransfer})
-        this.$emit('dragentered')
+        this.$emit('dragentered', this.dataTransfer)
       Object.assign(dragEnter, this.dataTransfer, {ref: this.$el})
     },
     dragOver () {

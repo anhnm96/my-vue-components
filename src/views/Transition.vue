@@ -4,7 +4,11 @@
     <button @click="add2">add</button>
     <button @click="swap">swap</button>
     <DragList :list="list">
-      
+      <template #item="{item, ind}">
+        <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+          {{ item }} - {{ind}}
+        </p>
+      </template>
     </DragList>
 
     <div id="list-complete-demo" class="demo">
@@ -33,7 +37,7 @@ export default {
   components: {DragList, DragItem},
   data() {
     return {
-      list: ['vue', 'ReactiveX', 'Drag and Drop'],
+      list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],
       text: '',
       items: [1,2,3,4,5,6,7,8,9],
     nextNum: 10

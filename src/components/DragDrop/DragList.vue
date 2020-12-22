@@ -1,32 +1,47 @@
 <template>
   <transition-group
-    @transitionstart="moving = true"
-    @transitionend="moving = false"
     move-class="drag-list--move"
     tag="div"
-    @dragenter="dragentered"
+    @dragstart="dragstart"
+    @dragend="dragend"
   >
+  <template v-if="dragging && enteringIndex > -1">
     <DragItem
-        v-for="(i, index) in list"
-        :key="i"
-        :data-transfer="{ index }"
-      >
-        <!-- <p>{{i}}</p> -->
-        <RenderItem :render="render" :value="i" />
-        <!-- <Item :value="i" /> -->
-        <!-- <component :is="Item" v-bind="{value: i}" /> -->
-      </DragItem>
-    <!-- <slot/>
-    <slot name="feedback">
-      <p ref="feedback" key="feedback" class="p-2 font-normal shadow-xs bg-">ád</p>
-    </slot> -->
+      v-for="(item, index) in itemsBeforeFeedback"
+      :key="index"
+      :data-transfer="{ index }"
+      @dragentered="dragentered"
+    >
+      <slot name="item" :item="item" :ind="index" />
+    </DragItem>
+      <slot name="feedback">
+        <p ref="feedback" key="feedback" class="bg-green-300 p-2 font-normal shadow-xs bg-">feeeed backkk</p>
+      </slot>
+    <DragItem
+      v-for="(item, index) in itemsAfterFeedback"
+      :key="index + itemsBeforeFeedback.length"
+      :data-transfer="{ index: index + itemsBeforeFeedback.length }"
+      @dragentered="dragentered"
+    >
+      <slot name="item" :item="item" :ind="index + itemsBeforeFeedback.length" />
+    </DragItem>
+  </template>
+  <template v-else>
+    <DragItem
+      v-for="(item, index) in list"
+      :key="index"
+      :data-transfer="{ index }"
+      @dragentered="dragentered"
+    >
+      <slot name="item" :item="item" :ind="index" />
+    </DragItem>
+  </template>
   </transition-group>
 </template>
 
 <script>
 import {ref, onMounted, getCurrentInstance, watch, computed} from 'vue'
 import {dragEnter} from './DragState'
-import RenderItem from './RenderItem'
 import DragItem from './DragItem'
 export default {
   props: {
@@ -34,43 +49,42 @@ export default {
     tag: String,
     childProps: Object
   },
-  components: {DragItem, RenderItem},
+  components: {DragItem},
   setup(props, ctx) {
-    const moving = ref(false)
+    const dragging = ref(false)
     const instance = getCurrentInstance()
+    const enteringIndex = ref(-1)
 
     function test(val) {
       console.log('test', val)
     }
-    function dragentered() {
-      console.log('draglistenter' , dragEnter, feedback.value)
-    }
-    const dragItems = computed(() => {
-      // return instance.$children
-      //   .find(x => x.$options.name === `SliderSlides`).$children;
-    })
-    watch(() => dragEnter.index, () => {
-      ctx.slots.default()[0].children.push(feedback.value)
-      console.log(ctx.slots.default()[0].children)
-      console.log(instance)
-      // console.log(instance)
-      // dragEnter.ref.insertAdjacentHTML('afterEnd', feedback.value.outerHTML)
-    })
-    const render = ({value}) => {
-      return (
-        <p>{value}</p>
-      )
+    function dragentered(payload) {
+      console.log('dragentered' , payload)
+      enteringIndex.value = payload.index
     }
     const feedback = ref(null)
-    const feedb = ref(null)
-    const arr = ref([])
-    return {render, feedb, test, moving, dragentered, feedback}
+
+    const itemsBeforeFeedback = computed(() => {
+      console.log('before', props.list.slice(0, enteringIndex.value + 1))
+      return props.list.slice(0, enteringIndex.value + 1)
+    })
+    const itemsAfterFeedback = computed(() => {
+      console.log('after', props.list.slice(enteringIndex.value + 1))
+      return props.list.slice(enteringIndex.value + 1)
+    })
+    const dragstart = () => {
+      dragging.value = true
+    }
+    const dragend = () => {
+      dragging.value = false
+    }
+    return {enteringIndex, dragging, dragentered, feedback, dragstart, dragend, itemsBeforeFeedback, itemsAfterFeedback}
   }
 }
 </script>
 
 <style>
 .drag-list--move {
-  transition: transform 0.25s;
+  transition: transform 0.1s ease;
 }
 </style>
