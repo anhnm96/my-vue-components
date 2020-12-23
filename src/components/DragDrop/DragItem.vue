@@ -72,11 +72,9 @@ export default {
   },
   methods: {
     transitionstart() {
-      console.log('start')
       this.transitioning = true
     },
     transitionend() {
-      console.log('end')
       this.transitioning = false
     },
     onDrag (e) {
@@ -84,6 +82,7 @@ export default {
       e.dataTransfer.dropEffect = this.dropEffect
       e.dataTransfer.setData('text', JSON.stringify(this.dataTransfer))
       if (this.mode === 'cut') this.$emit('remove', this.dataTransfer)
+      this.$emit('dragstarted', this.dataTransfer)
     },
     onDrop (e) {
       const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
@@ -91,11 +90,12 @@ export default {
       e.dataTransfer.clearData()
     },
     dragEntered(e) {
-      if (this.transitioning) {console.log(this.transitioning);return}
+      console.log('enter')
+      if (this.transitioning) return
       const offset = this.getOffset()
       // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
         // this.$emit('asd', {from: draggingData, to: this.dataTransfer})
-        this.$emit('dragentered', this.dataTransfer)
+        this.$emit('dragentered', {...this.dataTransfer, ref: this.$el})
       Object.assign(dragEnter, this.dataTransfer, {ref: this.$el})
     },
     dragOver () {
