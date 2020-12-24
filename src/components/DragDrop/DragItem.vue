@@ -5,7 +5,7 @@
     @dragstart.self="onDrag"
     @dragenter.prevent="dragEntered"
     @dragover.prevent="dragOver"
-    @drop.stop="onDrop"
+    @drop="onDrop"
     @dragleave="dragLeave"
     @dragend="dragEnd"
   >

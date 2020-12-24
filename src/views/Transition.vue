@@ -3,10 +3,10 @@
     <input class="border border-solid" type="text" v-model="text" />
     <button @click="add2">add</button>
     <button @click="swap">swap</button>
-    <DragList :list="list">
-      <template #item="{item, ind}">
+    <DragList v-model:list="list">
+      <template #item="{ item, ind }">
         <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
-          {{ item }} - {{ind}}
+          {{ item }} - {{ ind }}
         </p>
       </template>
     </DragList>

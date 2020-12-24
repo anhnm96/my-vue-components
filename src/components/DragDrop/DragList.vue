@@ -4,6 +4,7 @@
     tag="div"
     @dragstart="dragstart"
     @dragend="dragend"
+    @drop="dropped"
   >
     <template v-if="dragging && enteringIndex > -1">
       <DragItem
@@ -11,14 +12,12 @@
         :key="index"
         :data-transfer="{ index }"
         @dragentered="dragentered"
+        @dropped="dropped"
       >
         <slot name="item" :item="item" :ind="index" />
       </DragItem>
       <slot name="feedback">
-        <p
-          key="feedback"
-          class="p-2 font-normal bg-green-300 shadow-xs bg-"
-        >
+        <p key="feedback" class="p-2 font-normal bg-green-300 shadow-xs bg-">
           feeeed backkk
         </p>
       </slot>
@@ -27,6 +26,7 @@
         :key="index + itemsBeforeFeedback.length"
         :data-transfer="{ index: index + itemsBeforeFeedback.length }"
         @dragentered="dragentered"
+        @dropped="dropped"
       >
         <slot
           name="item"
@@ -41,6 +41,7 @@
         :key="index"
         :data-transfer="{ index }"
         @dragentered="dragentered"
+        @dragstarted="dragstarted"
       >
         <slot name="item" :item="item" :ind="index" />
       </DragItem>
@@ -60,13 +61,34 @@ export default {
   setup(props, ctx) {
     const dragging = ref(false)
     const dragstart = () => {
+      console.log('dragstart')
       dragging.value = true
     }
     const dragend = () => {
+      console.log('dragend')
       dragging.value = false
+      array_move(props.list, draggingIndex.value, enteringIndex.value)
     }
+    function array_move(arr, old_index, new_index) {
+        while (old_index < 0) {
+            old_index += arr.length;
+        }
+        while (new_index < 0) {
+            new_index += arr.length;
+        }
+        if (new_index >= arr.length) {
+            var k = new_index - arr.length + 1;
+            while (k--) {
+                arr.push(undefined);
+            }
+        }
+        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+        return arr; // for testing purposes
+    }
+    // index of hovering element
     const enteringIndex = ref(-1)
     function dragentered(payload) {
+      // stop if element is in transitioning
       if (payload.ref.classList.contains('drag-list--move')) return
       if (enteringIndex.value === payload.index) {
         movingRD.value = !movingRD.value
@@ -87,8 +109,15 @@ export default {
       const directionValue = movingRD.value ? 1 : 0
       return props.list.slice(enteringIndex.value + directionValue)
     })
-    
-    return {enteringIndex, dragging, dragentered, dragstart, dragend, itemsBeforeFeedback, itemsAfterFeedback}
+    const dropped = (val) => {
+      console.log('dropped', val)
+    }
+    const draggingIndex = ref(-1)
+    const dragstarted = (payload) => {
+      console.log('dragstarted', payload)
+      draggingIndex.value = payload.index
+    }
+    return {dragstarted, dropped, enteringIndex, dragging, dragentered, dragstart, dragend, itemsBeforeFeedback, itemsAfterFeedback}
   }
 }
 </script>
