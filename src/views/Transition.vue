@@ -9,6 +9,9 @@
           {{ item }} - {{ ind }}
         </p>
       </template>
+      <!-- <template #feedback>
+        <p key="tets">testestestse</p>
+      </template> -->
     </DragList>
 
     <div id="list-complete-demo" class="demo">

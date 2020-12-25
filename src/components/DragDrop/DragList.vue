@@ -9,24 +9,24 @@
     <template v-if="dragging && enteringIndex > -1">
       <DragItem
         v-for="(item, index) in itemsBeforeFeedback"
-        :key="index"
+        :key="item"
         :data-transfer="{ index }"
         @dragentered="dragentered"
-        @dropped="dropped"
       >
         <slot name="item" :item="item" :ind="index" />
       </DragItem>
       <slot name="feedback">
+        <!-- <DragItem key="ad"> -->
         <p key="feedback" class="p-2 font-normal bg-green-300 shadow-xs bg-">
           feeeed backkk
         </p>
+        <!-- </DragItem> -->
       </slot>
       <DragItem
         v-for="(item, index) in itemsAfterFeedback"
-        :key="index + itemsBeforeFeedback.length"
+        :key="item"
         :data-transfer="{ index: index + itemsBeforeFeedback.length }"
         @dragentered="dragentered"
-        @dropped="dropped"
       >
         <slot
           name="item"
@@ -38,7 +38,7 @@
     <template v-else>
       <DragItem
         v-for="(item, index) in list"
-        :key="index"
+        :key="item"
         :data-transfer="{ index }"
         @dragentered="dragentered"
         @dragstarted="dragstarted"
@@ -65,10 +65,11 @@ export default {
       dragging.value = true
     }
     const dragend = () => {
-      console.log('dragend')
+      // console.log('dragend')
       dragging.value = false
       array_move(props.list, draggingIndex.value, enteringIndex.value)
     }
+    // console.log(ctx.slots.default())
     function array_move(arr, old_index, new_index) {
         while (old_index < 0) {
             old_index += arr.length;
@@ -123,6 +124,6 @@ export default {
 </script>
 <style scoped>
 .drag-list--move {
-  transition: transform 0.1s ease;
+  transition: transform 0.2s ease;
 }
 </style>
