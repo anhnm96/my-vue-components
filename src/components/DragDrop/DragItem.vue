@@ -78,7 +78,6 @@ export default {
     onDrop (e) {
       const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
       this.$emit('dropped', {event: e, from: dataTransfer, to: this.dataTransfer})
-      e.dataTransfer.clearData()
     },
     dragEntered(e) {
       console.log('enter')
@@ -94,7 +93,7 @@ export default {
     dragLeave (e) {
       // this.$emit('drag-leave')
     },
-    dragEnd () {
+    dragEnd (e) {
       // this.$emit('drag-end')
     },
     getOffset () {
