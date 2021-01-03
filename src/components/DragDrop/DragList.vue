@@ -1,25 +1,26 @@
 <template>
-  <transition-group move-class="drag-list--move" tag="div" @dragend="dragend">
-    <template v-if="mode === 'lazy' && dragging">
+  <transition-group move-class="drag-list--move" :tag="tag" ref="listEl"
+        @dragleave="dragleave" @dragend="dragend" @drop="drop">
+    <template v-if="showPlaceholder">
       <DragItem
         v-for="(item, index) in itemsBeforeFeedback"
         :key="item"
-        :data-transfer="{ index }"
+        :data-transfer="{ index, value: item }"
         @dragentered="dragentered"
       >
         <slot name="item" :item="item" :ind="index" />
       </DragItem>
-      <slot name="feedback">
-        <!-- <DragItem key="ad"> -->
-        <p key="feedback" class="p-2 font-normal bg-green-300 shadow-xs bg-">
-          feeeed backkk
-        </p>
-        <!-- </DragItem> -->
-      </slot>
+      <DragItem key="drag-item--placeholder">
+        <slot name="placeholder">
+          <p class="p-2 font-normal bg-green-300 shadow-xs bg-">
+            feeeed backkk
+          </p>
+        </slot>
+      </DragItem>
       <DragItem
         v-for="(item, index) in itemsAfterFeedback"
         :key="item"
-        :data-transfer="{ index: index + itemsBeforeFeedback.length }"
+        :data-transfer="{ index: index + itemsBeforeFeedback.length, value: item }"
         @dragentered="dragentered"
       >
         <slot
@@ -29,61 +30,57 @@
         />
       </DragItem>
     </template>
-    <template v-else>
-      <DragItem
-        v-for="(item, index) in list"
-        :key="item"
-        :data-transfer="{ index }"
-        @dragstarted="dragstarted"
-        @dragentered="dragentered"
-        @dragend="test('end')"
-        @dragleave="test('leave', $event)"
-      >
-        <slot name="item" :item="item" :ind="index" />
-      </DragItem>
-    </template>
+    <DragItem
+      v-else
+      v-for="(item, index) in list"
+      :key="item"
+      :data-transfer="{ index, value: item }"
+      @dragstarted="dragstarted"
+      @dragentered="dragentered"
+    >
+      <slot name="item" :item="item" :ind="index" />
+    </DragItem>
   </transition-group>
 </template>
 <script>
-import {ref, onMounted, watch, computed} from 'vue'
-import {dragEnter} from './DragState'
+import {ref, watch, computed} from 'vue'
 import DragItem from './DragItem'
 export default {
   props: {
     list: Array,
-    tag: String,
+    tag: {
+      type: String,
+      default: 'div'
+    },
     mode: {
       type: String,
       default: 'immediate'
     }
   },
   components: {DragItem},
-  setup(props, ctx) {
-    const dragging = ref(false)
-    const dragend = () => {
-      // console.log('dragend')
-      dragging.value = false
-      if (props.mode === 'lazy')
-        array_move(props.list, draggingIndex.value, enteringIndex.value)
-    }
-    const dropped = (val) => {
-      console.log('dropped', val)
-    }
+  setup(props, {emit, slots}) {
+    // index of dragging item in list
     const draggingIndex = ref(-1)
+    let originalIndex = -1
     const dragstarted = (payload) => {
       console.log('dragstarted', payload)
       dragging.value = true
       draggingIndex.value = payload.index
+      originalIndex = payload.index
     }
-    // console.log(ctx.slots.default())
-    
     // index of hovering element
+    const dragging = ref(false)
     const enteringIndex = ref(-1)
+    // this is used when other components trigger dragenter
+    const hovering = ref(false)
+    const movingRD = ref(null)
+    const listEl = ref(null)
     function dragentered(payload) {
       console.log('dragentered', payload)
       // stop if element is in transitioning
       if (payload.ref.classList.contains('drag-list--move')) return
-      if (props.mode === 'lazy') {
+      if (props.mode === 'lazy' || !dragging.value) {
+        hovering.value = true
         if (enteringIndex.value === payload.index) {
           console.log('equal')
           movingRD.value = !movingRD.value
@@ -91,13 +88,11 @@ export default {
         }
         enteringIndex.value = payload.index
       }
-      if (props.mode === 'immediate') {
-        console.log('swap', draggingIndex.value, payload.index)
-        array_move(props.list, draggingIndex.value, payload.index)
+      if (props.mode === 'immediate' && dragging.value) {
+        array_move(props.list, draggingIndex.value, payload.index, false)
         draggingIndex.value = payload.index
       }
     }
-    const movingRD = ref(null)
     watch(enteringIndex, (newVal, oldVal) => {
       if (oldVal < newVal) movingRD.value = true
       else movingRD.value = false
@@ -110,26 +105,56 @@ export default {
       const directionValue = movingRD.value ? 1 : 0
       return props.list.slice(enteringIndex.value + directionValue)
     })
-    const test = (val, e) => {
-      console.log('test', val, e)
+    const showPlaceholder = computed(() => {
+      const hasPlaceholderSlot = Object.keys(slots).includes('placeholder')
+      if (hasPlaceholderSlot) 
+        return (props.mode === 'lazy' && dragging.value) || hovering.value
+      return false
+    })
+    function dragend() {
+      dragging.value = false
     }
-    return {test ,dragstarted, dropped, enteringIndex, dragging, dragentered, dragend, itemsBeforeFeedback, itemsAfterFeedback}
+    // handle swap in lazy mode
+    function drop (e) {
+      console.log('drop')
+      if (hovering.value) {
+        const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
+        const clone = props.list
+        const directionValue = movingRD.value ? 1 : 0
+        clone.splice(enteringIndex.value + directionValue, 0, dataTransfer.value)
+        emit('update:list', clone)
+        hovering.value = false
+      }
+      if (props.mode === 'lazy' && dragging.value) {
+        array_move(props.list, draggingIndex.value, enteringIndex.value, false)
+      }
+    }
+    function dragleave (e) {
+      // move back to original if drag out of list
+        if (!listEl.value.$el.contains(e.relatedTarget)) {
+          array_move(props.list, draggingIndex.value, originalIndex, false)
+          draggingIndex.value = originalIndex
+          hovering.value = false
+        }
+    }
+    return { hovering, drop, showPlaceholder, listEl, dragleave ,dragstarted, enteringIndex, dragging, dragentered, dragend, itemsBeforeFeedback, itemsAfterFeedback}
   }
 }
-function array_move(arr, old_index, new_index) {
-        while (old_index < 0) {
-            old_index += arr.length;
+function array_move(arr, oldIndex, newIndex, allowNegative = true) {
+  if (!allowNegative && (oldIndex < 0 || newIndex < 0)) return
+        while (oldIndex < 0) {
+            oldIndex += arr.length;
         }
-        while (new_index < 0) {
-            new_index += arr.length;
+        while (newIndex < 0) {
+            newIndex += arr.length;
         }
-        if (new_index >= arr.length) {
-            var k = new_index - arr.length + 1;
+        if (newIndex >= arr.length) {
+            var k = newIndex - arr.length + 1;
             while (k--) {
                 arr.push(undefined);
             }
         }
-        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+        arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
         return arr; // for testing purposes
     }
 </script>

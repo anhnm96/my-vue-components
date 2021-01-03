@@ -80,7 +80,6 @@ export default {
       this.$emit('dropped', {event: e, from: dataTransfer, to: this.dataTransfer})
     },
     dragEntered(e) {
-      console.log('enter')
       const offset = this.getOffset()
       // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
         // this.$emit('asd', {from: draggingData, to: this.dataTransfer})

@@ -3,30 +3,38 @@
     <input class="border border-solid" type="text" v-model="text" />
     <button @click="add2">add</button>
     <button @click="swap">swap</button>
-    <DragList v-model:list="list">
-      <template #item="{ item, ind }">
-        <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
-          {{ item }} - {{ ind }}
-        </p>
-      </template>
-      <template #feedback>
-        <p key="tets" class="bg-teal-400">testestestse</p>
-      </template>
-    </DragList>
+    <div class="flex">
+      <DragList v-model:list="list">
+        <template #item="{ item, ind }">
+          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+            {{ item }} - {{ ind }}
+          </p>
+        </template>
+        <template #placeholder>
+          <p key="tets" class="bg-teal-400">testestestse</p>
+        </template>
+      </DragList>
+      <DragList v-model:list="items">
+        <template #item="{ item, ind }">
+          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+            {{ item }} - {{ ind }}
+          </p>
+        </template>
+        <!-- <template #placeholder>
+          <p key="tets" class="bg-teal-400">testestestse</p>
+        </template> -->
+      </DragList>
+    </div>
 
-    <div id="list-complete-demo" class="demo">
-      <button v-on:click="shuffle1">Shuffle</button>
-      <button v-on:click="add">Add</button>
-      <button v-on:click="remove">Remove</button>
-      <transition-group name="list-complete" tag="p">
-        <span
-          v-for="item in items"
-          v-bind:key="item"
-          class="inline-block list-complete-item"
-        >
-          {{ item }}
-        </span>
-      </transition-group>
+    <div class="demo">
+      <VDrag class="drag" tag="span" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+        {{i}}
+      </VDrag>
+      <VDrop @dragleave="test" class="copy" @dropped="drop2" :accept-data="(val) => val.value % 2 === 0">
+        <div>
+          <span v-for="i in droplist" :key="i">{{i}}</span>
+        </div>
+      </VDrop>
     </div>
   </div>
 </template>
@@ -35,15 +43,17 @@
 import {shuffle} from 'lodash-es'
 import DragList from '@/components/DragDrop/DragList'
 import DragItem from '@/components/DragDrop/DragItem'
+import VDrag from '@/components/DragDrop/VDrag'
+import VDrop from '@/components/DragDrop/VDrop'
 export default {
   // eslint-disable-next-line
-  components: {DragList, DragItem},
+  components: {DragList, DragItem, VDrag, VDrop},
   data() {
     return {
       list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],
       text: '',
       items: [1,2,3,4,5,6,7,8,9],
-    nextNum: 10
+      droplist: []
     }
   },
   methods: {
@@ -69,17 +79,11 @@ export default {
       // this.list[0] = this.list[this.list.length - 1]
       // this.list[this.list.length - 1] = tmp
     },
-     randomIndex: function () {
-      return Math.floor(Math.random() * this.items.length)
+    drop2({data}) {
+      this.droplist.push(data.value)
     },
-    add: function () {
-      this.items.splice(this.randomIndex(), 0, this.nextNum++)
-    },
-    remove: function () {
-      this.items.splice(this.randomIndex(), 1)
-    },
-    shuffle1: function () {
-      this.items = shuffle(this.items)
+    test() {
+      console.log('test')
     }
   }
 }
@@ -101,18 +105,43 @@ export default {
 .fade-move {
   transition: transform 0.25s;
 }
-/* asd */
-.list-complete-item {
-  transition: all 1s;
-  /* display: inline-block; */
-  margin-right: 10px;
+.drag {
+  width: 60px;
+  height: 60px;
+  background-color: rgb(220, 220, 255);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 10px 0 10px;
+  font-size: 20px;
+  transition: all 0.5s;
 }
-.list-complete-enter-from, .list-complete-leave-to
-/* .list-complete-leave-active below version 2.1.8 */ {
-  opacity: 0;
-  transform: translateY(30px);
+.copy {
+  margin: 20px 10px;
+  border: 1px solid black;
+  height: 100px;
+  position: relative;
+  flex: 1;
 }
-.list-complete-leave-active {
+.copy::before {
+  content: "COPY";
   position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 25px;
+  font-weight: bold;
+}
+.drop-allowed {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.drop-forbidden {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.drop-in {
+  box-shadow: 0 0 5px rgba(0, 0, 255, 0.4);
 }
 </style>
