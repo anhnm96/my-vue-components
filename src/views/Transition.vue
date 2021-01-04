@@ -29,12 +29,25 @@
     <div class="demo">
       <VDrag class="drag" tag="span" v-for="i in items" :key="i" :dataTransfer="{value: i}">
         {{i}}
+        <template #drag-image="{data}" >
+          <span v-if="!entering" class="drag" style="border-radius: 50%">{{data.value}}</span>
+          <span v-if="entering" class="drag" style="border-radius: 50%">DROP!!!!!</span>
+        </template>
       </VDrag>
-      <VDrop @dragleave="test" class="copy" @dropped="drop2" :accept-data="(val) => val.value % 2 === 0">
+      <VDrop @dragentered="dragentered" @dragleave="dragleave" class="copy" @dropped="drop2" :accept-data="(val) => val.value % 2 === 0">
         <div>
           <span v-for="i in droplist" :key="i">{{i}}</span>
         </div>
       </VDrop>
+      <div>
+         <VDrop ref="trash" class="trash"></VDrop>
+         <VDrag v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
+          <img draggable="false" class="document" src="@/assets/document.png">
+          <template #drag-image>
+            <img src="@/assets/smiley01.png" >
+          </template>
+         </VDrag>
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +58,7 @@ import DragList from '@/components/DragDrop/DragList'
 import DragItem from '@/components/DragDrop/DragItem'
 import VDrag from '@/components/DragDrop/VDrag'
 import VDrop from '@/components/DragDrop/VDrop'
+
 export default {
   // eslint-disable-next-line
   components: {DragList, DragItem, VDrag, VDrop},
@@ -53,15 +67,14 @@ export default {
       list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],
       text: '',
       items: [1,2,3,4,5,6,7,8,9],
-      droplist: []
+      droplist: [],
+      entering: false,
+      docs: ['doc1', 'doc2']
     }
   },
   methods: {
-    dragenter({from, to}) {
-      console.log('dragenter',from.index, to.index)
-      const tmp = this.list[from.index]
-      this.list[from.index] = this.list[to.index]
-      this.list[to.index] = tmp
+    dragentered() {
+      this.entering = true
     },
     drop({from, to}) {
       // console.log('drop')
@@ -82,8 +95,8 @@ export default {
     drop2({data}) {
       this.droplist.push(data.value)
     },
-    test() {
-      console.log('test')
+    dragleave() {
+      this.entering = false
     }
   }
 }
@@ -143,5 +156,26 @@ export default {
 
 .drop-in {
   box-shadow: 0 0 5px rgba(0, 0, 255, 0.4);
+}
+
+.trash {
+  background: url('~@/assets/trash.png') top left no-repeat;
+  height: 128px;
+  width: 128px;
+  margin-top: 90px;
+  float: right;
+  opacity: 0.7;
+}
+
+.trash.full {
+  background: url('~@/assets/trash.png') top right no-repeat;
+}
+
+.document {
+  margin-top: 10px;
+  display: block;
+  cursor: pointer;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 </style>

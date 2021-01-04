@@ -15,7 +15,6 @@
 
 <script>
 import {isEqual, throttle} from 'lodash-es'
-import {dragEnter} from './DragState'
 export default {
   name: 'DragItem',
   props: {
@@ -84,7 +83,6 @@ export default {
       // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
         // this.$emit('asd', {from: draggingData, to: this.dataTransfer})
         this.$emit('dragentered', {...this.dataTransfer, ref: this.$el})
-      Object.assign(dragEnter, this.dataTransfer, {ref: this.$el})
     },
     dragOver () {
       // this.$emit('drag-over')
