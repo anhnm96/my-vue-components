@@ -3,10 +3,10 @@
     :is="tag"
     :draggable="draggable"
     @dragstart.self="dragstart"
-    @drag="drag"
     @dragenter.prevent
     @dragover.prevent
     @dragend="dragend"
+    class="drag-container"
     :class="{[ghostClass]: localDragging}"
     ref="el"
   >
@@ -24,7 +24,6 @@
 import {ref} from 'vue'
 import {setDragging, setDataTransfer} from './DragState'
 import {createDragImage} from './createDragImage'
-import logo from '@/assets/logo.png'
 export default {
   name: 'VDrag',
   props: {
@@ -60,13 +59,17 @@ export default {
       default: 'drag-item-ghost'
     }
   },
-  setup(props, {emit, slots}) {
+  setup(props, {emit}) {
     const localDragging = ref(false)
     const el = ref(null)
     const dragImageWrapper = ref(null)
     let dragImage
     function dragover(e) {
       e.preventDefault()
+      dragImageWrapper.value.style.position = 'fixed'
+      dragImageWrapper.value.style.left = e.clientX + 'px'
+      dragImageWrapper.value.style.top = e.clientY + 'px'
+      dragImageWrapper.value.style.transform = 'translate(-50%, -50%)'
     }
     function dragstart (e) {
       document.addEventListener('dragover', dragover)
@@ -94,26 +97,28 @@ export default {
       setDragging(false)
       emit('dragended', props.dataTransfer)
       // remove created dragImage
-      if (dragImage) dragImageWrapper.value.removeChild(dragImage)
-      dragImageWrapper.value.style.left = ''
-      dragImageWrapper.value.style.top = ''
-      dragImageWrapper.value.style.transform = ''
+      // if (dragImage) dragImageWrapper.value.removeChild(dragImage)
+      // dragImageWrapper.value.style.position = ''
+      // dragImageWrapper.value.style.left = ''
+      // dragImageWrapper.value.style.top = ''
+      // dragImageWrapper.value.style.transform = ''
       document.removeEventListener('dragover', dragover)
     }
-    function drag(e) {
-      dragImageWrapper.value.style.left = e.clientX + 'px'
-      dragImageWrapper.value.style.top = e.clientY + 'px'
-      dragImageWrapper.value.style.transform = 'translate(-50%, -50%)'
-    }
 
-    return {dragImageWrapper, el, drag, localDragging, dragstart, dragend}
+    return {dragImageWrapper, el, localDragging, dragstart, dragend}
   }
 }
 </script>
 
 <style>
+.drag-container {
+  position: relative;
+}
 .drag-image {
-  position: fixed;
+  position: absolute;
+  top: 0;
+  left: 0;
   will-change: top, left;
+  z-index: 999;
 }
 </style>

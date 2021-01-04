@@ -41,10 +41,15 @@
       </VDrop>
       <div>
          <VDrop ref="trash" class="trash"></VDrop>
-         <VDrag v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
+         <VDrag @dragover="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
           <img draggable="false" class="document" src="@/assets/document.png">
           <template #drag-image>
-            <img src="@/assets/smiley01.png" >
+            <img v-if="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
+            <img v-if="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
+            <img v-if="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
+            <img v-if="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
+            <img v-if="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
+            <img v-if="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
           </template>
          </VDrag>
       </div>
@@ -69,10 +74,26 @@ export default {
       items: [1,2,3,4,5,6,7,8,9],
       droplist: [],
       entering: false,
-      docs: ['doc1', 'doc2']
+      docs: ['doc1', 'doc2'],
+      startPosition: {},
+      imgName: ['smiley01', 'smiley02', 'smiley03', 'smiley04', 'smiley05', 'smiley06'],
+      idx: 0
     }
   },
   methods: {
+    drag(e) {
+      if (this.startPosition.x === undefined) Object.assign(this.startPosition, {x: e.clientX, y: e.clientY})
+      const {top, left, height, width} = this.$refs.trash.$el.getBoundingClientRect()
+      const trashCenter = {x: left + width / 2, y: top + height / 2}
+      let remainingDistance = Math.sqrt((trashCenter.x-e.clientX)^2 + (trashCenter.y-e.clientY)^2)
+      let totalDistance = Math.sqrt((this.startPosition.x-trashCenter.x)^2 + (this.startPosition.y-trashCenter.y)^2)
+      const distancePercent = Math.min(1, remainingDistance / totalDistance)
+      console.log(remainingDistance, totalDistance, distancePercent);
+      this.idx = 3 - Math.round((3 * distancePercent))
+    },
+    dragend() {
+      this.startPosition.x = undefined
+    },
     dragentered() {
       this.entering = true
     },
@@ -177,5 +198,10 @@ export default {
   cursor: pointer;
   cursor: grab;
   cursor: -webkit-grab;
+}
+.drag-image {
+  max-width: unset;
+  width: 100px;
+  height: 100px;
 }
 </style>
