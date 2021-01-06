@@ -5,7 +5,7 @@
     <button @click="swap">swap</button>
     <button @click="swap2">swap 2</button>
     <div class="flex">
-      <DragList v-model:list="list">
+      <DragList2 v-model:list="list">
         <template #item="{ item, ind }">
           <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
             {{ item }} - {{ ind }}
@@ -14,43 +14,43 @@
         <template #placeholder>
           <p key="tets" class="bg-teal-400">testestestse</p>
         </template>
-      </DragList>
-      <DragList v-model:list="items">
+      </DragList2>
+      <DragList2 v-model:list="items">
         <template #item="{ item, ind }">
           <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
             {{ item }} - {{ ind }}
           </p>
         </template>
-      </DragList>
+      </DragList2>
     </div>
-  <div class="demo">
-    <VDragDrop class="drag" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
-      h{{i}}
-      <template #drag-image={data} >
-        <span v-show="!entering" class="drag">{{data.value}}</span>
-        <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
-      </template>
-    </VDragDrop>
-    <VDragDrop :draggable="false" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop3" :accept-data="(val) => val.value % 2 === 0">
-      <div style="pointer-events: none">
-        <span v-for="i in droplist" :key="i">{{i}}</span>
-      </div>
-    </VDragDrop>
-    <div>
-         <VDragDrop ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
-         <VDragDrop @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
+    <div class="demo">
+      <VDrag class="drag" tag="span" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+        {{i}}
+        <template #drag-image="{data}">
+          <span v-show="!entering" class="drag">{{data.value}}</span>
+          <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
+        </template>
+      </VDrag>
+      <VDrop class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop2" :accept-data="(val) => val.value % 2 === 0">
+        <div style="pointer-events: none">
+          <span v-for="i in droplist" :key="i">{{i}}</span>
+        </div>
+      </VDrop>
+      <div>
+         <VDrop ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDrop>
+         <VDrag @drag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
           <img draggable="false" class="document" src="@/assets/document.png">
           <template #drag-image>
-            <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
-            <img v-show="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
-            <img v-show="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
-            <img v-show="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
-            <img v-show="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
-            <img v-show="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
+            <img v-if="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
+            <img v-if="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
+            <img v-if="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
+            <img v-if="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
+            <img v-if="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
+            <img v-if="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
           </template>
-         </VDragDrop>
+         </VDrag>
       </div>
-  </div>
+    </div>
   </div>
 </template>
 
@@ -82,6 +82,7 @@ export default {
   },
   methods: {
     drag(e) {
+      // console.log(e)
       if (this.startPosition.x === undefined) Object.assign(this.startPosition, {x: e.clientX, y: e.clientY})
       const {top, left, height, width} = this.$refs.trash.$el.getBoundingClientRect()
       const trashCenter = {x: left + width / 2, y: top + height / 2}

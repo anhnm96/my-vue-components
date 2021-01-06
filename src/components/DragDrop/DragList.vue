@@ -138,7 +138,6 @@ export default {
       }
     }
     function dragleave (e) {
-      console.log('LEFTLEFT', e)
       // move back to original if drag out of list
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
       if (isSafari) return // safari always return relatedTarget as null

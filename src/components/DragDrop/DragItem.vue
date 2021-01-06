@@ -74,7 +74,7 @@ export default {
       dragImageEl.value.style.transform = 'translate(-50%, -50%)'
       // fix bug on firefox: drag event always return mouse position 0, 0
       // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
-      el.value.dispatchEvent(new MouseEvent('drag', e))
+      el.value.dispatchEvent(new MouseEvent('customdrag', e))
     }
     function dragstart (e) {
       dragging.value = true
@@ -113,6 +113,7 @@ export default {
       dragging.value = false
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
+
     return {el, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, drop, dragend}
   }
   // methods: {

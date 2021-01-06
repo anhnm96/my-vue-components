@@ -13,6 +13,11 @@ const routes = [
     component: () => import('../views/Transition.vue')
   },
   {
+    path: '/transition2',
+    name: 'Transition2',
+    component: () => import('../views/Transition2.vue')
+  },
+  {
     path: '/menu',
     name: 'DemoMenu',
     component: () => import('../views/DemoMenu.vue')
