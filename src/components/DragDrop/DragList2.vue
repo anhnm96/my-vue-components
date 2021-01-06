@@ -1,50 +1,54 @@
 <template>
-  <transition-group move-class="drag-list--move" :tag="tag" ref="listEl"
+  <transition-group move-class="drag-list--move" @transitionstart="inProgress = true" @transitionend="inProgress = false" :tag="tag" ref="listEl"
         @dragleave="dragleave" @dragend="dragend" @drop="drop">
     <template v-if="showPlaceholder">
-      <DragItem
-        v-for="(item, index) in itemsBeforeFeedback"
-        :key="item"
+      <VDrag v-for="(item, index) in itemsBeforeFeedback" :key="item"
         :data-transfer="{ index, value: item }"
         @dragentered="dragentered"
       >
-        <slot name="item" :item="item" :ind="index" />
-      </DragItem>
-      <DragItem key="drag-item--placeholder">
+        <VDrop>
+          <slot name="item" :item="item" :ind="index" />
+        </VDrop>
+      </VDrag>
+      <VDrop key="drag-item--placeholder">
         <slot name="placeholder">
           <p class="p-2 font-normal bg-green-300 shadow-xs bg-">
             feeeed backkk
           </p>
         </slot>
-      </DragItem>
-      <DragItem
+      </VDrop>
+      <VDrag
         v-for="(item, index) in itemsAfterFeedback"
         :key="item"
         :data-transfer="{ index: index + itemsBeforeFeedback.length, value: item }"
         @dragentered="dragentered"
       >
-        <slot
-          name="item"
-          :item="item"
-          :ind="index + itemsBeforeFeedback.length"
-        />
-      </DragItem>
+        <VDrop>
+            <slot
+              name="item"
+              :item="item"
+              :ind="index + itemsBeforeFeedback.length"
+            />
+        </VDrop>
+      </VDrag>
     </template>
-    <DragItem
-      v-else
-      v-for="(item, index) in list"
-      :key="item"
-      :data-transfer="{ index, value: item }"
-      @dragstarted="dragstarted"
-      @dragentered="dragentered"
-    >
-      <slot name="item" :item="item" :ind="index" />
-    </DragItem>
+      <VDrag
+        v-else v-for="(item, index) in list" :key="item"
+        :data-transfer="{ index, value: item }"
+        @dragstarted="dragstarted"
+        @dragentered="dragentered"
+      >
+      <VDrop>
+        <slot name="item" :item="item" :ind="index" />
+      </VDrop>
+    </VDrag>
   </transition-group>
 </template>
 <script>
+/* eslint-disable */
 import {ref, watch, computed} from 'vue'
-import DragItem from './DragItem'
+import VDrag from './VDrag'
+import VDrop from './VDrop'
 export default {
   props: {
     list: Array,
@@ -57,8 +61,9 @@ export default {
       default: 'immediate'
     }
   },
-  components: {DragItem},
+  components: {VDrag, VDrop},
   setup(props, {emit, slots}) {
+    const inProgress = ref(false)
     // index of dragging item in list
     const draggingIndex = ref(-1)
     let originalIndex = -1
@@ -75,29 +80,25 @@ export default {
     const hovering = ref(false)
     const movingRD = ref(null)
     const listEl = ref(null)
-    function dragentered({detail: payload}) {
-      console.log('dragentered', payload)
+    function dragentered(e) {
+      console.log('dragentered', e)
       // stop if element is in transitioning
-      if (payload.ref.classList.contains('drag-list--move')) return
+      if (inProgress.value) {console.log('moving');return}
+      if (e.target.classList.contains('drag-list--move')) {console.log('moving');return}
       if (props.mode === 'lazy' || !dragging.value) {
         hovering.value = true
-        if (enteringIndex.value === payload.index) {
+        if (enteringIndex.value === e.payload.index) {
           console.log('equal')
           movingRD.value = !movingRD.value
           return
         }
-        enteringIndex.value = payload.index
+        enteringIndex.value = e.payload.index
       }
       if (props.mode === 'immediate' && dragging.value) {
-        console.log('immediate',draggingIndex.value, payload.index)
-        // array_move(props.list, draggingIndex.value, payload.index, false)
-        // draggingIndex.value = payload.index
-        
-        const clone = props.list
-        array_move(clone, draggingIndex.value, payload.index, false)
-        emit('update:list', clone)
-        // update index of dragging element
-        draggingIndex.value = payload.index
+        console.log('immediate',draggingIndex.value, e.payload.index)
+        array_move(props.list, draggingIndex.value, e.payload.index, false)
+        draggingIndex.value = e.payload.index
+        console.log(props.list[0], props.list[1])
       }
     }
     watch(enteringIndex, (newVal, oldVal) => {
@@ -138,23 +139,18 @@ export default {
       }
     }
     function dragleave (e) {
-      console.log('LEFTLEFT', e)
       // move back to original if drag out of list
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-      if (isSafari) return // safari always return relatedTarget as null
         if (!listEl.value.$el.contains(e.relatedTarget)) {
-          console.log('dragleave wtf', e)
           array_move(props.list, draggingIndex.value, originalIndex, false)
           draggingIndex.value = originalIndex
           hovering.value = false
         }
     }
-    return { hovering, drop, showPlaceholder, listEl, dragleave ,dragstarted, enteringIndex, dragging, dragentered, dragend, itemsBeforeFeedback, itemsAfterFeedback}
+    return { inProgress, hovering, drop, showPlaceholder, listEl, dragleave ,dragstarted, enteringIndex, dragging, dragentered, dragend, itemsBeforeFeedback, itemsAfterFeedback}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {
   if (!allowNegative && (oldIndex < 0 || newIndex < 0)) return
-  console.log('swapp', oldIndex, newIndex)
         while (oldIndex < 0) {
             oldIndex += arr.length;
         }

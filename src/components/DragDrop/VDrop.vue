@@ -2,7 +2,7 @@
   <component
     :is="tag"
     @dragover.prevent
-    @dragenter.prevent="dragenter"
+    @dragenter.prevent
     @dragleave="dragleave"
     @drop="drop"
     :class="clazz"
@@ -65,17 +65,19 @@ export default {
       this.$emit('dropped', {event: e, data: dataTransfer})
     },
     dragenter(e) {
-      const handler = () => {
-        this.$el.classList.add(this.hoverClass)
-        this.$emit('dragentered', {...this.dataTransfer, ref: this.$el})
-      }
-      if (!this.offset) handler()
-      else {
-        const offset = this.getOffset()
-        if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right) {
-          handler()
-        }
-      }
+      // const handler = () => {
+      //   this.$el.classList.add(this.hoverClass)
+      //   this.$emit('dragentered', {...this.dataTransfer, ref: this.$el})
+      // }
+      // handler()
+
+      // if (!this.offset) handler()
+      // else {
+      //   const offset = this.getOffset()
+      //   if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right) {
+      //     handler()
+      //   }
+      // }
     },
     dragleave() {
       this.$el.classList.remove(this.hoverClass)
