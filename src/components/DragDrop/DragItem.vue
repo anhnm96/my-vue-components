@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {ref, computed} from 'vue'
+import {ref} from 'vue'
 export default {
   name: 'DragItem',
   props: {
@@ -88,12 +88,12 @@ export default {
       e.dataTransfer.dropEffect = props.dropEffect
       e.dataTransfer.setData('text', JSON.stringify(props.dataTransfer))
     }
-    function dragenter (e) {
+    function dragenter () {
       // use dispatchEvent because emit causes laggy
-      el.value.dispatchEvent(new CustomEvent('dragentered', {detail:{...props.dataTransfer, ref: el.value}}))
+      el.value?.dispatchEvent(new CustomEvent('dragentered', {detail:{...props.dataTransfer, ref: el.value}}))
       // only add hoverClass on droppable components
       if (props.droppable)
-        el.value.classList.add(props.hoverClass)
+        el.value?.classList.add(props.hoverClass)
     }
 
     function dragleave () {

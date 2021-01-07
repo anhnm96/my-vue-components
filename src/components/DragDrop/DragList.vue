@@ -1,6 +1,6 @@
 <template>
   <transition-group move-class="drag-list--move" :tag="tag" ref="listEl"
-        @dragleave="dragleave" @dragend="dragend" @drop="drop" @mouseout="focusout">
+        @dragleave="dragleave" @dragend="dragend" @drop="drop">
     <template v-if="showPlaceholder">
       <DragItem
         v-for="(item, index) in itemsBeforeFeedback"
@@ -39,7 +39,7 @@
   </transition-group>
 </template>
 <script>
-import {ref, watch, computed, reactive} from 'vue'
+import {ref, watch, computed} from 'vue'
 import DragItem from './DragItem'
 export default {
   props: {
@@ -132,33 +132,34 @@ export default {
         array_move(props.list, draggingIndex.value, enteringIndex.value, false)
       }
     }
+    let trigger = false
+    const mouseover = (e) => {
+      console.log(e, trigger)
+      if (trigger && (listEl.value.$el === e.target || !listEl.value.$el.contains(e.target))) {
+        array_move(props.list, draggingIndex.value, originalIndex, false)
+        draggingIndex.value = originalIndex
+        hovering.value = false
+        console.log('leave', e, showPlaceholder.value, props.list[0])
+      }
+      trigger = false
+      document.removeEventListener('mouseover', mouseover)
+    }
     function dragleave (e) {
-      console.log('leave', e)
       // move back to original if drag out of list
       // safari always return relatedTarget as null
-      // if (isSafari) return
-      if (hovering.value) {
-        e.dragleave = true
-        listEl.value.$el.dispatchEvent(new MouseEvent('mouseout', {'detail': 'ok'}))
+      if (isSafari) {
+        trigger = true
+        document.addEventListener('mouseover', mouseover)
+        return
       }
-      /*
-      if (listEl.value.$el !== e.relatedTarget && !listEl.value.$el.contains(e.relatedTarget)) {
-      // if (listEl.value.$el !== e.relatedTarget && !listEl.value.$el.contains(e.relatedTarget)) {
+      if (listEl.value.$el === e.relatedTarget || !listEl.value.$el.contains(e.relatedTarget)) {
         array_move(props.list, draggingIndex.value, originalIndex, false)
         draggingIndex.value = originalIndex
         hovering.value = false
-      }
-      */
-    }
-    function focusout(e) {
-      console.log(e.detail)
-      if (e.detail && listEl.value.$el !== e.relatedTarget && !listEl.value.$el.contains(e.relatedTarget)) {
-        array_move(props.list, draggingIndex.value, originalIndex, false)
-        draggingIndex.value = originalIndex
-        hovering.value = false
+        console.log('leave', e, showPlaceholder.value, props.list[0])
       }
     }
-    return { focusout, hovering, drop, showPlaceholder, listEl, enteringIndex, dragging, dragentered, dragstart, dragleave, dragend, itemsBeforeFeedback, itemsAfterFeedback}
+    return { hovering, drop, showPlaceholder, listEl, enteringIndex, dragging, dragentered, dragstart, dragleave, dragend, itemsBeforeFeedback, itemsAfterFeedback}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {
