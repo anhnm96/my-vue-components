@@ -2,16 +2,16 @@
   <component
     ref="el"
     class="drag-container"
-    :class="{[ghostClass]: dragging}"
     :is="tag"
     :draggable="draggable"
     @dragstart.self="dragstart"
-    @dragenter.prevent.stop="dragenter"
+    @dragenter.prevent="dragenter"
     @dragover.prevent
+    @dragleave="dragleave"
     @drop="drop"
     @dragend="dragend"
   >
-    <slot />
+    <slot :dragging="dragging" />
     <div v-if="dragging && hasDragImageSlot" class="drag-image" ref="dragImageEl">
       <slot name="drag-image" :data="dataTransfer" />
     </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {ref} from 'vue'
+import {ref, computed} from 'vue'
 export default {
   name: 'DragItem',
   props: {
@@ -51,15 +51,10 @@ export default {
         ].includes(value)
       }
     },
-    offset: {
-      type: Object,
-      default: () => ({top: 5, bottom: 5, left: 5, right: 5})
-    },
-    ghostClass: {
+    hoverClass: {
       type: String,
-      default: 'drag-item-ghost'
-    },
-    disabled: Boolean
+      default: 'drop-hover'
+    }
   },
   setup(props, {emit, slots}) {
     const el = ref(null)
@@ -92,19 +87,27 @@ export default {
       e.dataTransfer.effectAllowed = props.effectsAllowed
       e.dataTransfer.dropEffect = props.dropEffect
       e.dataTransfer.setData('text', JSON.stringify(props.dataTransfer))
-      emit('dragstarted', props.dataTransfer)
     }
-
     function dragenter (e) {
-      // const offset = this.getOffset()
-      // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
-      // this.$emit('asd', {from: draggingData, to: this.dataTransfer})
       // use dispatchEvent because emit causes laggy
       el.value.dispatchEvent(new CustomEvent('dragentered', {detail:{...props.dataTransfer, ref: el.value}}))
+      // only add hoverClass on droppable components
+      if (props.droppable)
+        el.value.classList.add(props.hoverClass)
+    }
+
+    function dragleave () {
+      if (props.droppable) {
+        //remove hover class
+        // optional value in case of placeholder in drag list disappear
+        el.value?.classList.remove(props.hoverClass)
+      }
     }
 
     function drop (e) {
       if (!props.droppable) return
+      //remove hover class
+      el.value.classList.remove(props.hoverClass)
       const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
       emit('dropped', {event: e, from: dataTransfer, to: props.dataTransfer})
     }
@@ -114,40 +117,8 @@ export default {
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
 
-    return {el, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, drop, dragend}
+    return {el, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, dragleave, drop, dragend}
   }
-  // methods: {
-  //   onDrag (e) {
-  //     e.dataTransfer.effectAllowed = this.effectsAllowed
-  //     e.dataTransfer.dropEffect = this.dropEffect
-  //     e.dataTransfer.setData('text', JSON.stringify(this.dataTransfer))
-  //     if (this.mode === 'cut') this.$emit('remove', this.dataTransfer)
-  //     this.$emit('dragstarted', this.dataTransfer)
-  //   },
-  //   onDrop (e) {
-  //     const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
-  //     this.$emit('dropped', {event: e, from: dataTransfer, to: this.dataTransfer})
-  //   },
-  //   dragEntered(e) {
-  //     const offset = this.getOffset()
-  //     // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
-  //       // this.$emit('asd', {from: draggingData, to: this.dataTransfer})
-  //       this.$emit('dragentered', {...this.dataTransfer, ref: this.$el})
-  //   },
-  //   dragLeave (e) {
-  //     // this.$emit('drag-leave')
-  //   },
-  //   dragEnd (e) {
-  //     // this.$emit('drag-end')
-  //   },
-  //   getOffset () {
-  //     const top = this.$el.getBoundingClientRect().top + this.offset.top
-  //     const bottom = this.$el.getBoundingClientRect().bottom - this.offset.bottom
-  //     const left = this.$el.getBoundingClientRect().left + this.offset.left
-  //     const right = this.$el.getBoundingClientRect().right - this.offset.right
-  //     return {top, bottom, left, right}
-  //   }
-  // }
 }
 </script>
 

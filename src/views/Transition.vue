@@ -6,39 +6,58 @@
     <button @click="swap2">swap 2</button>
     <div class="flex">
       <DragList v-model:list="list">
-        <template #item="{ item, ind }">
+        <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
-            {{ item }} - {{ ind }}
+            {{ item }} - {{ index }}
           </p>
         </template>
         <template #placeholder>
-          <p key="tets" class="bg-teal-400">testestestse</p>
+          <div style="border: 1px solid green;height: 1px"></div>
         </template>
       </DragList>
       <DragList v-model:list="items">
-        <template #item="{ item, ind }">
+        <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
-            {{ item }} - {{ ind }}
+            {{ item }} - {{ index }}
+          </p>
+        </template>
+        <template #placeholder>
+          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+            new value
+          </p>
+        </template>
+      </DragList>
+      <DragList mode="lazy" v-model:list="items">
+        <template #item="{ item, index }">
+          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+            {{ item }} - {{ index }}
+          </p>
+        </template>
+        <template #placeholder>
+          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+            new value
           </p>
         </template>
       </DragList>
     </div>
   <div class="demo">
-    <VDragDrop class="drag" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
-      h{{i}}
-      <template #drag-image={data} >
+    <VDragDrop class="drag" @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+      <template #default="{dragging}">
+          <span :class="{ghost: dragging}">h{{i}}</span>
+      </template>
+      <template #drag-image="{data}">
         <span v-show="!entering" class="drag">{{data.value}}</span>
         <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
       </template>
     </VDragDrop>
-    <VDragDrop :draggable="false" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop3" :accept-data="(val) => val.value % 2 === 0">
+    <VDragDrop :draggable="false" hover-class="hovering" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop3" :accept-data="(val) => val.value % 2 === 0">
       <div style="pointer-events: none">
         <span v-for="i in droplist" :key="i">{{i}}</span>
       </div>
     </VDragDrop>
     <div>
-         <VDragDrop ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
-         <VDragDrop @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
+         <VDragDrop hover-class="hovering" ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
+         <VDragDrop :droppable="false" @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
           <img draggable="false" class="document" src="@/assets/document.png">
           <template #drag-image>
             <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
@@ -81,6 +100,10 @@ export default {
     }
   },
   methods: {
+    test(e) {
+      const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
+      console.log('test', dataTransfer)
+    },
     drag(e) {
       if (this.startPosition.x === undefined) Object.assign(this.startPosition, {x: e.clientX, y: e.clientY})
       const {top, left, height, width} = this.$refs.trash.$el.getBoundingClientRect()
@@ -225,5 +248,11 @@ export default {
   max-width: unset;
   width: 100px;
   height: 100px;
+}
+.ghost {
+  opacity: 0.4;
+}
+.hovering {
+  box-shadow: 0 0 2px 4px gray;
 }
 </style>

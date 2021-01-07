@@ -1,6 +1,6 @@
 <template>
   <transition-group move-class="drag-list--move" :tag="tag" ref="listEl"
-        @dragleave="dragleave" @dragend="dragend" @drop="drop">
+        @dragleave="dragleave" @dragend="dragend" @drop="drop" @mouseout="focusout">
     <template v-if="showPlaceholder">
       <DragItem
         v-for="(item, index) in itemsBeforeFeedback"
@@ -8,14 +8,10 @@
         :data-transfer="{ index, value: item }"
         @dragentered="dragentered"
       >
-        <slot name="item" :item="item" :ind="index" />
+        <slot name="item" :item="item" :index="index" />
       </DragItem>
       <DragItem key="drag-item--placeholder">
-        <slot name="placeholder">
-          <p class="p-2 font-normal bg-green-300 shadow-xs bg-">
-            feeeed backkk
-          </p>
-        </slot>
+        <slot name="placeholder" />
       </DragItem>
       <DragItem
         v-for="(item, index) in itemsAfterFeedback"
@@ -26,7 +22,7 @@
         <slot
           name="item"
           :item="item"
-          :ind="index + itemsBeforeFeedback.length"
+          :index="index + itemsBeforeFeedback.length"
         />
       </DragItem>
     </template>
@@ -35,15 +31,15 @@
       v-for="(item, index) in list"
       :key="item"
       :data-transfer="{ index, value: item }"
-      @dragstarted="dragstarted"
+      @dragstart="dragstart"
       @dragentered="dragentered"
     >
-      <slot name="item" :item="item" :ind="index" />
+      <slot name="item" :item="item" :index="index" />
     </DragItem>
   </transition-group>
 </template>
 <script>
-import {ref, watch, computed} from 'vue'
+import {ref, watch, computed, reactive} from 'vue'
 import DragItem from './DragItem'
 export default {
   props: {
@@ -59,26 +55,28 @@ export default {
   },
   components: {DragItem},
   setup(props, {emit, slots}) {
+    const listEl = ref(null)
     // index of dragging item in list
     const draggingIndex = ref(-1)
     let originalIndex = -1
-    const dragstarted = (payload) => {
-      console.log('dragstarted', payload)
+    const dragging = ref(false)
+    // index of hovering element
+    const enteringIndex = ref(-1)
+    // item events
+    const dragstart = (e) => {
+      const payload = JSON.parse(e.dataTransfer.getData('text'))
       dragging.value = true
       draggingIndex.value = payload.index
       originalIndex = payload.index
     }
-    // index of hovering element
-    const dragging = ref(false)
-    const enteringIndex = ref(-1)
-    // this is used when other components trigger dragenter
+    // this is used when outside components trigger dragenter
     const hovering = ref(false)
     const movingRD = ref(null)
-    const listEl = ref(null)
     function dragentered({detail: payload}) {
       console.log('dragentered', payload)
       // stop if element is in transitioning
       if (payload.ref.classList.contains('drag-list--move')) return
+      // if (!dragging.value) hovering.value = true
       if (props.mode === 'lazy' || !dragging.value) {
         hovering.value = true
         if (enteringIndex.value === payload.index) {
@@ -90,12 +88,7 @@ export default {
       }
       if (props.mode === 'immediate' && dragging.value) {
         console.log('immediate',draggingIndex.value, payload.index)
-        // array_move(props.list, draggingIndex.value, payload.index, false)
-        // draggingIndex.value = payload.index
-        
-        const clone = props.list
-        array_move(clone, draggingIndex.value, payload.index, false)
-        emit('update:list', clone)
+        array_move(props.list, draggingIndex.value, payload.index, false)
         // update index of dragging element
         draggingIndex.value = payload.index
       }
@@ -112,18 +105,21 @@ export default {
       const directionValue = movingRD.value ? 1 : 0
       return props.list.slice(enteringIndex.value + directionValue)
     })
+    const hasPlaceholderSlot = Object.keys(slots).includes('placeholder')
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     const showPlaceholder = computed(() => {
-      const hasPlaceholderSlot = Object.keys(slots).includes('placeholder')
+      // not support safari placeholder due to e.relatedTarget bug
+      // if (isSafari) return false
       if (hasPlaceholderSlot) 
         return (props.mode === 'lazy' && dragging.value) || hovering.value
       return false
     })
+    // list events
     function dragend() {
       dragging.value = false
     }
     // handle swap in lazy mode
     function drop (e) {
-      // console.log('drop',props.mode,dragging.value,hovering.value)
       if (hovering.value) {
         const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
         const clone = props.list
@@ -133,27 +129,40 @@ export default {
         hovering.value = false
       }
       if (props.mode === 'lazy' && dragging.value) {
-        // console.log('lazy');
         array_move(props.list, draggingIndex.value, enteringIndex.value, false)
       }
     }
     function dragleave (e) {
+      console.log('leave', e)
       // move back to original if drag out of list
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-      if (isSafari) return // safari always return relatedTarget as null
-        if (!listEl.value.$el.contains(e.relatedTarget)) {
-          console.log('dragleave wtf', e)
-          array_move(props.list, draggingIndex.value, originalIndex, false)
-          draggingIndex.value = originalIndex
-          hovering.value = false
-        }
+      // safari always return relatedTarget as null
+      // if (isSafari) return
+      if (hovering.value) {
+        e.dragleave = true
+        listEl.value.$el.dispatchEvent(new MouseEvent('mouseout', {'detail': 'ok'}))
+      }
+      /*
+      if (listEl.value.$el !== e.relatedTarget && !listEl.value.$el.contains(e.relatedTarget)) {
+      // if (listEl.value.$el !== e.relatedTarget && !listEl.value.$el.contains(e.relatedTarget)) {
+        array_move(props.list, draggingIndex.value, originalIndex, false)
+        draggingIndex.value = originalIndex
+        hovering.value = false
+      }
+      */
     }
-    return { hovering, drop, showPlaceholder, listEl, dragleave ,dragstarted, enteringIndex, dragging, dragentered, dragend, itemsBeforeFeedback, itemsAfterFeedback}
+    function focusout(e) {
+      console.log(e.detail)
+      if (e.detail && listEl.value.$el !== e.relatedTarget && !listEl.value.$el.contains(e.relatedTarget)) {
+        array_move(props.list, draggingIndex.value, originalIndex, false)
+        draggingIndex.value = originalIndex
+        hovering.value = false
+      }
+    }
+    return { focusout, hovering, drop, showPlaceholder, listEl, enteringIndex, dragging, dragentered, dragstart, dragleave, dragend, itemsBeforeFeedback, itemsAfterFeedback}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {
   if (!allowNegative && (oldIndex < 0 || newIndex < 0)) return
-  console.log('swapp', oldIndex, newIndex)
         while (oldIndex < 0) {
             oldIndex += arr.length;
         }
