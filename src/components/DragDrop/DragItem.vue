@@ -13,13 +13,13 @@
   >
     <slot :dragging="dragging" />
     <div v-if="dragging && hasDragImageSlot" class="drag-image" ref="dragImageEl">
-      <slot name="drag-image" :data="dataTransfer" />
+      <slot name="drag-image" :data="dataTransfer" :width="width" :height="height" />
     </div>
   </component>
 </template>
 
 <script>
-import {ref} from 'vue'
+import {ref, onMounted} from 'vue'
 export default {
   name: 'DragItem',
   props: {
@@ -61,6 +61,14 @@ export default {
     const dragging = ref(false)
     const dragImageEl = ref(null)
     const hasDragImageSlot = Object.keys(slots).includes('drag-image')
+    const width = ref(0)
+    const height = ref(0)
+
+    onMounted(() => {
+       const rect = el.value.getBoundingClientRect()
+       width.value = rect.width
+       height.value = rect.height
+    })
     function documentDragover(e) {
       e.preventDefault()
       dragImageEl.value.style.position = 'fixed'
@@ -117,7 +125,7 @@ export default {
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
 
-    return {el, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, dragleave, drop, dragend}
+    return {el, width, height, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, dragleave, drop, dragend}
   }
 }
 </script>

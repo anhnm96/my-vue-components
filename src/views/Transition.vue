@@ -7,43 +7,62 @@
     <div class="flex">
       <DragList v-model:list="list">
         <template #item="{ item, index }">
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+          <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
           </p>
         </template>
-        <template #placeholder>
+        <template #placeholder-move>
           <div style="border: 1px solid green;height: 1px"></div>
+        </template>
+      </DragList>
+      <DragList v-model:list="list">
+        <template #item="{ item, index }">
+          <p class="p-2 font-normal shadow-xs">
+            {{ item }} - {{ index }}
+          </p>
+        </template>
+      </DragList>
+      <DragList v-model:list="list">
+        <template #item="{ item, index, inProgress }">
+          <p class="p-2 font-normal shadow-xs" :class="{ghost: inProgress}">
+            {{ item }} - {{ index }}
+          </p>
+        </template>
+        <template #placeholder-move="{data}">
+          <p class="p-2 font-normal shadow-xs border-2 border-light-blue-500 border-dashed">
+            {{ data.value }} - {{ data.index }}
+          </p>
+        </template>
+        <template #drag-image="{data, width, height}">
+          <p class="p-2 font-normal shadow-xs border-2 border-green-300 rounded-md" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
+            {{ data.value }} - {{ data.index }}
+          </p>
         </template>
       </DragList>
       <DragList v-model:list="items">
         <template #item="{ item, index }">
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+          <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
-          </p>
-        </template>
-        <template #placeholder>
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
-            new value
           </p>
         </template>
       </DragList>
       <DragList mode="lazy" v-model:list="items">
         <template #item="{ item, index }">
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+          <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
           </p>
         </template>
-        <template #placeholder>
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+        <template #placeholder-move>
+          <p class="p-2 font-normal shadow-xs">
             new value
           </p>
         </template>
       </DragList>
     </div>
-  <div class="demo">
-    <VDragDrop class="drag" @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+  <div class="demo mt-5">
+    <VDragDrop @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
       <template #default="{dragging}">
-          <span :class="{ghost: dragging}">h{{i}}</span>
+          <span class="drag" :class="{ghost: dragging}">h{{i}}</span>
       </template>
       <template #drag-image="{data}">
         <span v-show="!entering" class="drag">{{data.value}}</span>
@@ -251,6 +270,7 @@ export default {
 }
 .ghost {
   opacity: 0.4;
+  background-color: gray;
 }
 .hovering {
   box-shadow: 0 0 2px 4px gray;
