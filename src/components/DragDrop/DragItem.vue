@@ -96,9 +96,9 @@ export default {
       e.dataTransfer.dropEffect = props.dropEffect
       e.dataTransfer.setData('text', JSON.stringify(props.dataTransfer))
     }
-    function dragenter () {
+    function dragenter (e) {
       // use dispatchEvent because emit causes laggy
-      el.value?.dispatchEvent(new CustomEvent('dragentered', {detail:{...props.dataTransfer, ref: el.value}}))
+      el.value?.dispatchEvent(new CustomEvent('dragentered', {detail:{event: e, ...props.dataTransfer, ref: el.value}}))
       // only add hoverClass on droppable components
       if (props.droppable)
         el.value?.classList.add(props.hoverClass)

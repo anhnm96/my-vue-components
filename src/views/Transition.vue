@@ -14,12 +14,33 @@
         <template #placeholder-move>
           <div style="border: 1px solid green;height: 1px"></div>
         </template>
+        <template #placeholder-add>
+          <div style="border: 1px solid green;height: 1px"></div>
+        </template>
       </DragList>
       <DragList v-model:list="list">
         <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
           </p>
+        </template>
+        <template #placeholder-add="{data}">
+          <p class="p-2 font-normal shadow-xs">
+            {{ data.value }}
+          </p>
+        </template>
+      </DragList>
+      <DragList v-model:list="items">
+        <template #item="{ item, index }">
+          <p class="p-2 font-normal shadow-xs">
+            {{ item }} - {{ index }}
+          </p>
+        </template>
+        <!-- <template #placeholder-add>
+          value
+        </template> -->
+        <template #placeholder-move>
+          moving
         </template>
       </DragList>
       <DragList v-model:list="list">
@@ -33,18 +54,11 @@
             {{ data.value }} - {{ data.index }}
           </p>
         </template>
-        <template #drag-image="{data, width, height}">
+        <!-- <template #drag-image="{data, width, height}">
           <p class="p-2 font-normal shadow-xs border-2 border-green-300 rounded-md" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
             {{ data.value }} - {{ data.index }}
           </p>
-        </template>
-      </DragList>
-      <DragList v-model:list="items">
-        <template #item="{ item, index }">
-          <p class="p-2 font-normal shadow-xs">
-            {{ item }} - {{ index }}
-          </p>
-        </template>
+        </template> -->
       </DragList>
       <DragList mode="lazy" v-model:list="items">
         <template #item="{ item, index }">
@@ -54,7 +68,12 @@
         </template>
         <template #placeholder-move>
           <p class="p-2 font-normal shadow-xs">
-            new value
+            move
+          </p>
+        </template>
+        <template #placeholder-add="{data}">
+          <p class="p-2 font-normal shadow-xs">
+            {{data.value}}
           </p>
         </template>
       </DragList>
@@ -107,7 +126,7 @@ export default {
     return {
       list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],
       text: '',
-      items: [1,2,3,4,5,6,7,8,9],
+      items: [1,2,3,4,5,6,7],
       droplist: [],
       entering: false,
       docs: ['doc1', 'doc2'],
@@ -166,9 +185,10 @@ export default {
       this.list = shuffle(this.list)
     },
     swap2() {
-      const tmp = this.list[0]
-      this.list[0] = this.list[this.list.length - 1]
-      this.list[this.list.length - 1] = tmp
+      // const tmp = this.list[0]
+      // this.list[0] = this.list[this.list.length - 1]
+      // this.list[this.list.length - 1] = tmp
+      this.list.splice(0, 1)
     },
     drop3 ({from}) {
       this.droplist.push(from.value)
