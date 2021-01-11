@@ -8,7 +8,7 @@
       <DragList v-model:list="list">
         <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
-            {{ item }} - {{ index }}
+            <span class="p-2">{{ item }} - {{ index }}</span>
           </p>
         </template>
         <template #placeholder-move>
