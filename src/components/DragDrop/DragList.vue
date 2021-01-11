@@ -17,7 +17,7 @@
           <slot :name="name" v-bind="scope" />
         </template>
       </DragItem>
-      <DragItem ref="placeholderMoveEl" @dragenter="setEnteringRef('placeholder-move')" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
+      <DragItem ref="placeholderMoveEl" class="placeholder-move" @dragenter="setEnteringRef('placeholder-move')" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
         <slot name="placeholder-move" :data="draggingItem.data" />
       </DragItem>
       <DragItem ref="placeholderAddEl" @dragenter="setEnteringRef('placeholder-add')" v-if="showPlaceholderAdd" key="drag-item--placeholder--add">
@@ -91,27 +91,54 @@ export default {
       Object.assign(draggingItem, {inProgress: true, originalIndex: payload.index, currentIndex: payload.index, data: payload})
       listBeingDraggedOver.value = true
       // for move or add with placeholder
-      enteringRef.value = e.target
+      // enteringRef.value = e.target
       enteringIndex.value = payload.index
-      nextTick(() => {
-        if (!hoveringPlaceholder.value) {
-          enteringIndex.value = payload.index + 1
-          console.log(hoveringPlaceholder.value)
-        }
-      console.log('dragstart', enteringIndex.value, enteringRef.value)
-      })
+      // const unwatch = watch(placeholderMoveEl, (newVal) => {
+      //   if (newVal) {
+      //     console.log('start show inTransition', inTransition.value, document.elementFromPoint(e.clientX, e.clientY).closest('.drag-container') === placeholderMoveEl.value.$el)
+      //     dragover(e, 'zxc')
+      //   }
+      // }, {immediate: true})
+      // console.log('start', payload.index, showPlaceholderMove.value, placeholderMoveEl.value?.$el);
+      // nextTick(() => {
+      //   dragover(e, 'zxc')
+      //   console.log('show', showPlaceholderMove.value, document.elementFromPoint(e.clientX, e.clientY).closest('.drag-container'))
+      // //   if (!hoveringPlaceholder.value) {
+      // //     // enteringIndex.value = payload.index + 1
+      // //     console.log('hovering not :(', enteringRef.value ,showPlaceholderMove.value, hoveringPlaceholder.value)
+      // //     console.log('el', inTransition.value, document.elementFromPoint(e.clientX, e.clientY).closest('.drag-container') === placeholderMoveEl.value.$el)
+      // //   }
+      // // console.log('dragstart', enteringIndex.value, enteringRef.value)
+      // })
     }
-    // watch(listBeingDraggedOver, (newVal) => {
-    //   if (newVal) {
-    //     console.log('add event')
-    //     document.addEve
-    //   }
-    // })
-    function dragover (e) {
+    function dragover (e, msg) {
       if (!inTransition.value) {
         if (enteringRef.value !== e.target.closest('.drag-container')) {
+          if (enteringRef.value === null) { // need run once fix
+            if (e.target.closest('.drag-container').classList.contains('placeholder-move')) {
+              console.log('kkk')
+            } else {
+              console.log('+1')
+              enteringIndex.value = enteringIndex.value + 1
+            }
+          }
           enteringRef.value = e.target.closest('.drag-container')
-          console.log('over', e.target.closest('.drag-container'))
+          console.log('over', msg, e.target.closest('.drag-container'), showPlaceholderMove.value)
+        }
+        // TODO: moving down from 0 jump at border
+        if (enteringIndex.value === 0) {
+          const {width, height, top, left} = e.target.getBoundingClientRect()
+          if (e.clientY >= top + height / 2) {
+            console.log('set 1')
+            enteringIndex.value = 1
+          }
+        }
+        if (enteringIndex.value === 1) {
+          const {width, height, top, left} = e.target.getBoundingClientRect()
+          if (e.clientY < top + height / 2) {
+            console.log('set 0')
+            enteringIndex.value = 0
+          }
         }
         // console.log('out', enteringRef.value, e.target.closest('.drag-container'))
       }
@@ -138,7 +165,7 @@ export default {
       if (showPlaceholderMove.value) {
         // enter from placeholder
         if (enteringRef.value === placeholderMoveEl.value?.$el) {
-          enteringRef.value = payload.ref
+          // enteringRef.value = payload.ref
           // moving down
           if (enteringIndex.value === payload.index) {
             enteringIndex.value = payload.index + 1
@@ -152,7 +179,7 @@ export default {
           console.log('placeholder', enteringIndex.value, payload.index, enteringRef.value)
           return
         }
-        enteringRef.value = payload.ref
+        // enteringRef.value = payload.ref
         enteringIndex.value = payload.index + 1
         console.log('# entering', enteringIndex.value, payload.index)
         return
@@ -234,12 +261,13 @@ export default {
       // safari always return relatedTarget as null so we use elementFromPoint instead
       if (isSafari) {
         const mouseEl = document.elementFromPoint(e.clientX, e.clientY)
-        if (!draggingItem.dragLeft && (listEl.value.$el === mouseEl || !listEl.value.$el.contains(mouseEl))) {
+        // TODO: need check listBeingDraggedOver?
+        if (listBeingDraggedOver.value && !listEl.value.$el.contains(mouseEl)) {
           handler()
         }
         return
       }
-      if (!draggingItem.dragLeft && (listEl.value.$el === e.relatedTarget || !listEl.value.$el.contains(e.relatedTarget))) {
+      if (listBeingDraggedOver.value && !listEl.value.$el.contains(e.relatedTarget)) {
         handler()
       }
       function handler () {
@@ -261,13 +289,14 @@ export default {
         (showPlaceholderAdd.value && enteringRef.value === placeholderAddEl.value?.$el)
     })
     function setEnteringRef (param) {
-      nextTick(() => {
-        if (inTransition.value) {console.log('STOP');return}
-        if (param === 'placeholder-move') {enteringRef.value = placeholderMoveEl.value?.$el}
-        if (param === 'placeholder-add') enteringRef.value = placeholderAddEl.value?.$el
-      })
+      // nextTick(() => {
+        // if (inTransition.value) {console.log('STOP');return}
+        // console.log('set placeholder')
+        // if (param === 'placeholder-move') {enteringRef.value = placeholderMoveEl.value?.$el}
+        // if (param === 'placeholder-add') enteringRef.value = placeholderAddEl.value?.$el
+      // })
     }
-    return { dragover, placeholderMoveEl, placeholderAddEl, setEnteringRef, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, enteringIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
+    return { dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, enteringIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {
