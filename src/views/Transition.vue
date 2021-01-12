@@ -5,7 +5,7 @@
     <button @click="swap">swap</button>
     <button @click="swap2">swap 2</button>
     <div class="flex">
-      <DragList handle="handle" v-model:list="list">
+      <DragList handle=".handle" v-model:list="list">
         <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             <button class="handle">&#9776;</button>
@@ -295,5 +295,8 @@ export default {
 }
 .hovering {
   box-shadow: 0 0 2px 4px gray;
+}
+.handle:hover {
+  background-color: red;
 }
 </style>

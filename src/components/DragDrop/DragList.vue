@@ -5,7 +5,6 @@
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
     <template v-if="showPlaceholderMove || showPlaceholderAdd">
       <DragItem
-        :handle="handle"
         v-for="(item, index) in itemsBeforePlaceholder"
         :key="item"
         :data-transfer="{ index, value: item }"
@@ -27,7 +26,6 @@
       </DragItem>
       <!-- index + 1 for placeholder -->
       <DragItem
-      :handle="handle"
         v-for="(item, index) in itemsAfterPlaceholder"
         :key="item"
         :data-transfer="{ index: index + 1 + itemsBeforePlaceholder.length, value: item }"

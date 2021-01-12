@@ -3,7 +3,7 @@
     ref="el"
     class="drag-container"
     :is="tag"
-    :draggable="draggable"
+    :draggable="draggable && !handleLock"
     @dragstart.self="dragstart"
     @dragenter.prevent="dragenter"
     @dragover.prevent
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, onBeforeUnmount} from 'vue'
 export default {
   name: 'DragItem',
   props: {
@@ -64,11 +64,35 @@ export default {
     const hasDragImageSlot = Object.keys(slots).includes('drag-image')
     const width = ref(0)
     const height = ref(0)
-
+    // handle's stuffs
+    let handleEl
+    const handleLock = ref(false)
+    function handleMouseEnter () {
+      handleLock.value = false
+    }
+    function handleMouseLeave () {
+      handleLock.value = true
+    }
+    
     onMounted(() => {
+      // for drag-image slot
        const rect = el.value.getBoundingClientRect()
        width.value = rect.width
        height.value = rect.height
+      // handle handle
+       if (props.handle) {
+         handleLock.value = true
+        //  el.value.addEventListener('mousemove', mousemove)
+        handleEl = el.value.querySelector(props.handle)
+        handleEl.addEventListener('mouseenter', handleMouseEnter)
+        handleEl.addEventListener('mouseleave', handleMouseLeave)
+       }
+    })
+    onBeforeUnmount(() => {
+      // it's ok if handlEl was removed before removeEventlistener
+      // leave garbage collector to do the job
+      handleEl?.removeEventListener('mouseenter', handleMouseEnter)
+      handleEl?.removeEventListener('mouseleave', handleMouseLeave)
     })
     function documentDragover(e) {
       e.preventDefault()
@@ -81,14 +105,6 @@ export default {
       el.value.dispatchEvent(new MouseEvent('customdrag', e))
     }
     function dragstart (e) {
-      // if (props.handle) {
-      //   console.log('HANDLE', props.handle)
-      //   const el = document.elementFromPoint(e.clientX, e.clientY)
-      //   if (!el.classList.contains(props.handle)) {
-      //     console.log('NOT HANDLER')
-      //     return false
-      //   }
-      // }
       dragging.value = true
       if (hasDragImageSlot) {
         // add dragover event for handling drag image position compatible with firefox
@@ -134,7 +150,7 @@ export default {
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
 
-    return {el, width, height, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, dragleave, drop, dragend}
+    return {handleLock, el, width, height, dragImageEl, dragging, hasDragImageSlot, dragstart, dragenter, dragleave, drop, dragend}
   }
 }
 </script>
