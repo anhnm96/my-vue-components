@@ -7,7 +7,7 @@
     </h3>
     <div class="flex-1 min-h-0 overflow-y-auto">
       <ul class="px-3 pt-1 pb-3">
-        <TaskColumn
+        <!-- <TaskColumn
           v-for="(item, index) in column.tasks"
           :key="item['_id']"
           :item="item"
@@ -17,7 +17,45 @@
           @remove="remove"
           @dragEnter="dragEnter"
           :ref="`col${columnIndex}`"
-        />
+        /> -->
+        <DragList v-model:list="tasks" >
+          <template #item="{item}">
+            <div class="block p-5 bg-white rounded-md shadow">
+              <div class="flex justify-between">
+                <p class="text-sm font-semibold leading-snug text-gray-900">
+                  {{ item.title }}
+                </p>
+                <span class="flex-shrink-0">
+                  <img class="w-6 h-6 rounded-full" :src="item.avatar" alt="avatar" />
+                </span>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <div class="text-sm text-gray-600">
+                  <time :datetime="item.date">{{ item.date }}</time>
+                </div>
+                <div class="mt-2">
+                  <span
+                    class="inline-flex items-center px-2 py-1 leading-tight bg-teal-100 rounded"
+                  >
+                    <svg
+                      class="w-2 h-2 text-teal-500"
+                      fill="currentColor"
+                      viewBox="0 0 8 8"
+                    >
+                      <circle cx="4" cy="4" r="3" />
+                    </svg>
+                    <span class="ml-2 text-sm font-medium text-teal-900"
+                      >Feature Request</span
+                    >
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template #placeholder-add>
+            <div style="background: green; height: 1px"></div>
+          </template>
+        </DragList>
       </ul>
     </div>
   </div>
@@ -25,6 +63,7 @@
 
 <script>
 import TaskColumn from './TaskColumn'
+import DragList from '@/components/DragDrop/DragList'
 
 export default {
   data () {
@@ -34,7 +73,7 @@ export default {
     }
   },
   components: {
-    TaskColumn
+    DragList
   },
   props: {
     column: {
@@ -44,6 +83,16 @@ export default {
     columnIndex: {
       type: Number,
       required: true
+    }
+  },
+  computed: {
+    tasks: {
+      set(val) {
+        Object.assign(this.column, {tasks: val})
+      },
+      get() {
+        return this.column.tasks
+      }
     }
   },
   methods: {

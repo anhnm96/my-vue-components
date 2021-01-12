@@ -3,22 +3,31 @@
     <!-- right-content -->
     <div class="flex flex-col flex-1 min-w-0 bg-white">
       <div class="flex-1 overflow-auto">
-        <main class="inline-flex h-full p-3">
-          <BoardColumn
+        <!-- <main class="inline-flex h-full p-3"> -->
+          <!-- <BoardColumn
             v-for="(column, columnIndex) in data"
             :key="columnIndex"
             :column="column"
             :columnIndex="columnIndex"
-          />
-        </main>
+          /> -->
+          <DragList tag="main" class="inline-flex h-full p-3" v-model:list="data">
+            <template #item="{item, index}">
+              <BoardColumn 
+                :column="item"
+                :columnIndex="index"
+              />
+            </template>
+          </DragList>
+        <!-- </main> -->
       </div>
     </div>
   </div>
 </template>
 <script>
 import BoardColumn from './BoardColumn'
+import DragList from '@/components/DragDrop/DragList'
 export default {
-  components: {BoardColumn},
+  components: {BoardColumn, DragList},
   data() {
     return {
       sidebarOpen: false,
