@@ -54,7 +54,8 @@ export default {
     hoverClass: {
       type: String,
       default: 'drop-hover'
-    }
+    },
+    handle: String
   },
   setup(props, {emit, slots}) {
     const el = ref(null)
@@ -80,6 +81,14 @@ export default {
       el.value.dispatchEvent(new MouseEvent('customdrag', e))
     }
     function dragstart (e) {
+      // if (props.handle) {
+      //   console.log('HANDLE', props.handle)
+      //   const el = document.elementFromPoint(e.clientX, e.clientY)
+      //   if (!el.classList.contains(props.handle)) {
+      //     console.log('NOT HANDLER')
+      //     return false
+      //   }
+      // }
       dragging.value = true
       if (hasDragImageSlot) {
         // add dragover event for handling drag image position compatible with firefox
