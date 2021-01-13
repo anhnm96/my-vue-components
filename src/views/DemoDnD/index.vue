@@ -10,12 +10,18 @@
             :column="column"
             :columnIndex="columnIndex"
           /> -->
-          <DragList tag="main" class="inline-flex h-full p-3" v-model:list="data">
+          <DragList type="column" tag="main" class="inline-flex h-full p-3" :id-adapter="(val) => val.name" v-model:list="data">
             <template #item="{item, index}">
               <BoardColumn 
                 :column="item"
                 :columnIndex="index"
               />
+            </template>
+            <template #placeholder-move>
+              <p style="border: 1px solid red;background: green; width: 1px; z-index: 9999;height: 100%"></p>
+            </template>
+            <template #drag-image={width}>
+              <p :style="{width: width + 'px'}">Moving column :)</p>
             </template>
           </DragList>
         <!-- </main> -->
@@ -27,6 +33,7 @@
 import BoardColumn from './BoardColumn'
 import DragList from '@/components/DragDrop/DragList'
 export default {
+  /* eslint-disable-next-line */
   components: {BoardColumn, DragList},
   data() {
     return {

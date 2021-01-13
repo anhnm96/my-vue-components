@@ -72,9 +72,9 @@
             move
           </p>
         </template>
-        <template #placeholder-add>
+        <template #placeholder-add="{data}">
           <p class="p-2 font-normal shadow-xs">
-            placeholder
+            {{data.value}}
           </p>
         </template>
       </DragList>

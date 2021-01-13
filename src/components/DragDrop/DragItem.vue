@@ -20,6 +20,7 @@
 
 <script>
 import {ref, onMounted, onBeforeUnmount} from 'vue'
+import {DnDState} from './DnDStore'
 export default {
   name: 'DragItem',
   props: {
@@ -55,7 +56,9 @@ export default {
       type: String,
       default: 'drop-hover'
     },
-    handle: String
+    handle: String,
+    type: String,
+    dataValidator: Function
   },
   setup(props, {emit, slots}) {
     const el = ref(null)
@@ -106,6 +109,7 @@ export default {
     }
     function dragstart (e) {
       dragging.value = true
+      Object.assign(DnDState, {inProgress: true, data: props.dataTransfer, type: props.type})
       if (hasDragImageSlot) {
         // add dragover event for handling drag image position compatible with firefox
         // and prevent drag end move back animation when drop outside of dropable element
@@ -122,6 +126,7 @@ export default {
       e.dataTransfer.setData('text', JSON.stringify(props.dataTransfer))
     }
     function dragenter (e) {
+      if (DnDState.type !== props.type) return
       // use dispatchEvent because emit causes laggy
       el.value?.dispatchEvent(new CustomEvent('dragentered', {detail:{event: e, ...props.dataTransfer, ref: el.value}}))
       // only add hoverClass on droppable components
@@ -138,6 +143,7 @@ export default {
     }
 
     function drop (e) {
+      if (DnDState.type !== props.type) return
       if (!props.droppable) return
       //remove hover class
       el.value.classList.remove(props.hoverClass)
@@ -147,6 +153,7 @@ export default {
 
     function dragend () {
       dragging.value = false
+      Object.assign(DnDState, {inProgress: false, data: null, type: null})
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
 

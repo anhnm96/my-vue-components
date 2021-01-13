@@ -18,9 +18,9 @@
           @dragEnter="dragEnter"
           :ref="`col${columnIndex}`"
         /> -->
-        <DragList v-model:list="tasks" >
-          <template #item="{item}">
-            <div class="block p-5 bg-white rounded-md shadow">
+        <DragList v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
+          <template #item="{item, index}">
+            <div :class="{ 'mt-3': index > 0 }" class="block p-5 bg-white rounded-md shadow">
               <div class="flex justify-between">
                 <p class="text-sm font-semibold leading-snug text-gray-900">
                   {{ item.title }}
