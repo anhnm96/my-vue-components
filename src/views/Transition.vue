@@ -20,19 +20,19 @@
         </template>
       </DragList>
       <DragList v-model:list="items">
-        <template #item="{ item, index }">
+        <template #item="{ item, index, gg }">
           <p class="p-2 font-normal shadow-xs">
-            {{ item }} - {{ index }}
+            {{ item }} - {{ index }} {{gg}}
           </p>
         </template>
-        <!-- <template #placeholder-add>
-          value
-        </template> -->
         <template #placeholder-move>
           moving
         </template>
+        <template #placeholder-add="{data}">
+          {{data.value}}
+        </template>
       </DragList>
-      <DragList v-model:list="list">
+      <DragList mode="cut" name="fade" v-model:list="list">
         <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
@@ -61,7 +61,7 @@
           </p>
         </template>
       </DragList>
-      <DragList mode="lazy" v-model:list="items">
+      <DragList v-model:list="items" :accept-data="({value}) => typeof value === 'number'">
         <template #item="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}

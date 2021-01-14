@@ -1,5 +1,5 @@
 <template>
-  <transition-group :name="animationName" move-class="drag-list--move" :tag="tag" ref="listEl"
+  <transition-group move-class="drag-list--move" :tag="tag" ref="listEl"
       @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop
       @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
@@ -9,7 +9,8 @@
         :key="idAdapter(item)"
         :data-transfer="{ index, value: item }"
         :data-index="index"
-        :type="type"
+        :drag-type="dragType"
+        :accept-data="acceptData"
         @dragentered="dragentered"
       >
         <template #default="{dragging}">
@@ -31,7 +32,8 @@
         :key="idAdapter(item)"
         :data-transfer="{ index: index + 1 + itemsBeforePlaceholder.length, value: item }"
         :data-index="index + 1"
-        :type="type"
+        :drag-type="dragType"
+        :accept-data="acceptData"
         @dragentered="dragentered"
       >
         <template #default="{dragging}">
@@ -40,6 +42,7 @@
             :item="item"
             :index="index + 1 + itemsBeforePlaceholder.length"
             :inProgress="dragging"
+            :gg="listBeingDraggedOver"
           />
         </template>
         <template v-for="name of Object.keys($slots)" #[name]="scope">
@@ -52,7 +55,8 @@
       v-for="(item, index) in list"
       :key="idAdapter(item)"
       :data-transfer="{ index, value: item }"
-      :type="type"
+      :drag-type="dragType"
+      :accept-data="acceptData"
       :handle="handle"
       @dragstart="dragstart"
       @dragentered="dragentered"
@@ -82,9 +86,16 @@ export default {
       type: String,
       default: 'div'
     },
-    animationName: String,
     handle: String,
-    type: String
+    dragType: String,
+    acceptData: {
+      type: Function,
+      default: () => {}
+    },
+    mode: {
+      type: String,
+      default: 'copy'
+    }
   },
   components: {DragItem},
   setup(props, {emit, slots}) {
@@ -100,15 +111,16 @@ export default {
     const hasPlaceholderAddSlot = Object.keys(slots).includes('placeholder-add')
     // item events
     const dragstart = (e) => {
+      if (!e.target.draggable) return
       const payload = JSON.parse(e.dataTransfer.getData('text'))
       Object.assign(draggingItem, {inProgress: true, originalIndex: payload.index, currentIndex: payload.index, data: payload})
-      listBeingDraggedOver.value = true
+      // listBeingDraggedOver.value = true
       // for move or add with placeholder
       // enteringRef.value = e.target
       placeholderIndex.value = payload.index
       console.log('dragstart', `currentIndex: ${payload.index}`, props.list[0], `inProgress`, draggingItem.inProgress)
     }
-    function dragover (e, msg) {
+    function dragover (e) {
       // stop update enteringRef if in transition
       // if (!inTransition.value) {
       const dragItemElTarget = e.target.closest('.drag-container')
@@ -240,13 +252,22 @@ export default {
     })
     // list events
     function dragend () {
+      if (DnDState.success && props.mode === 'cut' && draggingItem.inProgress && !listBeingDraggedOver.value) {
+        const clone = props.list
+        clone.splice(draggingItem.originalIndex, 1)
+        emit('update:list', clone)
+      }
       draggingItem.inProgress = false
       listBeingDraggedOver.value = false
     }
+    const dataAllowed = computed(() => {
+      return props.acceptData(DnDState.data)
+    })
     function drop (e) {
-      if (DnDState.type !== props.type) return
+      // remember that we may drop on placeholder
+      if (dataAllowed.value === false || DnDState.dragType !== props.dragType) return
       // handle add el from other list
-      if (!showPlaceholderMove.value && !draggingItem.inProgress) {
+      if (showPlaceholderAdd.value) {
         console.log('drop add', placeholderIndex.value)
         const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
         const clone = props.list
@@ -277,12 +298,13 @@ export default {
       if (isSafari) {
         const mouseEl = document.elementFromPoint(e.clientX, e.clientY)
         // TODO: need check listBeingDraggedOver?
-        if (listBeingDraggedOver.value && !listEl.value.$el.contains(mouseEl)) {
+        if (!listEl.value.$el.contains(mouseEl)) {
           handler()
         }
         return
       }
-      if (listBeingDraggedOver.value && !listEl.value.$el.contains(e.relatedTarget)) {
+      // if (listBeingDraggedOver.value && !listEl.value.$el.contains(e.relatedTarget)) {
+      if (!listEl.value.$el.contains(e.relatedTarget)) {
         handler()
       }
       function handler () {
@@ -311,7 +333,7 @@ export default {
         // if (param === 'placeholder-add') enteringRef.value = placeholderAddEl.value?.$el
       // })
     }
-    return { dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
+    return { listBeingDraggedOver, dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {
