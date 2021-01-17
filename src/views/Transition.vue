@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="pb-20">
     <input class="border border-solid" type="text" v-model="text" />
     <button @click="add2">add</button>
     <button @click="swap">swap</button>
     <button @click="swap2">swap 2</button>
     <div class="flex">
       <DragList handle=".handle" v-model:list="list">
-        <template #item="{ item, index }">
+        <template #default="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             <button class="handle">&#9776;</button>
             <span class="p-2">{{ item }} - {{ index }}</span>
@@ -20,7 +20,7 @@
         </template>
       </DragList>
       <DragList v-model:list="items">
-        <template #item="{ item, index, gg }">
+        <template #default="{ item, index, gg }">
           <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }} {{gg}}
           </p>
@@ -33,7 +33,7 @@
         </template>
       </DragList>
       <DragList mode="cut" name="fade" v-model:list="list">
-        <template #item="{ item, index }">
+        <template #default="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
           </p>
@@ -45,7 +45,7 @@
         </template>
       </DragList>
       <DragList v-model:list="list">
-        <template #item="{ item, index, inProgress }">
+        <template #default="{ item, index, inProgress }">
           <p class="p-2 font-normal shadow-xs" :class="{ghost: inProgress}">
             {{ item }} - {{ index }}
           </p>
@@ -62,7 +62,7 @@
         </template>
       </DragList>
       <DragList v-model:list="items" :accept-data="({value}) => typeof value === 'number'">
-        <template #item="{ item, index }">
+        <template #default="{ item, index }">
           <p class="p-2 font-normal shadow-xs">
             {{ item }} - {{ index }}
           </p>
@@ -79,36 +79,39 @@
         </template>
       </DragList>
     </div>
-  <div class="demo mt-5">
-    <VDragDrop @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
-      <template #default="{dragging}">
-          <span class="drag" :class="{ghost: dragging}">h{{i}}</span>
-      </template>
-      <template #drag-image="{data}">
-        <span v-show="!entering" class="drag">{{data.value}}</span>
-        <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
-      </template>
-    </VDragDrop>
-    <VDragDrop :draggable="false" hover-class="hovering" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop3" :accept-data="(val) => val.value % 2 === 0">
-      <div style="pointer-events: none">
-        <span v-for="i in droplist" :key="i">{{i}}</span>
-      </div>
-    </VDragDrop>
-    <div>
-         <VDragDrop hover-class="hovering" ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
-         <VDragDrop :droppable="false" @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
-          <img draggable="false" class="document" src="@/assets/document.png">
-          <template #drag-image>
-            <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
-            <img v-show="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
-            <img v-show="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
-            <img v-show="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
-            <img v-show="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
-            <img v-show="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
-          </template>
-         </VDragDrop>
-      </div>
-  </div>
+    <!-- h1 h2 h3 -->
+    <div class="demo mt-5">
+      <VDragDrop @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+        <template #default="{dragging}">
+            <span class="drag" :class="{ghost: dragging}">h{{i}}</span>
+        </template>
+        <template #drag-image="{data}">
+          <span v-show="!entering" class="drag">{{data.value}}</span>
+          <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
+        </template>
+      </VDragDrop>
+      <VDragDrop :draggable="false" hover-class="hovering" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop3" :accept-data="(val) => val.value % 2 === 0">
+        <div style="pointer-events: none">
+          <span v-for="i in droplist" :key="i">{{i}}</span>
+        </div>
+      </VDragDrop>
+        <!-- trash -->
+        <div>
+          <VDragDrop hover-class="hovering" ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
+          <VDragDrop :droppable="false" @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
+            <img draggable="false" class="document" src="@/assets/document.png">
+            <template #drag-image>
+              <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
+              <img v-show="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
+              <img v-show="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
+              <img v-show="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
+              <img v-show="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
+              <img v-show="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
+            </template>
+          </VDragDrop>
+        </div>
+    </div>
+    <NestedDrag v-model:tasks="nest" />
   </div>
 </template>
 
@@ -119,10 +122,11 @@ import DragList2 from '@/components/DragDrop/DragList2'
 import VDragDrop from '@/components/DragDrop/DragItem'
 import VDrag from '@/components/DragDrop/VDrag'
 import VDrop from '@/components/DragDrop/VDrop'
+import NestedDrag from './NestedDrag'
 
 export default {
   // eslint-disable-next-line
-  components: {DragList, VDragDrop, VDrag, VDrop, DragList2},
+  components: {DragList, VDragDrop, VDrag, VDrop, DragList2, NestedDrag},
   data() {
     return {
       list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],
@@ -135,7 +139,30 @@ export default {
       imgName: ['smiley01', 'smiley02', 'smiley03', 'smiley04', 'smiley05', 'smiley06'],
       idx: 0,
       totalDistance: {value: 1, lock: false},
-      hasTrash: false
+      hasTrash: false,
+      nest: [
+              {
+                "name": "task 5",
+                "tasks": []
+              },
+              {
+                "name": "task 1",
+                "tasks": []
+              },
+              {
+                "name": "task 3",
+                "tasks": [
+                  {
+                    "name": "task 2",
+                    "tasks": []
+                  },
+                  {
+                    "name": "task 4",
+                    "tasks": []
+                  }
+                ]
+              }
+            ]
     }
   },
   methods: {
@@ -299,4 +326,5 @@ export default {
 .handle:hover {
   background-color: red;
 }
+
 </style>
