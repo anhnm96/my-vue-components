@@ -3,6 +3,7 @@
       @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop
       @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
+    <div key="dummy-el" ref="dummyEl"></div>
     <template v-if="showPlaceholderMove || showPlaceholderAdd">
       <DragItem
         v-for="(item, index) in itemsBeforePlaceholder"
@@ -13,11 +14,11 @@
         :accept-data="acceptData"
         @dragentered="dragentered"
       >
-        <template #default="{dragging}">
-          <slot name="item" :item="item" :index="index" :inProgress="dragging" />
-        </template>
+        <!-- <template #default="{dragging}">
+          <slot name="item" :inProgress="dragging" />
+        </template> -->
         <template v-for="name of Object.keys($slots)" #[name]="scope">
-          <slot :name="name" v-bind="scope" />
+          <slot :name="name" v-bind="scope" :item="item" :index="index" />
         </template>
       </DragItem>
       <DragItem ref="placeholderMoveEl" class="placeholder-move" @dragenter="setEnteringRef('placeholder-move')" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
@@ -36,17 +37,16 @@
         :accept-data="acceptData"
         @dragentered="dragentered"
       >
-        <template #default="{dragging}">
+        <!-- <template #default="{dragging}">
           <slot
             name="item"
             :item="item"
             :index="index + 1 + itemsBeforePlaceholder.length"
             :inProgress="dragging"
-            :gg="listBeingDraggedOver"
           />
-        </template>
+        </template> -->
         <template v-for="name of Object.keys($slots)" #[name]="scope">
-          <slot :name="name" v-bind="scope" />
+          <slot :name="name" v-bind="scope" :item="item" :index="index + 1 + itemsBeforePlaceholder.length" />
         </template>
       </DragItem>
     </template>
@@ -61,15 +61,14 @@
       @dragstart="dragstart"
       @dragentered="dragentered"
     >
-      <slot name="item" :item="item" :index="index" />
       <template v-for="name of Object.keys($slots)" #[name]="scope">
-        <slot :name="name" v-bind="scope" />
+        <slot :name="name" v-bind="scope" :item="item" :index="index" />
       </template>
     </DragItem>
   </transition-group>
 </template>
 <script>
-import {ref, computed, reactive, nextTick, watch} from 'vue'
+import {ref, computed, reactive} from 'vue'
 import {DnDState} from './DnDStore'
 import DragItem from './DragItem'
 export default {
@@ -120,6 +119,8 @@ export default {
       placeholderIndex.value = payload.index
       console.log('dragstart', `currentIndex: ${payload.index}`, props.list[0], `inProgress`, draggingItem.inProgress)
     }
+
+    const dummyEl = ref(null)
     function dragover (e) {
       // stop update enteringRef if in transition
       // if (!inTransition.value) {
@@ -143,13 +144,23 @@ export default {
         
         if (dragItemElTarget.dataset.index === '0') {
           const {width, height, top, left} = dragItemElTarget.getBoundingClientRect()
-          if (e.clientY < top + height / 2) {
+          const center = {x: width / 2 + left, y: height / 2 + top}
+          const distanceToFirstItem = Math.sqrt(Math.pow(center.x - e.clientX, 2) + Math.pow(center.y - e.clientY, 2))
+          const dummyElRect = dummyEl.value.getBoundingClientRect()
+          const dummyCenterPosition = {x: dummyElRect.width / 2 + dummyElRect.left, y: dummyElRect.height / 2 + dummyElRect.top}
+          const distanceToDummyEl = Math.sqrt(Math.pow(dummyCenterPosition.x - e.clientX, 2) + Math.pow(dummyCenterPosition.y - e.clientY, 2))
+          if (distanceToDummyEl <= distanceToFirstItem) {
             placeholderIndex.value = 0
           }
         }
         if (dragItemElTarget.dataset.index === '1' && itemsBeforePlaceholder.value.length === 0) {
           const {width, height, top, left} = dragItemElTarget.getBoundingClientRect()
-          if (e.clientY >= top + height / 2) {
+          const center = {x: width / 2 + left, y: height / 2 + top}
+          const distanceToFirstItem = Math.sqrt(Math.pow(center.x - e.clientX, 2) + Math.pow(center.y - e.clientY, 2))
+          const dummyElRect = dummyEl.value.getBoundingClientRect()
+          const dummyCenterPosition = {x: dummyElRect.width / 2 + dummyElRect.left, y: dummyElRect.height / 2 + dummyElRect.top}
+          const distanceToDummyEl = Math.sqrt(Math.pow(dummyCenterPosition.x - e.clientX, 2) + Math.pow(dummyCenterPosition.y - e.clientY, 2))
+          if (distanceToFirstItem < distanceToDummyEl) {
             placeholderIndex.value = 1
           }
         }
@@ -251,8 +262,10 @@ export default {
       return res
     })
     // list events
-    function dragend () {
-      if (DnDState.success && props.mode === 'cut' && draggingItem.inProgress && !listBeingDraggedOver.value) {
+    const id = (Date.now() + Math.random()).toString(36)
+    function dragend (e) {
+      console.log('dragend', e, props.list[0], DnDState.success, !draggingItem.inProgress, DnDState.success && props.mode === 'cut' && draggingItem.inProgress)
+      if (DnDState.success && props.mode === 'cut' && DnDState.dropId !== id) {
         const clone = props.list
         clone.splice(draggingItem.originalIndex, 1)
         emit('update:list', clone)
@@ -265,7 +278,9 @@ export default {
     })
     function drop (e) {
       // remember that we may drop on placeholder
+      console.log(dataAllowed.value === false || DnDState.dragType !== props.dragType)
       if (dataAllowed.value === false || DnDState.dragType !== props.dragType) return
+      console.log(showPlaceholderAdd.value, props.list[0])
       // handle add el from other list
       if (showPlaceholderAdd.value) {
         console.log('drop add', placeholderIndex.value)
@@ -274,6 +289,8 @@ export default {
         clone.splice(placeholderIndex.value, 0, dataTransfer.value)
         emit('update:list', clone)
         listBeingDraggedOver.value = false
+        Object.assign(DnDState, {dropId: id})
+        e.stopPropagation()
       }
       // handle move el inside list
       if (showPlaceholderMove.value) {
@@ -333,7 +350,7 @@ export default {
         // if (param === 'placeholder-add') enteringRef.value = placeholderAddEl.value?.$el
       // })
     }
-    return { listBeingDraggedOver, dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
+    return { dummyEl, listBeingDraggedOver, dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {
