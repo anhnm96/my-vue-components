@@ -1,6 +1,6 @@
 <template>
   <transition-group class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl"
-      @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop
+      @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop @dragenter="dragenter"
       @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
     <div key="dummy-el" ref="dummyEl"></div>
@@ -121,7 +121,7 @@ export default {
     const dummyEl = ref(null)
     function dragover (e) {
       // get closest drag element
-      const dragItemElTarget = e.target.closest('.drag-container')
+      const dragItemElTarget = e.target.nodeType === 1 ? e.target.closest('.drag-container') : e.target.parentElement.closest('.drag-container')
       // stop update enteringRef if in transition
       // fast moving causes sometimes e.target is listEl. So dragItemElTarget would be null
       if (dragItemElTarget && !dragItemElTarget.classList.contains('drag-list--move')) {
@@ -159,6 +159,10 @@ export default {
         }
       }
     }
+    function dragenter (e) {
+      // console.log('dragenter', e, props.list[0])
+    }
+
     // this fire before list's dragover
     function dragentered({detail: payload}) {
       // payload.event.stopPropagation()
@@ -167,7 +171,13 @@ export default {
       // inTransition can't stop if directly dragenter children of target 
       if (payload.ref.classList.contains('drag-list--move')) {console.log('intransition', inTransition.value);return}
       // if (inTransition.value) {console.log('intransition', inTransition.value);return}
-      console.log('dragentered index', payload.index, payload.value, `inProgress: ${draggingItem.inProgress}`)
+      console.log('dragentered index', payload.index, payload.value, DnDState.ref, payload.event.target)
+      // return if bubble from nested draglist
+       const closestList = payload.event.target.nodeType === 1 ? payload.event.target.closest('.drag-list') : payload.event.target.parentElement.closest('.drag-list')
+       if (closestList && listEl.value.$el.contains(closestList) && listEl.value.$el !== closestList && !DnDState.ref.contains(payload.event.target) ) {
+         console.log('stop bubble from nested list')
+         return
+       }
       // return if event was bubbled from children
       if (enteringRef.value?.contains(payload.event.target)) {
         console.log('stop bubble', enteringRef.value, payload.event.target)
@@ -184,21 +194,11 @@ export default {
         // enter from placeholder
         if (enteringRef.value === placeholderMoveEl.value?.$el || enteringRef.value === placeholderAddEl.value?.$el) {
           // enteringRef.value = payload.ref
-          // moving down
-          if (placeholderIndex.value === payload.index) {
-            placeholderIndex.value = payload.index
-            console.log('===')}
-          // moving up. in case placeholder always show at mouse's position
-          else if (placeholderIndex.value - payload.index === 1) {
-            placeholderIndex.value = payload.index
-            console.log('=1')
-          }
-          else {placeholderIndex.value = payload.index;console.log('else')}
+          placeholderIndex.value = payload.index
           console.log('placeholder', placeholderIndex.value, payload.index, enteringRef.value, props.list[0])
           return
         } else {
           // enteringRef.value = payload.ref
-          
           if (placeholderIndex.value > payload.index) {
             placeholderIndex.value = payload.index + 1
           } else {
@@ -206,21 +206,8 @@ export default {
           }
           console.log('# entering', placeholderIndex.value, payload.index, props.list[0])
         }
-        
         return
       }
-      // add with placeholder
-      // if (showPlaceholderAdd.value) {
-        // if (placeholderIndex.value === payload.index) {
-        //    if (hoveringPlaceholder.value) {
-        //     placeholderIndex.value = placeholderIndex.value + 1
-        //     console.log('hover', placeholderIndex.value)
-        //   }
-        //   return
-        // }
-        // placeholderIndex.value = payload.index
-        // console.log('shoPlaceholderAdd', placeholderIndex.value)
-      // }
       // move item immediately
       if (!hasPlaceholderMoveSlot && draggingItem.inProgress) {
         console.log('move immediate',draggingItem.currentIndex, payload.index)
@@ -255,7 +242,7 @@ export default {
     const id = (Date.now() + Math.random()).toString(36)
     function dragend (e) {
       console.log('dragend', e, props.list[0], DnDState.success, !draggingItem.inProgress, DnDState.success && props.mode === 'cut' && draggingItem.inProgress)
-      if (DnDState.success && props.mode === 'cut' && DnDState.dropId !== id) {
+      if (draggingItem.inProgress && DnDState.success && props.mode === 'cut' && DnDState.dropId !== id) {
         const clone = props.list
         clone.splice(draggingItem.originalIndex, 1)
         emit('update:list', clone)
@@ -291,6 +278,7 @@ export default {
           array_move(props.list, draggingItem.currentIndex, placeholderIndex.value, false)
         if (placeholderIndex.value > draggingItem.currentIndex)
           array_move(props.list, draggingItem.currentIndex, placeholderIndex.value - 1, false)
+        e.stopPropagation()
       }
       enteringRef.value = null
     }
@@ -312,7 +300,9 @@ export default {
         return
       }
       // if (listBeingDraggedOver.value && !listEl.value.$el.contains(e.relatedTarget)) {
-      if (!listEl.value.$el.contains(e.relatedTarget)) {
+      const closestList =  e.relatedTarget && e.relatedTarget.nodeType === 1 ? e.relatedTarget.closest('.drag-list') : e.relatedTarget.parentElement.closest('.drag-list')
+      if (!listEl.value.$el.contains(e.relatedTarget) || (closestList && listEl.value.$el !== closestList)) {
+      // if (!listEl.value.$el.contains(e.relatedTarget)) {
         handler()
       }
       function handler () {
@@ -341,7 +331,7 @@ export default {
         // if (param === 'placeholder-add') enteringRef.value = placeholderAddEl.value?.$el
       // })
     }
-    return { dummyEl, listBeingDraggedOver, dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
+    return { dragenter, dummyEl, listBeingDraggedOver, dragover, setEnteringRef, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {

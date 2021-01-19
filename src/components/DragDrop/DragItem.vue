@@ -82,7 +82,7 @@ export default {
     // handle's stuffs
     let handleEl
     const handleLock = ref(false)
-    function handleMouseDown (e) {
+    function handleMouseDown () {
       handleLock.value = false
     }
 
@@ -138,7 +138,7 @@ export default {
 
     function dragstart (e) {
       dragging.value = true
-      Object.assign(DnDState, {inProgress: true, data: props.dataTransfer, dragType: props.dragType, success: false})
+      Object.assign(DnDState, {ref: el.value, inProgress: true, data: props.dataTransfer, dragType: props.dragType, success: false})
       if (hasDragImageSlot) {
         // add dragover event for handling drag image position compatible with firefox
         // and prevent drag end move back animation when drop outside of dropable element
@@ -185,7 +185,7 @@ export default {
         handleLock.value = true
       }
       dragging.value = false
-      Object.assign(DnDState, {inProgress: false, data: null, dragType: null})
+      Object.assign(DnDState, {inProgress: false, data: null, dragType: null, ref: null, dropdId: '', success: false})
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
 

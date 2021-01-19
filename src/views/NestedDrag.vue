@@ -1,5 +1,5 @@
 <template>
-    <DragList class="nest" v-model:list="taskList" mode="cut">
+    <DragList class="nest" v-model:list="taskList" :id-adapter="(val) => val.name" mode="cut">
       <template #default="{item}">
         {{item.name}}
         <NestedDrag :tasks="item.tasks" />
@@ -34,11 +34,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .nest {
   margin-top: 20px;
   border: 1px dashed black;
   min-height: 50px;
+}
+:deep(.drag-container) {
   padding: 10px;
 }
 </style>
