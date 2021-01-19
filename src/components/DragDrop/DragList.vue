@@ -1,5 +1,5 @@
 <template>
-  <transition-group move-class="drag-list--move" :tag="tag" ref="listEl"
+  <transition-group class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl"
       @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop
       @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
@@ -110,33 +110,26 @@ export default {
     const hasPlaceholderAddSlot = Object.keys(slots).includes('placeholder-add')
     // item events
     const dragstart = (e) => {
+      // user can select text then drag even if draggable = false
       if (!e.target.draggable) return
       const payload = JSON.parse(e.dataTransfer.getData('text'))
       Object.assign(draggingItem, {inProgress: true, originalIndex: payload.index, currentIndex: payload.index, data: payload})
-      // listBeingDraggedOver.value = true
-      // for move or add with placeholder
-      // enteringRef.value = e.target
       placeholderIndex.value = payload.index
-      console.log('dragstart', `currentIndex: ${payload.index}`, props.list[0], `inProgress`, draggingItem.inProgress)
+      console.log('dragstart', `currentIndex: ${payload.index}`, props.list[0])
     }
 
     const dummyEl = ref(null)
     function dragover (e) {
-      // stop update enteringRef if in transition
-      // if (!inTransition.value) {
+      // get closest drag element
       const dragItemElTarget = e.target.closest('.drag-container')
+      // stop update enteringRef if in transition
       // fast moving causes sometimes e.target is listEl. So dragItemElTarget would be null
-      // if (dragItemElTarget.classList.contains('drag-list--move')) {console.log('MOVING')}
-      // if (!dragItemElTarget) console.log('NULL cmnr')
       if (dragItemElTarget && !dragItemElTarget.classList.contains('drag-list--move')) {
         if (enteringRef.value !== dragItemElTarget) {
-          if (enteringRef.value === null) { // need run once fix
-            if (dragItemElTarget.classList.contains('placeholder-move') || dragItemElTarget.classList.contains('placeholder-add')) {
-              console.log('kkk')
-            } else {
-              console.log('+1')
-              placeholderIndex.value = placeholderIndex.value + 1
-            }
+          // run once in draglist
+          if (enteringRef.value === null && !(dragItemElTarget.classList.contains('placeholder-move') || dragItemElTarget.classList.contains('placeholder-add'))) {
+            console.log('+1')
+            placeholderIndex.value = placeholderIndex.value + 1
           }
           enteringRef.value = dragItemElTarget
           console.log('over', dragItemElTarget, props.list[0])
@@ -168,6 +161,7 @@ export default {
     }
     // this fire before list's dragover
     function dragentered({detail: payload}) {
+      // payload.event.stopPropagation()
       // stop if element is in transitioning
       // should check by classlist instead of inTransition that is slower
       // inTransition can't stop if directly dragenter children of target 
@@ -182,17 +176,13 @@ export default {
       }
       // dragging from outside source
       if (!draggingItem.inProgress) {
-        // try {
           draggingItem.data = DnDState.data
-        // } catch {
-        //   console.log('err parse', payload.event)
-        // }
       }
       listBeingDraggedOver.value = true
       // move with placeholder
       if (showPlaceholderMove.value || showPlaceholderAdd.value) {
         // enter from placeholder
-        if (enteringRef.value === placeholderMoveEl.value?.$el) {
+        if (enteringRef.value === placeholderMoveEl.value?.$el || enteringRef.value === placeholderAddEl.value?.$el) {
           // enteringRef.value = payload.ref
           // moving down
           if (placeholderIndex.value === payload.index) {
@@ -272,6 +262,7 @@ export default {
       }
       draggingItem.inProgress = false
       listBeingDraggedOver.value = false
+      enteringRef.value = null
     }
     const dataAllowed = computed(() => {
       return props.acceptData(DnDState.data)
