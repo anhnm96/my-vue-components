@@ -19,7 +19,7 @@
           :ref="`col${columnIndex}`"
         /> -->
         <DragList name="sca" mode="cut" v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
-          <template #item="{item, index}">
+          <template #default="{item, index}">
             <div :class="{ 'mt-3': index > 0 }" class="block p-5 bg-white rounded-md shadow">
               <div class="flex justify-between">
                 <p class="text-sm font-semibold leading-snug text-gray-900">
