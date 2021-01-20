@@ -4,8 +4,8 @@
         {{item.name}}
         <NestedDrag :tasks="item.tasks" />
       </template>
-      <template #placeholder-add="{data}">
-        {{data.value}}
+      <template #placeholder-add>
+        add
       </template>
       <template #placeholder-move>
         move

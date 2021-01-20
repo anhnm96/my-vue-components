@@ -18,7 +18,7 @@
           @dragEnter="dragEnter"
           :ref="`col${columnIndex}`"
         /> -->
-        <DragList name="sca" mode="cut" v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
+        <DragList drag-type="task" name="sca" mode="cut" v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
           <template #default="{item, index}">
             <div :class="{ 'mt-3': index > 0 }" class="block p-5 bg-white rounded-md shadow">
               <div class="flex justify-between">
