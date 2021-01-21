@@ -163,11 +163,15 @@ export default {
     }
     function dragenter (e) {
       // init list with 0 item
-      if (props.list.length === 0 && !listBeingDraggedOver.value && !inTransition.value && !DnDState.ref.contains(e.target)) {
+      console.log('listenter', e.target, props.list[0])
+      if (props.list.length === 0 && !listBeingDraggedOver.value
+       && !DnDState.ref.contains(e.target)
+        && DnDState.dragType === props.dragType) {
         console.log('list dragenter')
         placeholderIndex.value = 0
         listBeingDraggedOver.value = true
         draggingItem.data = DnDState.data
+        e.stopPropagation()
       }
     }
 
@@ -182,14 +186,18 @@ export default {
       // return if bubble from nested draglist and target is not in dragging item
       // this is used for hide placeholder
       const closestList = payload.event.target.nodeType === 1 ? payload.event.target.closest('.drag-list') : payload.event.target.parentElement.closest('.drag-list')
+      console.log('ee', DnDState.ref, payload.event.target)
       console.log('dragentered index', closestList, listEl.value.$el,
       listEl.value.$el.contains(closestList), listEl.value.$el !== closestList
       ,!DnDState.ref.contains(payload.event.target),closestList.dataset.group, DnDState.dragType === closestList.dataset.group)
        if (closestList && listEl.value.$el.contains(closestList) && listEl.value.$el !== closestList
-        && !DnDState.ref.contains(payload.event.target)
         && DnDState.dragType === closestList.dataset.group) {
          console.log('dragenter', closestList.dataset.group, closestList, listEl.value.$el, listEl.value.$el !== closestList, DnDState.ref.contains(payload.event.target), payload.ref)
          console.log('stop bubble from nested list')
+         return
+       }
+       if (closestList && listEl.value.$el.contains(closestList) && listEl.value.$el !== closestList && DnDState.ref.contains(payload.event.target)) {
+         console.log('enter itself')
          return
        }
       // return if event was bubbled from children
