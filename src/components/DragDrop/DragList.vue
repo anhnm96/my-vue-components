@@ -1,5 +1,5 @@
 <template>
-  <transition-group class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl" :data-group="dragType"
+  <transition-group :id="id" class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl" :data-group="dragType"
       @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop @dragenter="dragenter"
       @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
@@ -13,6 +13,7 @@
         :data-group="dragType"
         :drag-type="dragType"
         :accept-data="acceptData"
+        :trigger-move="triggerMove"
         @dragentered="dragentered"
       >
         <!-- <template #default="{dragging}">
@@ -37,6 +38,7 @@
         :data-group="dragType"
         :drag-type="dragType"
         :accept-data="acceptData"
+        :trigger-move="triggerMove"
         @dragentered="dragentered"
       >
         <!-- <template #default="{dragging}">
@@ -58,6 +60,7 @@
       :key="idAdapter(item)"
       :data-transfer="{ index, value: item }"
       :drag-type="dragType"
+      :trigger-move="triggerMove"
       :accept-data="acceptData"
       :handle="handle"
       @dragstart="dragstart"
@@ -71,7 +74,7 @@
 </template>
 <script>
 import {ref, computed, reactive} from 'vue'
-import {DnDState} from './DnDStore'
+import {DnDState, DragListState} from './DnDStore'
 import DragItem from './DragItem'
 export default {
   props: {
@@ -88,6 +91,7 @@ export default {
       default: 'div'
     },
     handle: String,
+    triggerMove: String,
     dragType: String,
     acceptData: {
       type: Function,
@@ -117,7 +121,8 @@ export default {
       const payload = JSON.parse(e.dataTransfer.getData('text'))
       Object.assign(draggingItem, {inProgress: true, originalIndex: payload.index, currentIndex: payload.index, data: payload})
       placeholderIndex.value = payload.index
-      console.log('dragstart', `currentIndex: ${payload.index}`, props.list[0])
+      DragListState.id = id
+      console.log('dragstart', `placeholderIndex: ${payload.index}`, props.list[0])
     }
 
     const dummyEl = ref(null)
@@ -134,7 +139,7 @@ export default {
             placeholderIndex.value = placeholderIndex.value + 1
           }
           enteringRef.value = dragItemElTarget
-          console.log('over', dragItemElTarget, props.list[0])
+          console.log('over', dragItemElTarget, props.list[0], placeholderIndex.value)
         }
         
         if (dragItemElTarget.dataset.index === '0') {
@@ -186,10 +191,10 @@ export default {
       // return if bubble from nested draglist and target is not in dragging item
       // this is used for hide placeholder
       const closestList = payload.event.target.nodeType === 1 ? payload.event.target.closest('.drag-list') : payload.event.target.parentElement.closest('.drag-list')
-      console.log('ee', DnDState.ref, payload.event.target)
-      console.log('dragentered index', closestList, listEl.value.$el,
-      listEl.value.$el.contains(closestList), listEl.value.$el !== closestList
-      ,!DnDState.ref.contains(payload.event.target),closestList.dataset.group, DnDState.dragType === closestList.dataset.group)
+      // console.log('ee', DnDState.ref, payload.event.target)
+      // console.log('dragentered index', closestList, listEl.value.$el,
+      // listEl.value.$el.contains(closestList), listEl.value.$el !== closestList
+      // ,!DnDState.ref.contains(payload.event.target),closestList.dataset.group, DnDState.dragType === closestList.dataset.group)
        if (closestList && listEl.value.$el.contains(closestList) && listEl.value.$el !== closestList
         && DnDState.dragType === closestList.dataset.group) {
          console.log('dragenter', closestList.dataset.group, closestList, listEl.value.$el, listEl.value.$el !== closestList, DnDState.ref.contains(payload.event.target), payload.ref)
@@ -220,12 +225,12 @@ export default {
           console.log('placeholder', placeholderIndex.value, payload.index, enteringRef.value, props.list[0])
         } else {
           // enteringRef.value = payload.ref
+          console.log('# entering', placeholderIndex.value, props.list[0])
           if (placeholderIndex.value > payload.index) {
             placeholderIndex.value = payload.index + 1
           } else {
             placeholderIndex.value = payload.index
           }
-          console.log('# entering', placeholderIndex.value, payload.index, props.list[0])
         }
         payload.event.stopPropagation()
         return
@@ -245,14 +250,10 @@ export default {
       payload.event.stopPropagation()
     }
     const itemsBeforePlaceholder = computed(() => {
-      // const directionValue = reachFirst.value ? 0 : 1
-      const directionValue = 0
-      return props.list.slice(0, placeholderIndex.value + directionValue)
+      return props.list.slice(0, placeholderIndex.value)
     })
     const itemsAfterPlaceholder = computed(() => {
-      // const directionValue = reachFirst.value ? 0 : 1
-      const directionValue = 0
-      return props.list.slice(placeholderIndex.value + directionValue)
+      return props.list.slice(placeholderIndex.value)
     })
     const showPlaceholderMove = computed(() => {
       const res = hasPlaceholderMoveSlot && draggingItem.inProgress && listBeingDraggedOver.value
@@ -272,8 +273,10 @@ export default {
         emit('update:list', clone)
       }
       draggingItem.inProgress = false
+      draggingItem.originalIndex = -1
       listBeingDraggedOver.value = false
       enteringRef.value = null
+      placeholderIndex.value = -1
     }
     const dataAllowed = computed(() => {
       return props.acceptData(DnDState.data)
@@ -283,6 +286,7 @@ export default {
       console.log(dataAllowed.value === false || DnDState.dragType !== props.dragType)
       if (dataAllowed.value === false || DnDState.dragType !== props.dragType) return
       console.log(showPlaceholderAdd.value, props.list[0])
+      if (!showPlaceholderMove.value && !showPlaceholderAdd.value) DnDState.success = false
       // handle add el from other list
       if (showPlaceholderAdd.value) {
         console.log('drop add', placeholderIndex.value)
@@ -336,15 +340,17 @@ export default {
         && closestList.dataset.group === props.dragType
         && !e.relatedTarget.classList.contains('placeholder-add')
         && !e.relatedTarget.classList.contains('placeholder-move')
-        && !DnDState.ref.contains(e.relatedTarget) && !inTransition.value)) {
+        && !DnDState.ref.contains(e.relatedTarget) && !inTransition.value)
+        && closestList.id !== DragListState.id) { // there are chance dragleave el from nested one to parent relatedTarget was original list itself
       // if (!listEl.value.$el.contains(e.relatedTarget)) {
-        console.log('LEFT', listEl.value.$el, e.relatedTarget)
+        console.log('LEFT', props.list[0], listEl.value.$el, e.relatedTarget, closestList, DragListState.id)
         handler()
+        e.stopPropagation()
       }
       function handler () {
         // firefox will fire dragenter and dragleave forever 
         // if dragging at border of list when list is in transition
-        if (!inTransition.value) {
+        if (!inTransition.value && draggingItem.originalIndex > -1) {
           array_move(props.list, draggingItem.currentIndex, draggingItem.originalIndex, false)
           draggingItem.currentIndex = draggingItem.originalIndex
         }
@@ -359,7 +365,7 @@ export default {
       return (showPlaceholderMove.value && enteringRef.value === placeholderMoveEl.value?.$el) ||
         (showPlaceholderAdd.value && enteringRef.value === placeholderAddEl.value?.$el)
     })
-    return { dragenter, dummyEl, listBeingDraggedOver, dragover, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
+    return { id, dragenter, dummyEl, listBeingDraggedOver, dragover, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }
 function array_move(arr, oldIndex, newIndex, allowNegative = true) {

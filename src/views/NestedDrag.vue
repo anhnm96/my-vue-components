@@ -1,14 +1,14 @@
 <template>
-    <DragList class="nest" v-model:list="taskList" :id-adapter="(val) => val.name" mode="cut">
+    <DragList trigger-move=".title" class="nest" v-model:list="taskList" :id-adapter="(val) => val.name" mode="cut">
       <template #default="{item}">
-        {{item.name}}
+        <p class="title">{{item.name}}</p>
         <NestedDrag :tasks="item.tasks" />
       </template>
       <template #placeholder-add>
         add
       </template>
       <template #placeholder-move>
-        move
+        <div>move</div>
       </template>
     </DragList>
 </template>

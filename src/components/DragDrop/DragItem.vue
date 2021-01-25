@@ -58,6 +58,7 @@ export default {
       default: 'drop-hover'
     },
     handle: String,
+    triggerMove: String,
     dragType: String,
     acceptData: {
       type: Function,
@@ -90,12 +91,16 @@ export default {
       handleLock.value = true
       console.log('mous up')
     }
-
+    let triggerEl
     onMounted(() => {
       // for drag-image slot
        const rect = el.value.getBoundingClientRect()
        width.value = rect.width
        height.value = rect.height
+      // handle
+      if (props.triggerMove) {
+        triggerEl = el.value.querySelector(props.triggerMove)
+      }
       // handle handle
        if (props.handle) {
         handleLock.value = true
@@ -155,6 +160,9 @@ export default {
       e.dataTransfer.setData('text', JSON.stringify(props.dataTransfer))
     }
     function dragenter (e) {
+      if (triggerEl && !triggerEl.contains(e.target)) {
+        return
+      }
       if (!props.droppable || dataAllowed.value === false || DnDState.dragType !== props.dragType) return
       // use dispatchEvent because emit causes laggy
       el.value?.dispatchEvent(new CustomEvent('dragentered', {detail:{event: e, ...props.dataTransfer, ref: el.value}}))

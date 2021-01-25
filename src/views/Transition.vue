@@ -161,6 +161,20 @@ export default {
                     "tasks": []
                   }
                 ]
+              },
+              {
+                "name": "task 6",
+                "tasks": [
+                  {
+                    "name": "task 7",
+                    "tasks": [
+                      {
+                        "name": "task 8",
+                        "tasks": []
+                      }
+                    ]
+                  }
+                ]
               }
             ]
     }
