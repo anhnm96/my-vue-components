@@ -89,7 +89,6 @@ export default {
 
     function handleMouseUp () {
       handleLock.value = true
-      console.log('mous up')
     }
     let triggerEl
     onMounted(() => {
@@ -180,9 +179,7 @@ export default {
     }
 
     function drop (e) {
-      console.log('item drop', DnDState.dragType, props.dragType, DnDState.dragType !== props.dragType)
       if (!props.droppable || dataAllowed.value === false || DnDState.dragType !== props.dragType) return
-      console.log('drop success')
       Object.assign(DnDState, {success: true})
       //remove hover class
       el.value.classList.remove(props.hoverClass)
@@ -195,7 +192,6 @@ export default {
         handleLock.value = true
       }
       dragging.value = false
-      console.log('dragend item')
       Object.assign(DnDState, {inProgress: false, data: null, dragType: null, ref: null, dropdId: ''})
       if (hasDragImageSlot) document.removeEventListener('dragover', documentDragover)
     }
