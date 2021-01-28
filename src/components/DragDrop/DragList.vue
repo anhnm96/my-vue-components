@@ -34,7 +34,7 @@
         v-for="(item, index) in itemsAfterPlaceholder"
         :key="idAdapter(item)"
         :data-transfer="{ index: index + 1 + itemsBeforePlaceholder.length, value: item }"
-        :data-index="index + 1"
+        :data-index="index + 1 + itemsBeforePlaceholder.length"
         :data-group="dragType"
         :drag-type="dragType"
         :accept-data="acceptData"
@@ -59,7 +59,6 @@
       v-for="(item, index) in list"
       :key="idAdapter(item)"
       :data-transfer="{ index, value: item }"
-      :data-index="index"
       :drag-type="dragType"
       :trigger-move="triggerMove"
       :accept-data="acceptData"
@@ -74,7 +73,7 @@
   </transition-group>
 </template>
 <script>
-import {ref, computed, reactive, nextTick} from 'vue'
+import {ref, computed, reactive, nextTick, watch, watchEffect} from 'vue'
 import {DnDState, DragListState} from './DnDStore'
 import DragItem from './DragItem'
 export default {
@@ -138,12 +137,12 @@ export default {
         if (enteringRef.value !== dragItemElTarget) {
           const index = dragItemElTarget.dataset.index
           // run once in draglist
-          if (enteringRef.value === null && !isNaN(index) && !(dragItemElTarget.classList.contains('placeholder-move') || dragItemElTarget.classList.contains('placeholder-add'))) {
-            console.log('+1', props.list[0], index, dragItemElTarget)
-            placeholderIndex.value = Number(index) + 1
-          }
+          // if (enteringRef.value === null && !isNaN(index) && !(dragItemElTarget.classList.contains('placeholder-move') || dragItemElTarget.classList.contains('placeholder-add'))) {
+          //   console.log('+1', props.list[0], index, dragItemElTarget, dragItemElTarget.dataset.index)
+          //   placeholderIndex.value = Number(index) + 1
+          // }
           enteringRef.value = dragItemElTarget
-          console.log('over', dragItemElTarget, props.list[0], placeholderIndex.value)
+          console.log('over', dragItemElTarget, props.list[0], placeholderIndex.value, index, dragItemElTarget.dataset.index)
         }
         
         if (dragItemElTarget.dataset.index === '0') {
@@ -187,33 +186,16 @@ export default {
 
     // this fire before list's dragover
     function dragentered({detail: payload}) {
-      // stop if element is in transitioning
+      // stop if target element is moving
       // inTransition can't stop if directly dragenter children of target; cause bug in safari
       if (payload.ref.classList.contains('drag-list--move')) {console.log('intransition', inTransition.value);return}
-      // if (inTransition.value) {console.log('intransition', inTransition.value);return}
-      // return if bubble from nested draglist and target is not in dragging item
-      // this is used for hide placeholder
-      const closestList = payload.event.target.nodeType === 1 ? payload.event.target.closest('.drag-list') : payload.event.target.parentElement.closest('.drag-list')
-      // console.log('dragentered index', closestList, listEl.value.$el,
-      // listEl.value.$el.contains(closestList), listEl.value.$el !== closestList
-      // ,!DnDState.ref.contains(payload.event.target),closestList.dataset.group, DnDState.dragType === closestList.dataset.group)
-       if (closestList && listEl.value.$el.contains(closestList) && listEl.value.$el !== closestList
-        && DnDState.dragType === closestList.dataset.group) {
-         console.log('dragenter', closestList.dataset.group, closestList, listEl.value.$el, listEl.value.$el !== closestList, DnDState.ref.contains(payload.event.target), payload.ref)
-         console.log('stop bubble from nested list')
+      // prevent drag into its nested list
+      const closestList = payload.ref.closest('.drag-list')
+       if (DnDState.ref.contains(closestList)) {
+         console.log('prevent bubbled from nested list')
          return
        }
-       if (closestList && listEl.value.$el.contains(closestList) && listEl.value.$el !== closestList && DnDState.ref.contains(payload.event.target)) {
-         console.log('enter itself')
-         return
-       }
-      // return if event was bubbled from children
-      if (enteringRef.value?.contains(payload.event.target)) {
-        // console.log('stop bubble', enteringRef.value, payload.event.target)
-        // TODO: recheck whether neccessary
-        // return
-      }
-      // dragging from outside source
+      // dragenter from outside source
       if (!draggingItem.inProgress) {
           draggingItem.data = DnDState.data
       }
@@ -234,7 +216,7 @@ export default {
           console.log('after enter', placeholderIndex.value)
         }
         // ?
-        // enteringRef.value = payload.ref
+        enteringRef.value = payload.ref
         payload.event.stopPropagation()
         return
       }
@@ -286,13 +268,20 @@ export default {
     })
     function drop (e) {
       // remember that we may drop on placeholder
-      console.log(dataAllowed.value === false || DnDState.dragType !== props.dragType)
+      console.log('drop not allowed', dataAllowed.value === false || DnDState.dragType !== props.dragType, e)
       if (dataAllowed.value === false || DnDState.dragType !== props.dragType) return
       console.log(props.list[0], showPlaceholderMove.value, showPlaceholderAdd.value, !showPlaceholderMove.value && !showPlaceholderAdd.value)
-      if (!showPlaceholderMove.value && !showPlaceholderAdd.value) DnDState.success = false
+      if (!showPlaceholderMove.value && !showPlaceholderAdd.value) {
+        console.log('drop fail', props.list[0])
+        DnDState.success = false
+      } else {
+        // though we set success as true in DragItem's drop but users may drop on
+        // positions belong to list only
+        DnDState.success = true
+      }
       // handle add el from other list
       if (showPlaceholderAdd.value) {
-        console.log('drop add', placeholderIndex.value)
+        console.log('drop add', placeholderIndex.value, props.list[0])
         const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
         const clone = props.list
         clone.splice(placeholderIndex.value, 0, dataTransfer.value)
@@ -327,27 +316,34 @@ export default {
       // safari always return relatedTarget as null so we use elementFromPoint instead
       if (isSafari) {
         const mouseEl = document.elementFromPoint(e.clientX, e.clientY)
-        // TODO: need check listBeingDraggedOver?
-        // if (!listEl.value.$el.contains(mouseEl)) {
-        if (!listEl.value.$el.contains(mouseEl) || (closestList && listEl.value.$el !== closestList
-        && closestList.dataset.group === props.dragType
-        && !mouseEl.classList.contains('placeholder-add')
-        && !mouseEl.classList.contains('placeholder-move')
-        && !DnDState.ref.contains(mouseEl) && !inTransition.value)) {
+        const closestList =  mouseEl && mouseEl.nodeType === 1 ? mouseEl.closest('.drag-list') : mouseEl?.parentElement.closest('.drag-list')
+
+        if (listBeingDraggedOver.value && (
+          !listEl.value.$el.contains(mouseEl) // leave to outside
+          || (closestList // leave to other el's nested list
+              && !DnDState.ref.contains(mouseEl) // prevent leave to inside dragging el
+              && listEl.value.$el !== closestList
+              && closestList.id !== DragListState.id // there are chances dragleave el from nested one to parent relatedTarget was original list itself
+              && closestList.dataset.group === props.dragType
+            )
+          )
+        ) {
           handler()
         }
         return
       }
-      // if (listBeingDraggedOver.value && !listEl.value.$el.contains(e.relatedTarget)) {
       const closestList =  e.relatedTarget && e.relatedTarget.nodeType === 1 ? e.relatedTarget.closest('.drag-list') : e.relatedTarget?.parentElement.closest('.drag-list')
-      if (!listEl.value.$el.contains(e.relatedTarget) || (closestList && listEl.value.$el !== closestList
-        && closestList.dataset.group === props.dragType
-        && !e.relatedTarget.classList.contains('placeholder-add')
-        && !e.relatedTarget.classList.contains('placeholder-move')
-        && !DnDState.ref.contains(e.relatedTarget))
-        && closestList.id !== DragListState.id) { // there are chance dragleave el from nested one to parent relatedTarget was original list itself
-      // if (!listEl.value.$el.contains(e.relatedTarget)) {
-        console.log('LEFT', props.list[0], listEl.value.$el, e.target, e.relatedTarget, closestList, DragListState.id)
+      if (listBeingDraggedOver.value && (
+          !listEl.value.$el.contains(e.relatedTarget) // leave to outside
+          || (closestList // leave to other el's nested list
+              && !DnDState.ref.contains(e.relatedTarget) // prevent leave to inside dragging el
+              && listEl.value.$el !== closestList
+              && closestList.id !== DragListState.id // there are chances dragleave el from nested one to parent relatedTarget was original list itself
+              && closestList.dataset.group === props.dragType
+            )
+          )
+        ) {
+       console.log('LEFT', props.list[0], listEl.value.$el, e.target, e.relatedTarget, DragListState.id)
         handler()
         e.stopPropagation()
       }
@@ -365,10 +361,7 @@ export default {
     }
     const placeholderMoveEl = ref(null)
     const placeholderAddEl = ref(null)
-    const hoveringPlaceholder = computed(() => {
-      return (showPlaceholderMove.value && enteringRef.value === placeholderMoveEl.value?.$el) ||
-        (showPlaceholderAdd.value && enteringRef.value === placeholderAddEl.value?.$el)
-    })
+    
     return { id, dragenter, dummyEl, listBeingDraggedOver, dragover, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }

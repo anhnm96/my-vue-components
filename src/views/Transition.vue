@@ -55,11 +55,11 @@
             {{ data.value }} - {{ data.index }}
           </p>
         </template>
-        <template #drag-image="{data, width, height}">
+        <!-- <template #drag-image="{data, width, height}">
           <p class="p-2 font-normal shadow-xs border-2 border-green-300 rounded-md" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
             :)) - {{ data.value }}
           </p>
-        </template>
+        </template> -->
       </DragList>
       <DragList v-model:list="items" :accept-data="({value}) => typeof value === 'number'">
         <template #default="{ item, index }">
