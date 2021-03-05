@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import {computed} from 'vue'
+import {computed, reactive} from 'vue'
 export default {
   props: {
     modelValue: {
@@ -61,32 +61,39 @@ export default {
     const labelUnChecked = computed(() => {
       return typeof props.labels === 'object' && Object.prototype.hasOwnProperty.call(props.labels, 'unchecked') ? props.labels.unchecked : 'off'
     })
-    return {toggle, labelChecked, labelUnChecked}
+    const styleVars = reactive({
+      width: props.width,
+      height: props.height,
+      inActiveColor: props.inActiveColor,
+      activeColor: props.activeColor,
+      margin: props.margin
+    })
+    return { styleVars, toggle, labelChecked, labelUnChecked}
   }
 }
 </script>
 
-<style vars="{activeColor, inActiveColor, width, height, margin}">
+<style vars>
 .toggle-button {
   display: inline-block;
   position: relative;
   box-sizing: border-box;
   transition: background .3s;
   user-select: none;
-  width: var(--width);
-  height: var(--height);
+  width: v-bind('styleVars.width');
+  height: v-bind('styleVars.height');
   border-radius: 999px;
 }
 
 .toggle-button:hover,
 .toggle-button:focus {
-  box-shadow: 0 0 0.5rem var(--inActiveColor);
+  box-shadow: 0 0 0.5rem v-bind('styleVars.inActiveColor');
   outline: none;
 }
 
 .toggle-button[aria-pressed=true]:hover,
 .toggle-button[aria-pressed=true]:focus {
-  box-shadow: 0 0 0.5rem var(--activeColor);
+  box-shadow: 0 0 0.5rem v-bind('styleVars.activeColor');
 }
 
 .toggle-button span {
@@ -95,8 +102,8 @@ export default {
   font-weight: 600;
   color: #fff;
   pointer-events: none;
-  line-height: var(--height);
-  height: var(--height);
+  line-height: v-bind('styleVars.height');
+  height: v-bind('styleVars.height');
   font-size: 10px;
 }
 
@@ -109,11 +116,11 @@ export default {
 }
 
 .toggle-button[aria-pressed=true] {
-  background: var(--activeColor);
+  background: v-bind('styleVars.activeColor');
 }
 
 .toggle-button[aria-pressed=false] {
-  background: var(--inActiveColor);
+  background: v-bind('styleVars.inActiveColor');
 }
 
 .toggle-button::before {
@@ -124,16 +131,16 @@ export default {
   top: 0;
   left: 0;
   z-index: 20;
-  transform: translate(var(--margin), var(--margin));
+  transform: translate(v-bind('styleVars.margin'), v-bind('styleVars.margin'));
   transition: transform .3s;
   border-radius: 100%;
   background-color: #fff;
-  width: calc(var(--height) - (2 * var(--margin)));
-  height: calc(var(--height) - (2 * var(--margin)));
+  width: calc(v-bind('styleVars.height') - (2 * v-bind('styleVars.margin')));
+  height: calc(v-bind('styleVars.height') - (2 * v-bind('styleVars.margin')));
 }
 
 .toggle-button[aria-pressed=true]::before {
-  transform: translate(calc(var(--width) - var(--height) + var(--margin)), var(--margin));
+  transform: translate(calc(v-bind('styleVars.width') - v-bind('styleVars.height') + v-bind('styleVars.margin')), v-bind('styleVars.margin'));
 }
 
 /* Reduced motion */
@@ -146,11 +153,11 @@ export default {
 
 *[dir="rtl"] .toggle-button::before {
   right: 0;
-  transform: translate(calc(-1 * var(--margin)), var(--margin));
+  transform: translate(calc(-1 * v-bind('styleVars.margin')), v-bind('styleVars.margin'));
 }
 
 *[dir="rtl"] .toggle-button[aria-pressed=true]::before {
-  transform: translate(calc(-1 * (var(--width) - var(--height) + var(--margin))), var(--margin));
+  transform: translate(calc(-1 * (v-bind('styleVars.width') - v-bind('styleVars.height') + v-bind('styleVars.margin'))), v-bind('styleVars.margin'));
 }
 
 *[dir="rtl"] .toggle-button[aria-pressed=false] span {

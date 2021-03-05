@@ -15,9 +15,12 @@
 </template>
 
 <style>
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
 
 .scale-enter-active {
   @apply transform transition-all duration-75 ease-out;
