@@ -7,7 +7,7 @@
     <div class="flex">
       <DragList handle=".handle" v-model:list="list">
         <template #default="{ item, index }">
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             <button class="handle">&#9776;</button>
             <span class="p-2">{{ item }} - {{ index }}</span>
           </p>
@@ -21,7 +21,7 @@
       </DragList>
       <DragList v-model:list="items">
         <template #default="{ item, index, gg }">
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             {{ item }} - {{ index }} {{gg}}
           </p>
         </template>
@@ -34,46 +34,46 @@
       </DragList>
       <DragList mode="cut" name="fade" v-model:list="list">
         <template #default="{ item, index }">
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             {{ item }} - {{ index }}
           </p>
         </template>
         <template #placeholder-add>
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             test
           </p>
         </template>
       </DragList>
       <DragList v-model:list="list">
         <template #default="{ item, index, inProgress }">
-          <p class="p-2 font-normal shadow-xs" :class="{ghost: inProgress}">
+          <p class="p-2 font-normal shadow" :class="{ghost: inProgress}">
             {{ item }} - {{ index }}
           </p>
         </template>
         <template #placeholder-move="{data}">
-          <p class="p-2 font-normal shadow-xs border-2 border-light-blue-500 border-dashed">
+          <p class="p-2 font-normal shadow border-2 border-light-blue-500 border-dashed">
             {{ data.value }} - {{ data.index }}
           </p>
         </template>
         <!-- <template #drag-image="{data, width, height}">
-          <p class="p-2 font-normal shadow-xs border-2 border-green-300 rounded-md" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
+          <p class="p-2 font-normal shadow border-2 border-green-300 rounded-md" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
             :)) - {{ data.value }}
           </p>
         </template> -->
       </DragList>
       <DragList v-model:list="items" :accept-data="({value}) => typeof value === 'number'">
         <template #default="{ item, index }">
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             {{ item }} - {{ index }}
           </p>
         </template>
         <template #placeholder-move>
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             move
           </p>
         </template>
         <template #placeholder-add="{data}">
-          <p class="p-2 font-normal shadow-xs">
+          <p class="p-2 font-normal shadow">
             {{data.value}}
           </p>
         </template>

@@ -128,6 +128,6 @@ export default {
   @apply absolute w-48 mt-2 origin-top rounded-md shadow-lg;
 }
 .dropdown-content {
-  @apply py-1 bg-white rounded-md shadow-xs;
+  @apply py-1 bg-white rounded-md shadow;
 }
 </style>

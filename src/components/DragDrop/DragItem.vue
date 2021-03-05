@@ -25,14 +25,23 @@ import {DnDState} from './DnDStore'
 export default {
   name: 'DragItem',
   props: {
+    /**
+     * defines html tag
+     */
     tag: {
       type: String,
       default: 'div'
     },
+    /**
+     * enable/disable drag
+     */
     draggable: {
       type: Boolean,
       default: true
     },
+    /**
+     * enable/disable drop
+     */
     droppable: {
       type: Boolean,
       default: true

@@ -12,7 +12,7 @@
       </VDrag>
       <VDrop key="drag-item--placeholder">
         <slot name="placeholder">
-          <p class="p-2 font-normal bg-green-300 shadow-xs bg-">
+          <p class="p-2 font-normal bg-green-300 shadow bg-">
             feeeed backkk
           </p>
         </slot>

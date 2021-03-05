@@ -7,7 +7,7 @@
     <div class="flex">
       <DragList2 v-model:list="list">
         <template #item="{ item, ind }">
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+          <p class="p-2 font-normal shadow" style="transition: all ease 0.5s">
             {{ item }} - {{ ind }}
           </p>
         </template>
@@ -17,7 +17,7 @@
       </DragList2>
       <DragList2 v-model:list="items">
         <template #item="{ item, ind }">
-          <p class="p-2 font-normal shadow-xs" style="transition: all ease 0.5s">
+          <p class="p-2 font-normal shadow" style="transition: all ease 0.5s">
             {{ item }} - {{ ind }}
           </p>
         </template>

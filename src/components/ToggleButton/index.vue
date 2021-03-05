@@ -73,7 +73,7 @@ export default {
 }
 </script>
 
-<style vars>
+<style>
 .toggle-button {
   display: inline-block;
   position: relative;
