@@ -51,8 +51,10 @@
 
 <script>
 import {ref, onMounted, onBeforeUnmount, watch} from 'vue'
+import trapFocus from '@/directives/trapFocus.js'
 export default {
   inheritAttrs: false,
+  directives: {'trap-focus': trapFocus},
   props: {
     attach: {
       type: String,

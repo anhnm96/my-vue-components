@@ -3,10 +3,10 @@
     ref="cursorRef"
     class="cursor"
     tabindex="0"
-    v-click-outside="clickOutSide"
     :style="cursorStyle"
     @keydown="onKeyDown"
   >
+  <!-- recheck what it means v-click-outside="clickOutSide" -->
     <slot
       v-if="editing"
       :name="'cell-input-' + column.name"

@@ -1,5 +1,5 @@
 <template>
-  <transition-group :id="id" class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl" :data-group="dragType"
+  <transition-group :id="id" class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl" :data-group="group"
       @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop @dragenter="dragenter"
       @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
@@ -10,22 +10,21 @@
         :key="idAdapter(item)"
         :data-transfer="{ index, value: item }"
         :data-index="index"
-        :data-group="dragType"
-        :drag-type="dragType"
+        :data-group="group"
+        :group="group"
         :accept-data="acceptData"
         :trigger-move="triggerMove"
         @dragentered="dragentered"
       >
-        <!-- <template #default="{dragging}">
-          <slot name="item" :inProgress="dragging" />
-        </template> -->
         <template v-for="name of Object.keys($slots)" #[name]="scope">
           <slot :name="name" v-bind="scope" :item="item" :index="index" />
         </template>
       </DragItem>
+      <!-- @slot use for swapping inside list -->
       <DragItem ref="placeholderMoveEl" class="placeholder-move" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
         <slot name="placeholder-move" :data="draggingItem.data" />
       </DragItem>
+      <!-- @slot use for swapping outside list -->
       <DragItem ref="placeholderAddEl" class="placeholder-add" v-if="showPlaceholderAdd" key="drag-item--placeholder--add">
         <slot name="placeholder-add" :data="draggingItem.data" />
       </DragItem>
@@ -35,20 +34,12 @@
         :key="idAdapter(item)"
         :data-transfer="{ index: index + 1 + itemsBeforePlaceholder.length, value: item }"
         :data-index="index + 1 + itemsBeforePlaceholder.length"
-        :data-group="dragType"
-        :drag-type="dragType"
+        :data-group="group"
+        :group="group"
         :accept-data="acceptData"
         :trigger-move="triggerMove"
         @dragentered="dragentered"
       >
-        <!-- <template #default="{dragging}">
-          <slot
-            name="item"
-            :item="item"
-            :index="index + 1 + itemsBeforePlaceholder.length"
-            :inProgress="dragging"
-          />
-        </template> -->
         <template v-for="name of Object.keys($slots)" #[name]="scope">
           <slot :name="name" v-bind="scope" :item="item" :index="index + 1 + itemsBeforePlaceholder.length" />
         </template>
@@ -59,7 +50,7 @@
       v-for="(item, index) in list"
       :key="idAdapter(item)"
       :data-transfer="{ index, value: item }"
-      :drag-type="dragType"
+      :group="group"
       :trigger-move="triggerMove"
       :accept-data="acceptData"
       :handle="handle"
@@ -82,21 +73,26 @@ export default {
       type: Array,
       required: true
     },
+    /** func to get key of drag elements */
     idAdapter: {
       type: Function,
       default: (item) => (item)
     },
+    /** HTML tag for draglist */
     tag: {
       type: String,
       default: 'div'
     },
+    /** DragItem prop */
     handle: String,
+    /** DragItem prop */
     triggerMove: String,
-    dragType: String,
+    group: String,
     acceptData: {
       type: Function,
       default: () => {}
     },
+    /** if mode == 'cut', remove orginal element */
     mode: {
       type: String,
       default: 'copy'
@@ -128,7 +124,7 @@ export default {
 
     const dummyEl = ref(null)
     function dragover (e) {
-      if (props.dragType !== DnDState.dragType) return
+      if (props.group !== DnDState.group) return
       // get closest drag element
       const dragItemElTarget = e.target.nodeType === 1 ? e.target.closest('.drag-container') : e.target.parentElement.closest('.drag-container')
       // stop update enteringRef if in transition
@@ -175,7 +171,7 @@ export default {
       // init list with 0 item
       if (props.list.length === 0 && !listBeingDraggedOver.value
        && !DnDState.ref.contains(e.target)
-        && DnDState.dragType === props.dragType) {
+        && DnDState.group === props.group) {
         console.log('list dragenter')
         placeholderIndex.value = 0
         listBeingDraggedOver.value = true
@@ -268,8 +264,8 @@ export default {
     })
     function drop (e) {
       // remember that we may drop on placeholder
-      console.log('drop not allowed', dataAllowed.value === false || DnDState.dragType !== props.dragType, e)
-      if (dataAllowed.value === false || DnDState.dragType !== props.dragType) return
+      console.log('drop not allowed', dataAllowed.value === false || DnDState.group !== props.group, e)
+      if (dataAllowed.value === false || DnDState.group !== props.group) return
       console.log(props.list[0], showPlaceholderMove.value, showPlaceholderAdd.value, !showPlaceholderMove.value && !showPlaceholderAdd.value)
       if (!showPlaceholderMove.value && !showPlaceholderAdd.value) {
         console.log('drop fail', props.list[0])
@@ -324,7 +320,7 @@ export default {
               && !DnDState.ref.contains(mouseEl) // prevent leave to inside dragging el
               && listEl.value.$el !== closestList
               && closestList.id !== DragListState.id // there are chances dragleave el from nested one to parent relatedTarget was original list itself
-              && closestList.dataset.group === props.dragType
+              && closestList.dataset.group === props.group
             )
           )
         ) {
@@ -339,7 +335,7 @@ export default {
               && !DnDState.ref.contains(e.relatedTarget) // prevent leave to inside dragging el
               && listEl.value.$el !== closestList
               && closestList.id !== DragListState.id // there are chances dragleave el from nested one to parent relatedTarget was original list itself
-              && closestList.dataset.group === props.dragType
+              && closestList.dataset.group === props.group
             )
           )
         ) {

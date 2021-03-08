@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import {isEqual, throttle} from 'lodash-es'
 export default {
   props: {
     tag: {
@@ -76,14 +75,14 @@ export default {
     },
     dragEnter(e) {
       const draggingData = JSON.parse(e.dataTransfer.getData('draggingItem'))
-      const offset = this.getOffset()
+      // const offset = this.getOffset()
       // if (e.clientY > offset.top && e.clientY < offset.bottom && e.clientX > offset.left && e.clientX < offset.right)
         this.$emit('dragentered', {from: draggingData, to: this.dataTransfer})
     },
     dragOver () {
       this.$emit('drag-over')
     },
-    dragLeave (e) {
+    dragLeave () {
       this.$emit('drag-leave')
     },
     dragEnd () {

@@ -7,18 +7,7 @@
     </h3>
     <div class="flex-1 min-h-0 overflow-y-auto">
       <ul class="px-3 pt-1 pb-3">
-        <!-- <TaskColumn
-          v-for="(item, index) in column.tasks"
-          :key="item['_id']"
-          :item="item"
-          :taskIndex="index"
-          :columnIndex="columnIndex"
-          :class="{ 'mt-3': index > 0 }"
-          @remove="remove"
-          @dragEnter="dragEnter"
-          :ref="`col${columnIndex}`"
-        /> -->
-        <DragList drag-type="task" name="sca" mode="cut" v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
+        <DragList group="task" name="sca" mode="cut" v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
           <template #default="{item, index}">
             <div :class="{ 'mt-3': index > 0 }" class="block p-5 bg-white rounded-md shadow">
               <div class="flex justify-between">
@@ -62,7 +51,6 @@
 </template>
 
 <script>
-import TaskColumn from './TaskColumn'
 import DragList from '@/components/DragDrop/DragList'
 
 export default {

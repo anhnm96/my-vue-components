@@ -44,6 +44,7 @@
 
 <script>
 import {ref, onMounted, onBeforeUnmount, watch, nextTick} from 'vue'
+import trapFocus from '@/directives/trapFocus.js'
 export default {
   name: 'VDropdown',
   props: {
@@ -73,6 +74,7 @@ export default {
     },
     disabled: Boolean
   },
+  directives: {'trap-focus': trapFocus},
   setup(props) {
     /** trigger button */
     const dropdownTrigger = ref(null)

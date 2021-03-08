@@ -10,7 +10,7 @@
             :column="column"
             :columnIndex="columnIndex"
           /> -->
-          <DragList drag-type="column" tag="main" class="inline-flex h-full p-3" :id-adapter="(val) => val.name" v-model:list="data">
+          <DragList group="column" tag="main" class="inline-flex h-full p-3" :id-adapter="(val) => val.name" v-model:list="data">
             <template #default="{item, index}">
               <BoardColumn 
                 :column="item"

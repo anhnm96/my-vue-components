@@ -96,20 +96,7 @@
         </div>
       </VDragDrop>
         <!-- trash -->
-        <div>
-          <VDragDrop hover-class="hovering" ref="trash" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
-          <VDragDrop :droppable="false" @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
-            <img draggable="false" class="document" src="@/assets/document.png">
-            <template #drag-image>
-              <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
-              <img v-show="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
-              <img v-show="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
-              <img v-show="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
-              <img v-show="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
-              <img v-show="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
-            </template>
-          </VDragDrop>
-        </div>
+        <DynamicDragImage />
     </div>
     <NestedDrag v-model:tasks="nest" />
   </div>
@@ -123,10 +110,11 @@ import VDragDrop from '@/components/DragDrop/DragItem'
 import VDrag from '@/components/DragDrop/VDrag'
 import VDrop from '@/components/DragDrop/VDrop'
 import NestedDrag from './NestedDrag'
+import DynamicDragImage from '@/views/SingleDnD/DynamicDragImage'
 
 export default {
   // eslint-disable-next-line
-  components: {DragList, VDragDrop, VDrag, VDrop, DragList2, NestedDrag},
+  components: {DynamicDragImage, DragList, VDragDrop, VDrag, VDrop, DragList2, NestedDrag},
   data() {
     return {
       list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],
@@ -134,7 +122,6 @@ export default {
       items: [1,2,3,4,5,6,7],
       droplist: [],
       entering: false,
-      docs: ['doc1', 'doc2'],
       startPosition: {},
       imgName: ['smiley01', 'smiley02', 'smiley03', 'smiley04', 'smiley05', 'smiley06'],
       idx: 0,
@@ -184,29 +171,6 @@ export default {
       const dataTransfer = JSON.parse(e.dataTransfer.getData('text'))
       console.log('test', dataTransfer)
     },
-    drag(e) {
-      if (this.startPosition.x === undefined) Object.assign(this.startPosition, {x: e.clientX, y: e.clientY})
-      const {top, left, height, width} = this.$refs.trash.$el.getBoundingClientRect()
-      const trashCenter = {x: left + width / 2, y: top + height / 2}
-      let remainingDistance = Math.sqrt(Math.pow(trashCenter.x-e.clientX, 2) + Math.pow(trashCenter.y-e.clientY, 2))
-      // lock for calculating totalDistance only once since drag start
-      if (!this.totalDistance.lock) {
-        this.totalDistance.value = Math.sqrt(Math.pow(this.startPosition.x-trashCenter.x, 2) + Math.pow(this.startPosition.y-trashCenter.y, 2))
-        this.totalDistance.lock = true
-      }
-      const distancePercent = Math.min(1, remainingDistance / this.totalDistance.value)
-      // console.log(remainingDistance, this.totalDistance.value, distancePercent);
-      if (distancePercent < 0.1) this.idx = 5
-      else if (distancePercent >= 0.1 && distancePercent < 0.3) this.idx = 4
-      else if (distancePercent >= 0.3 && distancePercent < 0.5) this.idx = 3
-      else if (distancePercent >= 0.5 && distancePercent < 0.7) this.idx = 2
-      else if (distancePercent >= 0.7 && distancePercent < 0.9) this.idx = 1
-      else if (distancePercent >= 0.9) this.idx = 0
-    },
-    dragend() {
-      this.startPosition.x = undefined
-      this.totalDistance.lock = false
-    },
     dragendEx2() {
       this.entering = false
     },
@@ -240,16 +204,12 @@ export default {
     },
     dragleave() {
       this.entering = false
-    },
-    trashDrop() {
-      console.log('trashdrop')
-      this.hasTrash = true
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .fade-enter-from {
   opacity: 0;
   transform: translateY(-5px);
@@ -305,31 +265,6 @@ export default {
   box-shadow: 0 0 5px rgba(0, 0, 255, 0.4);
 }
 
-.trash {
-  background: url('~@/assets/trash.png') top left no-repeat;
-  height: 128px;
-  width: 128px;
-  margin-top: 90px;
-  float: right;
-  opacity: 0.7;
-}
-
-.trash.full {
-  background: url('~@/assets/trash.png') top right no-repeat;
-}
-
-.document {
-  margin-top: 10px;
-  display: block;
-  cursor: pointer;
-  cursor: grab;
-  cursor: -webkit-grab;
-}
-.drag-image {
-  max-width: unset;
-  width: 100px;
-  height: 100px;
-}
 .ghost {
   opacity: 0.4;
   background-color: gray;

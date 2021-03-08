@@ -1,11 +1,18 @@
 <template>
+  <button
+    v-if="shown"
+    type="button"
+    class="fixed inset-0 w-full cursor-default"
+    arial-label="close"
+    @click.prevent="close"
+  ></button>
   <div
     role="combobox"
     :aria-expanded="shown"
     :aria-owns="`VAutocomplete__${timeId}--listbox`"
     aria-haspopup="listbox"
     class="autocomplete__container"
-    v-click-outside="close"
+    v-bind="$attrs"
   >
     <input
       type="text"
@@ -19,7 +26,7 @@
       @keydown.tab.prevent="safeSalect(adaptedOptions[arrowCounter])"
       @click="shown = true"
       :aria-controls="`VAutocomplete__${timeId}--listbox`"
-      :aria-activedescendant="`VAutocomplete__${this.timeId}--opt${this.arrowCounter}`"
+      :aria-activedescendant="`VAutocomplete__${timeId}--opt${arrowCounter}`"
       :aria-label="arialLabel"
     />
     <div
@@ -55,10 +62,15 @@
 export default {
   name: 'VAutocomplete',
   props: {
+    /**
+     * (optional) input value. Use when we want to pass input from parent.
+     * Otherwise we use localInput
+     */
     input: {
       type: String,
       default: undefined
     },
+    /** `array` let select multiplt value */
     selected: {
       type: [String, Number, Object, Array],
       default: null
@@ -79,6 +91,7 @@ export default {
       type: Boolean,
       default: true
     },
+    /** aria-label for input */
     arialLabel: String
   },
   mounted() {
@@ -92,7 +105,7 @@ export default {
       shown: false,
       arrowCounter: 0,
       isListInViewportVertically: true,
-      timeId: new Date().getTime()
+      timeId: Date.now()
     }
   },
   watch: {
@@ -140,7 +153,7 @@ export default {
     },
     select (item){
       this.inputValue = item.label
-      const newValue = this.multiple ? this.seleted.concat(item.value) : item.value
+      const newValue = this.multiple ? this.selected.concat(item.value) : item.value
       
       this.$emit('update:selected', newValue)
       this.$refs.input?.focus()

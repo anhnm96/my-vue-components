@@ -2,7 +2,7 @@
   <div>
     <VDragDrop hover-class="hovering" ref="trashRef" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
     <VDragDrop :droppable="false" @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
-      <img draggable="false" class="document" src="@/assets/document.png">
+      <img :draggable="false" class="document" src="@/assets/document.png">
       <template #drag-image>
         <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
         <img v-show="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
@@ -60,7 +60,7 @@ components: { VDragDrop },
 
 <style>
 .trash {
-  background: url('/../assets/trash.png') top left no-repeat;
+  background: url('~@/assets/trash.png') top left no-repeat;
   height: 128px;
   width: 128px;
   margin-top: 90px;
@@ -69,6 +69,21 @@ components: { VDragDrop },
 }
 
 .trash.full {
-  background: url('/../assets/trash.png') top right no-repeat;
+  background: url('~@/assets/trash.png') top right no-repeat;
+}
+.document {
+  margin-top: 10px;
+  display: block;
+  cursor: pointer;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+.drag-image {
+  max-width: unset;
+  width: 100px;
+  height: 100px;
+}
+.hovering {
+  box-shadow: 0 0 2px 4px gray;
 }
 </style>

@@ -6,21 +6,17 @@ export default {
     component: VDragDrop
 }
 
-// import DynamicDragImageComp from './DynamicDragImage'
-import DynamicDragImageComp from '@/views/Transition'
+import SimpleDragWithImgOnDropComp from '@/views/SingleDnD/DragImgOnDrop'
+export const SimpleDragWithImgOnDrop = () => ({
+  render: () => h(SimpleDragWithImgOnDropComp)
+})
+
+import DropAcceptEvenNumberOnlyComp from '@/views/SingleDnD/RestrictDropable'
+export const DropAcceptEvenNumberOnly = () => ({
+  render: () => h(DropAcceptEvenNumberOnlyComp)
+})
+
+import DynamicDragImageComp from '@/views/SingleDnD/DynamicDragImage'
 export const DynamicDragImage = () => ({
   render: () => h(DynamicDragImageComp)
 })
-
-  
-
-  // import Test2 from '../Test'
-//   import { storiesOf } from '@storybook/vue3';
-// storiesOf('DragDrop/DragList', module).add('SingleListWithPlaceHolder', () => ({
-//     render: () => h(Test2)
-//   }));
-
-// export const T3 = () => ({
-//   components: {Test2},
-//   render: () => h(Test2)
-// })
