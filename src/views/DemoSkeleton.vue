@@ -5,7 +5,7 @@
   <div style="display: flex">
 
   <article class="default">
-    <div :aria-hidden="hidden" class="skeleton link-heading-img-txt">
+    <div :aria-hidden="hidden" class="skeleton C3t1 link-heading-img-txt">
       <div aria-hidden="true"></div>
       <div aria-hidden="true"></div>
       <div aria-hidden="true"></div>
@@ -23,31 +23,24 @@
       </a>
     </div>
   </article>
+  </div>
 
-   <section class="block">
-    <div :aria-hidden="hidden" class="skeleton button-heading-txt-btn">
-      <div aria-hidden="true"></div>
-      <div aria-hidden="true"></div>
-      <div aria-hidden="true"></div>
+  <article class="default">
+    <div :aria-hidden="false">
+        <skeleton-box width="100%" height="3em" /><br>
+        <skeleton-box height="6em" /><br>
+        <skeleton-box width="100%" :min-width="50" height="6em" :max-width="70" />
       <span>Loading</span>
     </div>
-    <div :aria-busy="busy">
-      <h3>Only on Settings Text</h3>
-      <p>
-        Hundreds of thousands how far away not a sunrise but a galaxyrise paroxysm of global death gathered by gravity
-        preserve and cherish that pale blue dot?
-      </p>
-      <button type="button" onclick="alert('You look nice in that shirt.');">
-        <span>Settings</span>
-      </button>
-    </div>
-  </section>
-  </div>
+  </article>
+  
 </div>
 </template>
 
 <script>
+import SkeletonBox from '@/components/SkeletonBox'
 export default {
+  components: {SkeletonBox},
     data() {
         return {
             hidden: true,
@@ -73,103 +66,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
 article, section.block {
   padding: .5em 1em;
   margin: 0 0.5em 1em 0.5em;
   flex: 0 1 20em;
-  border: .2em solid rgba(0,0,0,.15);
+  border: .2em solid rgba(0,0,0,.25);
   border-radius: 1em;
   background-color: #fff;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-h3 {
-  margin: .2em 0;
-  line-height: 1.2;
-}
-
-a:focus, a:hover {
-  text-decoration: none;
-}
-
-.default a:link {
-  text-decoration: none;
-  color: #333;
-}
-
-.default a:focus h3, .default a:hover h3 {
-  color: #00f;
-  text-decoration: underline;
-}
-
-button {
-  font: inherit;
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-button:focus, button:hover {
-  outline: none;
-}
-
-button span {
-  display: block;
-  text-align: center;
-  padding: .5em 1em;
-  margin: .5em 1em;
-  border: .1em solid #00c;
-  border-radius: .25em;
-  background-color: #00c;
-  color: #fff;
-}
-
-button:focus span, button:hover span {
-  color: #00c;
-  background-color: #fff;
-}
-
-/* Block links */
-
-.block {
-  position: relative;
-}
-
-.block a[href]::after, .block button::after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.block:hover, .block:focus-within, .default:hover, .default:focus-within {
-  border-color: rgba(0,0,255,.5);
-  box-shadow: 0 0 .5em rgba(0,0,0,.25);
-}
-
-/* Help out IE */
-
-.block a[href]:hover, .block a[href]:focus {
-  outline: .4em solid rgba(0,0,255,.25);
-  outline-offset: .25em;
-}
-
-/* Undo the IE */
-
-.block:hover a[href]:hover, .block:hover a[href]:focus, .block:hover button:focus, .block:hover button:hover, .block:focus-within a[href]:hover, .block:focus-within a[href]:focus, .block:focus-within button:focus, .block:focus-within button:hover {
-  outline: none;
 }
 
 /* ================================== */
@@ -194,22 +99,24 @@ aside > * {
   margin: .5em 0;
   padding: 0;
   border-radius: .25em;
-  background: linear-gradient(-60deg, rgba(238,238,238,1) 0, rgba(238,238,238,1) 120px, rgba(250,250,250,1) 150px, rgba(238,238,238,1) 180px, rgba(238,238,238,1) 100%);
+  background: linear-gradient(-60deg,
+   rgba(238,238,238,1) 0, 
+   rgba(238,238,238,1) 120px, 
+   rgba(250,250,250,1) 150px, 
+   rgba(238,238,238,1) 180px, 
+   rgba(238,238,238,1) 100%);
 }
-
+.skeleton.C3t1 div {
+/* Full neon */
+  background: linear-gradient(-60deg, #000 0, #000 130px, #A43348 146px, #f00 147px, #FF69B4 149px, #FFDBED 150px, #FF69B4 151px, #f00 153px, #A43348 154px, #000 170px, #000 100%);
+}
 @keyframes gradientBG {
-	from { background-position: 0px; }
-	to { background-position: 315px; }
+	0% { background-position: 0px; }
+	100% { background-position: 282px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .skeleton div {
-/*  setting animation-iteration-count to 2.5    */
-/*  so it does not exceed 5s per WCAG 2.2.2    */
-    /* animation: gradientBG 2s ease 2.5; */
-    animation: gradientBG 2s ease infinite;
-  }
-  .skeleton.animate div{
     animation: gradientBG 2s ease infinite;
   }
 }
@@ -237,6 +144,7 @@ section *[aria-busy=true], article *[aria-busy=true], .skeleton[aria-hidden=true
   display: none !important;
 }
 
+/* The following CSS visually hides the <span>, but still leaves it available for a screen reader */
 .visually-hidden, .skeleton > span {
   position: absolute;
   top: auto;

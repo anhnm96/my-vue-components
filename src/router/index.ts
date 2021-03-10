@@ -55,6 +55,11 @@ const routes = [
     name: 'Drag',
     component: () => import('../views/DemoDnD/index.vue')
   },
+  {
+    path: '/useFetch',
+    name: 'UserFetch',
+    component: () => import('../views/DemoUseFetch.vue')
+  },
 ]
 
 const router = createRouter({

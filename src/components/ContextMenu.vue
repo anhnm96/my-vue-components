@@ -27,8 +27,10 @@
 
 <script>
 import {getCurrentInstance, onMounted, nextTick, reactive} from 'vue'
+import clickOutside from '@/directives/clickOutSide.ts'
 export default {
   name: 'ContextMenu',
+  directives: {'click-outside': clickOutside},
   props: {
     actions: {
       type: Array,

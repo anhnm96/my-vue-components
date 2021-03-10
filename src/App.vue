@@ -10,6 +10,7 @@
     <router-link to="/transition2">Transition2</router-link> |
     <router-link to="/tang">tang</router-link> |
     <router-link to="/drag">Drag</router-link> |
+    <router-link to="/useFetch">Use Fetch</router-link> |
   </div>
   <router-view />
 </template>

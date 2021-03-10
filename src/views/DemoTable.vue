@@ -35,6 +35,7 @@
       class="border border-gray-400 border-solid"
       arialLabel="select name"
     />
+    selected name: {{selected}} <br>
     <label>
       Select country
       <v-autocomplete
@@ -79,7 +80,8 @@ export default {
       items.value.splice(rowIndex, 0, dumpItem)
       context.show = false
     }
-    const selected = reactive({})
+    const selected = ref([])
+
     return { countries, nameList, columns, items, onInput, val, arr, insertRow, reactive, selected }
   }
 }

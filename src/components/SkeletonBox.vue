@@ -1,10 +1,10 @@
 <template>
-  <span :style="{ height, width: computedWidth }" class="SkeletonBox" />
+  <span aria-hidden="true" :style="{ height, width: computedWidth }" class="SkeletonBox" />
 </template>
 
 <script>
 export default {
-  name: `SkeletonBox`,
+  name: `VSkeletonBox`,
   props: {
     maxWidth: {
       default: 100,
@@ -37,7 +37,7 @@ export default {
   position: relative;
   vertical-align: middle;
   overflow: hidden;
-  background-color: #333;
+  background: rgba(0,0,0,.15);
   &::after {
     position: absolute;
     top: 0;
@@ -45,20 +45,19 @@ export default {
     bottom: 0;
     left: 0;
     transform: translateX(-100%);
-    background-image: linear-gradient(
-      90deg,
-      rgba(#fff, 0) 0,
-      rgba(#fff, 0.2) 20%,
-      rgba(#fff, 0.5) 60%,
-      rgba(#fff, 0) 0
-    );
-    animation: shimmer 5s infinite;
+    background: linear-gradient(90deg,hsla(0,0%,100%,0),hsla(0,0%,100%,.6),hsla(0,0%,100%,0));
+    // duration 2s -> wait 0.5s
+    animation: shimmer 2.5s ease-in-out infinite;
     content: "";
   }
   @keyframes shimmer {
     100% {
-      transform: translateX(100%);
+      transform: translateX(125%);
     }
   }
 }
 </style>
+<docs>
+[markus blog](https://markus.oberlehner.net/blog/skeleton-loading-animation-with-vue/)
+[adrianroselli blog](https://adrianroselli.com/2020/11/more-accessible-skeletons.html)
+</docs>

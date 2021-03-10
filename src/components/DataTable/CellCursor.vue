@@ -5,8 +5,8 @@
     tabindex="0"
     :style="cursorStyle"
     @keydown="onKeyDown"
+    v-click-outside="clickOutSide"
   >
-  <!-- recheck what it means v-click-outside="clickOutSide" -->
     <slot
       v-if="editing"
       :name="'cell-input-' + column.name"
@@ -27,10 +27,12 @@
 
 <script>
 import VInput from '../VInput'
+import clickOutSide from '@/directives/clickOutSide'
 import {computed, inject, ref, watch, nextTick, getCurrentInstance } from 'vue'
 export default {
   name: 'CellCursor',
   components: {VInput},
+  directives: {'click-outside': clickOutSide},
   props: {
     items: Array
   },
@@ -54,6 +56,7 @@ export default {
         cursorRef.value.focus()
       })
     })
+    // Turn off edit mode when select autocomplete, clickoutside
     const clickOutSide = (event) => {
       // Because we've set pointer-events: none. Click on current 
       // cell will trigger td element instead

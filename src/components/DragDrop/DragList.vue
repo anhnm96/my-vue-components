@@ -14,6 +14,7 @@
         :group="group"
         :accept-data="acceptData"
         :trigger-move="triggerMove"
+        :tag="childTag"
         @dragentered="dragentered"
       >
         <template v-for="name of Object.keys($slots)" #[name]="scope">
@@ -21,11 +22,11 @@
         </template>
       </DragItem>
       <!-- @slot use for swapping inside list -->
-      <DragItem ref="placeholderMoveEl" class="placeholder-move" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
+      <DragItem :tag="childTag" ref="placeholderMoveEl" class="placeholder-move" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
         <slot name="placeholder-move" :data="draggingItem.data" />
       </DragItem>
       <!-- @slot use for swapping outside list -->
-      <DragItem ref="placeholderAddEl" class="placeholder-add" v-if="showPlaceholderAdd" key="drag-item--placeholder--add">
+      <DragItem :tag="childTag" ref="placeholderAddEl" class="placeholder-add" v-if="showPlaceholderAdd" key="drag-item--placeholder--add">
         <slot name="placeholder-add" :data="draggingItem.data" />
       </DragItem>
       <!-- index + 1 for placeholder -->
@@ -38,6 +39,7 @@
         :group="group"
         :accept-data="acceptData"
         :trigger-move="triggerMove"
+        :tag="childTag"
         @dragentered="dragentered"
       >
         <template v-for="name of Object.keys($slots)" #[name]="scope">
@@ -54,6 +56,7 @@
       :trigger-move="triggerMove"
       :accept-data="acceptData"
       :handle="handle"
+      :tag="childTag"
       @dragstart="dragstart"
       @dragentered="dragentered"
     >
@@ -80,6 +83,11 @@ export default {
     },
     /** HTML tag for draglist */
     tag: {
+      type: String,
+      default: 'div'
+    },
+    /** HTML tag for dragitem */
+    childTag: {
       type: String,
       default: 'div'
     },

@@ -32,7 +32,7 @@
     <div
       class="dropdown-menu"
       ref="dropdown"
-      :style="isListInViewportVertically && { bottom: '100%' }"
+      :style="!isListInViewportVertically && { bottom: '100%' }"
     >
       <ul
         :id="`VAutocomplete__${timeId}--listbox`"
@@ -111,6 +111,8 @@ export default {
   watch: {
     shown(val) {
       if (val) {
+        // reset to inital state
+        this.isListInViewportVertically = true
         this.calcDropdownInViewportVertical()
       }
     }

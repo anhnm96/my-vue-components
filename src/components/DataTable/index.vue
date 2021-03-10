@@ -19,7 +19,27 @@
         </th>
       </tr>
     </thead>
-    <tbody>
+     <DragList tag="tbody" child-tag="tr" handle=".datatable__index" :id-adapter="(i) => i.id" v-model:list="list">
+       <template #default="{ item, index }">
+          <td
+            class="datatable__index"
+            @mousedown="selectHeader('row', index)"
+          >
+            {{ index + 1 }}
+          </td>
+          <Cell
+            v-for="(col, $columnIndex) in columns"
+            :key="col.name"
+            :row-index="index"
+            :column-index="$columnIndex"
+            >{{ item[col.name] }}</Cell
+          >
+        </template>
+        <template #placeholder-move>
+          <td :colspan="columns.length + 1" style="border: 1px solid red;height: 2px"></td>
+        </template>
+     </DragList>
+    <!-- <tbody>
       <tr v-for="(item, $rowIndex) in items" :key="item.id">
         <td
           class="datatable__index"
@@ -35,7 +55,7 @@
           >{{ item[col.name] }}</Cell
         >
       </tr>
-    </tbody>
+    </tbody> -->
     <cell-selecting-region />
     <cell-cursor :items="items">
       <!-- Pass-through all slots to cell-input component. -->
@@ -92,7 +112,7 @@
 </template>
 
 <script>
-import { ref, provide, nextTick } from 'vue'
+import { ref, provide, nextTick, computed } from 'vue'
 import Cell from './Cell'
 import CellCursor from './CellCursor'
 import CellSelectingRegion from './CellSelectingRegion'
@@ -100,6 +120,7 @@ import {Cursor} from '@/hooks/useCursor'
 import ContextMenu from '@/components/ContextMenu'
 import {getCsvFromClipboardData} from '@/services/utils'
 import Tracker from '@/hooks/useTracker'
+import DragList from '@/components/DragDrop/DragList'
 
 export default {
   props: {
@@ -110,8 +131,12 @@ export default {
       default: false
     }
   },
-  components: {Cell, CellCursor, CellSelectingRegion, ContextMenu},
+  components: {DragList, Cell, CellCursor, CellSelectingRegion, ContextMenu},
   setup(props, {emit}) {
+    const list = computed({
+      get: () => props.items,
+      set: val => emit('update:items', val)
+    })
     const tableRef = ref(null)
     const cursor = new Cursor(tableRef)
     provide('$cursor', cursor)
@@ -248,7 +273,7 @@ export default {
       }
     }
 
-    return {itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
+    return {list, itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
   }
 }
 
