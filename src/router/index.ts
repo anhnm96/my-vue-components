@@ -46,9 +46,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/DemoTable.vue')
   },
   {
-    path: '/tang',
-    name: 'Tang',
-    component: () => import('../views/tang.vue')
+    path: '/slider',
+    name: 'Slider',
+    component: () => import('../views/DemoSlider.vue')
   },
   {
     path: '/drag',

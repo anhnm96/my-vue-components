@@ -9,11 +9,15 @@
 <script>
 export default {
   name: `SliderSlide`,
+  inject: ['slides'],
   data() {
     return {
       active: false,
       transition: ``,
     };
+  },
+  mounted() {
+    this.slides.push(this)
   },
   methods: {
     // Deactivate and hide the slide and
@@ -47,13 +51,13 @@ export default {
   top: 0;
   position: absolute;
 }
-.SliderSlide--transition-left-enter,
+.SliderSlide--transition-left-enter-from,
 .SliderSlide--transition-right-leave-active {
   opacity: 0;
   transform: translate(2em, 0);
 }
 .SliderSlide--transition-left-leave-active,
-.SliderSlide--transition-right-enter {
+.SliderSlide--transition-right-enter-from {
   opacity: 0;
   transform: translate(-2em, 0);
 }

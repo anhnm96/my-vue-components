@@ -1,6 +1,6 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> | 
+    <router-link to="/">Home</router-link> |
     <router-link to="/table">Table</router-link> |
     <router-link to="/toggle">Toggle</router-link> |
     <router-link to="/dialog">Dialog</router-link> |
@@ -8,7 +8,7 @@
     <router-link to="/menu">Menu</router-link> |
     <router-link to="/transition">Transition</router-link> |
     <router-link to="/transition2">Transition2</router-link> |
-    <router-link to="/tang">tang</router-link> |
+    <router-link to="/slider">Slider</router-link> |
     <router-link to="/drag">Drag</router-link> |
     <router-link to="/useFetch">Use Fetch</router-link> |
   </div>

@@ -3,14 +3,18 @@ export default {
   data() {
     return {
       activeIndex: 0,
+      slides: []
     };
   },
+  provide() {
+    return {slides: this.slides}
+  },
   computed: {
-    slides() {
+    // slides() {
       // All slides must be children of the `SliderSlides` component.
-      return this.$children
-        .find(x => x.$options.name === `SliderSlides`).$children;
-    },
+    //   return this.$children
+    //     .find(x => x.$options.name === `SliderSlides`).$children;
+    // },
     slidesCount() {
       return this.slides.length;
     },
@@ -50,13 +54,13 @@ export default {
     },
   },
   render() {
-    return this.$scopedSlots.default({
+    return this.$slots.default({
       // Data
       activeIndex: this.activeIndex,
       // Methods
       goToIndex: this.goToIndex,
       next: this.next,
-      prev: this.prev,
+      prev: this.prev
     });
   },
 };
