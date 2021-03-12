@@ -1,12 +1,13 @@
 <template>
-  <div class="App o-container o-container--s o-vertical-spacing o-vertical-spacing--xl">
-    <h1>Building a Simple Content Slider with Vue.js</h1>
+  <div class="max-w-sm mx-auto py-2 px-1">
+    <h1 class="text-center font-semibold">Building a Simple Content Slider with Vue.js</h1>
 
-    <section class="App__example o-vertical-spacing o-vertical-spacing--l">
+    <section class="p-4 mt-4 shadow-md">
         <SliderFrame>
         <template #default="{ next, prev }">
+          <h2 class="font-semibold">Basic Slider</h2>
           <SliderSlides>
-            <SliderSlide class="o-vertical-spacing">
+            <SliderSlide class="mt-2">
               <h3>Lorem Ipsum dolor</h3>
               <p>
                 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
@@ -15,7 +16,7 @@
                 justo duo dolores et ea rebum. Stet clita kasd gubergren.
               </p>
             </SliderSlide>
-            <SliderSlide class="o-vertical-spacing">
+            <SliderSlide class="mt-2">
               <h3>Dolor Sit</h3>
               <p>
                 Dolor sit amet, consetetur sadipscing elitr, sed
@@ -26,7 +27,7 @@
             </SliderSlide>
           </SliderSlides>
 
-          <div class="App__basic-example-controls">
+          <div class="mt-2 space-x-2 text-center">
             <button @click="prev">
               &laquo; Prev
             </button>
@@ -38,17 +39,17 @@
       </SliderFrame>
     </section>
 
-    <section class="App__example o-vertical-spacing o-vertical-spacing--l">
-      <h2>Tabs</h2>
+    <section class="mt-4 p-4 shadow-md">
+      <h2 class="font-semibold">Tabs</h2>
 
       <SliderFrame>
         <template #default="{ activeIndex, goToIndex }">
-          <ul class="App__tabs-example-tabs">
+          <ul class="mt-2 flex">
             <li>
               <button
                 @click="goToIndex(0)"
                 :class="{ 'is-active': activeIndex === 0 }"
-                class="App__tabs-example-tab"
+                class="shadow px-2 py-1 border border-gray-400"
               >
                 Tab 1
               </button>
@@ -57,7 +58,7 @@
               <button
                 @click="goToIndex(1)"
                 :class="{ 'is-active': activeIndex === 1 }"
-                class="App__tabs-example-tab"
+                class="shadow px-2 py-1 border border-gray-400"
               >
                 Tab 2
               </button>
@@ -66,16 +67,15 @@
               <button
                 @click="goToIndex(2)"
                 :class="{ 'is-active': activeIndex === 2 }"
-                class="App__tabs-example-tab"
+                class="shadow px-2 py-1 border border-gray-400"
               >
                 Tab 3
               </button>
             </li>
           </ul>
 
-          <div class="App__tabs-example-content">
             <SliderSlides>
-              <SliderSlide class="o-vertical-spacing">
+              <SliderSlide class="p-4 border border-gray-500">
                 <h3>Lorem Ipsum dolor</h3>
                 <p>
                   Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
@@ -84,7 +84,7 @@
                   justo duo dolores et ea rebum. Stet clita kasd gubergren.
                 </p>
               </SliderSlide>
-              <SliderSlide class="o-vertical-spacing">
+              <SliderSlide class="p-4 border border-gray-500">
                 <h3>Dolor Sit</h3>
                 <p>
                   Dolor sit amet, consetetur sadipscing elitr, sed
@@ -93,26 +93,28 @@
                   justo duo dolores et ea rebum. Stet clita kasd gubergren.
                 </p>
               </SliderSlide>
-              <SliderSlide class="o-vertical-spacing">
+              <SliderSlide class="p-4 border border-gray-500">
                 <h3>Consetetur</h3>
                 <p>
                   Consetetur sadipscing elitr, sed
                   diam nonumy eirmod tempor invidunt ut labore et dolore magna
                   aliquyam erat, sed diam voluptua. At vero eos et accusam et
                   justo duo dolores et ea rebum. Stet clita kasd gubergren.
+                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
+                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
                 </p>
               </SliderSlide>
             </SliderSlides>
-          </div>
+
         </template>
       </SliderFrame>
     </section>
 
-     <section class="App__example o-vertical-spacing o-vertical-spacing--l">
-      <h2>Image Slider</h2>
+     <section class="mt-4 p-2">
+      <h2 class="font-semibold">Image Slider</h2>
       <SliderFrame>
-        <template #default="{ goToIndex, next, prev }" class="ImageSlider">
-          <div>
+        <template #default="{ goToIndex, next, prev }">
+          <div class="relative">
             <SliderSlides>
               <SliderSlide v-for="slide in slides" :key="slide.image" class="ImageSlider__slide">
                 <img :src="slide.image" :alt="slide.headline" class="ImageSlider__image" />
@@ -120,17 +122,17 @@
               </SliderSlide>
             </SliderSlides>
             <button
-              class="ImageSlider__direction ImageSlider__direction--prev"
+              class="ImageSlider__direction ImageSlider__direction--prev text-white"
               @click="prev"
             >&laquo; Prev</button>
             <button
-              class="ImageSlider__direction ImageSlider__direction--next"
+              class="ImageSlider__direction ImageSlider__direction--next text-white"
               @click="next"
             >Next &raquo;</button>
 
             <ol class="ImageSlider__dots">
               <li v-for="n in slides.length" :key="n">
-                <button @click="goToIndex(n - 1)">{{ n }}</button>
+                <button class="bg-white px-2 border border-gray-200" @click="goToIndex(n - 1)">{{ n }}</button>
               </li>
             </ol>
           </div>
@@ -174,46 +176,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.App {
-  padding-top: setting-spacing(xl);
-  padding-bottom: setting-spacing(xl);
-  h1 {
-    text-align: center;
-  }
-}
-.App__example {
-  padding: setting-spacing(l);
-  border-radius: 0.25em;
-  box-shadow: 0 0.35em 1em rgba(#000, 0.2);
-}
-.App__basic-example-controls {
-  margin-top: setting-spacing(l);
-  text-align: center;
-}
-.App__tabs-example-tabs {
-  display: flex;
-}
-.App__tabs-example-tab {
-  padding: setting-spacing(s) setting-spacing(l);
-  border: 1px solid #999;
-  border-bottom: none;
-  background-color: #efefef;
-  cursor: pointer;
-  outline: none;
-  &:hover,
-  &:focus,
-  &.is-active {
-    background-color: #999;
-  }
-  :not(:first-child) > & {
-    border-left: none;
-  }
-}
-.App__tabs-example-content {
-  padding: setting-spacing(m);
-  border: 1px solid #999;
-  overflow: hidden;
-}
 // image slider
 .ImageSlider {
   position: relative;

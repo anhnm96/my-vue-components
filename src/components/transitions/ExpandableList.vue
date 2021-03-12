@@ -1,12 +1,15 @@
 <script>
 export default {
-  computed: {
-    panels() {
-      return this.$children
-        .filter(x => x.$options.name === `TransitionExpand`)
+  name: 'ExpandableList',
+  data() {
+    return {
+      panels: []
     }
   },
   methods: {
+    setPanels(el) {
+      this.panels.push(el)
+    },
     setAll (value) {
       for (let panel of this.panels) {
         panel.$expand = value
@@ -18,12 +21,13 @@ export default {
     }
   },
   render() {
-    return this.$scopedSlots.default({
+    return this.$slots.default({
       // Methods
       setAll: this.setAll,
-      toggleAll: this.toggleAll
+      toggleAll: this.toggleAll,
+      setPanels: this.setPanels
     });
-  },
+  }
 }
 </script>
 

@@ -9,7 +9,8 @@
         <span class="px-2 font-medium">Adam Wathan</span>
       </template>
       <template #dropdown>
-        <button role="menuitem" @click="test" class="item">test</button>
+        <button role="option" tabindex="1" @click="test" class="item">test</button>
+        <a role="option" tabindex="0">asd</a>
         <button role="menuitem" @click="test" class="item">test</button>
         <button role="menuitem" @click="test" class="item">test</button>
         <button role="menuitem" @click="test" class="item">test</button>

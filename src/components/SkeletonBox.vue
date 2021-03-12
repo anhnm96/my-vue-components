@@ -56,8 +56,8 @@ export default {
     }
   }
 }
+// <docs>
+// [markus blog](https://markus.oberlehner.net/blog/skeleton-loading-animation-with-vue/)
+// [adrianroselli blog](https://adrianroselli.com/2020/11/more-accessible-skeletons.html)
+// </docs>
 </style>
-<docs>
-[markus blog](https://markus.oberlehner.net/blog/skeleton-loading-animation-with-vue/)
-[adrianroselli blog](https://adrianroselli.com/2020/11/more-accessible-skeletons.html)
-</docs>

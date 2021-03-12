@@ -35,8 +35,9 @@ export default {
     }
   },
   methods: {
-    toggle () {
-      this.$expand = !this.$expand
+    toggle (val) {
+      if (val !== undefined) this.$expand = val
+      else this.$expand = !this.$expand
     },
     afterEnter(element) {
           // eslint-disable-next-line no-param-reassign

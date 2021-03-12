@@ -14,7 +14,7 @@
     <textarea
       ref="textarea"
       :class="`${$options.name}__textarea`"
-      :value="value"
+      :value="modelValue"
       rows="1"
       @input="updateValue"
     />
@@ -46,14 +46,14 @@
         />
       </svg>
     </div>
-    <div
+    <!-- <div
       :class="`${$options.name}__htmlarea`"
       style="border: 1px solid blue; color: black;font-size: 0;"
       aria-hidden
     >
       <span style="font-size: 1rem;">{{ valueAllowed }}</span>
       <span style="font-size: 1rem;" class="text-excess" v-if="valueExcess">{{ valueExcess }}&nbsp;</span>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -65,22 +65,22 @@ export default {
       type: Number,
       default: 140,
     },
-    value: {
+    modelValue: {
       type: String,
     },
   },
   computed: {
     valueAllowed() {
-      return this.limit ? this.value.slice(0, this.limit) : this.value;
+      return this.limit ? this.modelValue.slice(0, this.limit) : this.modelValue;
     },
     valueExcess() {
-      return this.limit ? this.value.slice(this.limit) : '';
+      return this.limit ? this.modelValue.slice(this.limit) : '';
     },
     limitStatus() {
-      return (this.value.length / this.limit) * 100;
+      return (this.modelValue.length / this.limit) * 100;
     },
     remainingCharacters() {
-      return this.limit - this.value.length;
+      return this.limit - this.modelValue.length;
     },
     textareaStyle() {
       return getComputedStyle(this.$refs.textarea);
@@ -98,7 +98,7 @@ export default {
   methods: {
     updateValue(e) {
       this.textareaGrow();
-      this.$emit(`input`, e.target.value);
+      this.$emit(`update:modelValue`, e.target.value)
     },
     // Update the size of the textarea to fit the number
     // of lines of text.

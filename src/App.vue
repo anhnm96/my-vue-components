@@ -10,11 +10,19 @@
     <router-link to="/transition2">Transition2</router-link> |
     <router-link to="/slider">Slider</router-link> |
     <router-link to="/drag">Drag</router-link> |
+    <router-link to="/expand">Expand</router-link> |
     <router-link to="/useFetch">Use Fetch</router-link> |
+    <router-link to="/error">Error</router-link> |
   </div>
   <router-view />
 </template>
-
+<script>
+export default {
+  errorCaptured() {
+    console.log('demo app')
+  }
+}
+</script>
 <style>
 @tailwind base;
 

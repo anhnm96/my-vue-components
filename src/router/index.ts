@@ -56,9 +56,19 @@ const routes = [
     component: () => import('../views/DemoDnD/index.vue')
   },
   {
+    path: '/expand',
+    name: 'Expand',
+    component: () => import('../views/DemoExpand.vue')
+  },
+  {
     path: '/useFetch',
     name: 'UserFetch',
     component: () => import('../views/DemoUseFetch.vue')
+  },
+  {
+    path: '/error',
+    name: 'ErrorCapture',
+    component: () => import('../views/DemoError.vue')
   },
 ]
 

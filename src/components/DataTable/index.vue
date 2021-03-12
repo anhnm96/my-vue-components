@@ -247,6 +247,7 @@ export default {
     }
 
     const paste = async (event) => {
+      console.log('paste')
       event.preventDefault()
       const pastedItems = getCsvFromClipboardData(
           event.clipboardData
@@ -272,8 +273,10 @@ export default {
           }
       }
     }
-
-    return {list, itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
+  function foc() {
+    tableRef.value.focus()
+  }
+    return {foc, list, itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
   }
 }
 
