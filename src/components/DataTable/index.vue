@@ -116,7 +116,7 @@ import { ref, provide, nextTick, computed } from 'vue'
 import Cell from './Cell'
 import CellCursor from './CellCursor'
 import CellSelectingRegion from './CellSelectingRegion'
-import {Cursor} from '@/hooks/useCursor'
+import {Cursor} from '@/components/DataTable/useCursor'
 import ContextMenu from '@/components/ContextMenu'
 import {getCsvFromClipboardData} from '@/services/utils'
 import Tracker from '@/hooks/useTracker'
@@ -157,11 +157,11 @@ export default {
     const insertRow = (rowIndex, context, position = 'below') => {
       const posInsert = position === 'below' ? rowIndex + 1 : rowIndex
       const newArr = [...props.items]
-      
+
       newArr.splice(posInsert, 0, {...dumpItem})
       console.log(newArr.length)
       emit('update:items', newArr)
-      
+
       // update focusing cursor if add row above
       if (position === 'above')
         selectHeader('row', rowIndex + 1)
@@ -173,12 +173,12 @@ export default {
       // TODO: add column, name column
       // const posInsert = position === 'left' ? rowIndex + 1 : rowIndex
       // const newArr = [...props.items]
-      
+
       // newArr.splice(posInsert, 0, dumpItem)
       // console.log(newArr.length)
       // emit('update:items', newArr)
       // nextTick(() => console.log(props.items.length))
-      
+
       // // update focusing cursor if add row above
       // if (position === 'above')
       //   selectHeader('row', rowIndex + 1)
@@ -247,7 +247,6 @@ export default {
     }
 
     const paste = async (event) => {
-      console.log('paste')
       event.preventDefault()
       const pastedItems = getCsvFromClipboardData(
           event.clipboardData
@@ -273,10 +272,7 @@ export default {
           }
       }
     }
-  function foc() {
-    tableRef.value.focus()
-  }
-    return {foc, list, itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
+    return {list, itemsTracker, tableRef, undo, redo, actions, cursor, selectHeader, copy, paste, insertRow, insertColumn}
   }
 }
 

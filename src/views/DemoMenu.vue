@@ -220,7 +220,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-::v-deep .btn {
+:deep(.btn) {
   @apply py-2 relative inline-flex items-center rounded-md;
 }
 .item {
@@ -229,7 +229,7 @@ export default {
     @apply bg-indigo-500 text-white;
   }
 }
-::v-deep .dropdown-menu {
+deep(.dropdown-menu) {
   margin-top: 0;
 }
 .focused:focus {

@@ -12,13 +12,13 @@
     @drop="drop"
     @dragend="dragend"
   >
-    <!-- 
+    <!--
       @slot default
       @binding dragging item is being dragged status
      -->
     <slot :dragging="dragging" />
     <div v-if="dragging && hasDragImageSlot" class="drag-image" ref="dragImageEl">
-      <!-- 
+      <!--
         @slot drag-image
         @binding data dataTransfer passed as props
         @binding width width of the element
@@ -228,15 +228,13 @@ export default {
 </script>
 
 <style scoped>
-.drag-container {
-  position: relative;
-}
+/* check has drag-image slot. set container relative then .drag-image absolute */
 .drag-image {
   position: absolute;
   top: 0;
   left: 0;
   will-change: top, left;
   z-index: 999;
-  pointer-events: none; 
+  pointer-events: none;
 }
 </style>

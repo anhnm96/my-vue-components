@@ -67,7 +67,7 @@
   </transition-group>
 </template>
 <script>
-import {ref, computed, reactive, nextTick, watch, watchEffect} from 'vue'
+import {ref, computed, reactive} from 'vue'
 import {DnDState, DragListState} from './DnDStore'
 import DragItem from './DragItem'
 export default {
@@ -148,7 +148,7 @@ export default {
           enteringRef.value = dragItemElTarget
           console.log('over', dragItemElTarget, props.list[0], placeholderIndex.value, index, dragItemElTarget.dataset.index)
         }
-        
+
         if (dragItemElTarget.dataset.index === '0') {
           const {width, height, top, left} = dragItemElTarget.getBoundingClientRect()
           const center = {x: width / 2 + left, y: height / 2 + top}
@@ -336,7 +336,7 @@ export default {
         }
         return
       }
-      const closestList =  e.relatedTarget && e.relatedTarget.nodeType === 1 ? e.relatedTarget.closest('.drag-list') : e.relatedTarget?.parentElement.closest('.drag-list')
+      const closestList =  e.relatedTarget && e.relatedTarget.nodeType === 1 ? e.relatedTarget.closest('.drag-list') : e.relatedTarget?.parentElement?.closest('.drag-list')
       if (listBeingDraggedOver.value && (
           !listEl.value.$el.contains(e.relatedTarget) // leave to outside
           || (closestList // leave to other el's nested list
@@ -352,7 +352,7 @@ export default {
         e.stopPropagation()
       }
       function handler () {
-        // firefox will fire dragenter and dragleave forever 
+        // firefox will fire dragenter and dragleave forever
         // if dragging at border of list when list is in transition
         if (!inTransition.value && draggingItem.originalIndex > -1) {
           array_move(props.list, draggingItem.currentIndex, draggingItem.originalIndex, false)
@@ -365,7 +365,7 @@ export default {
     }
     const placeholderMoveEl = ref(null)
     const placeholderAddEl = ref(null)
-    
+
     return { id, dragenter, dummyEl, listBeingDraggedOver, dragover, placeholderMoveEl, placeholderAddEl, setTransitionState, draggingItem, drop, showPlaceholderMove, showPlaceholderAdd, listEl, placeholderIndex, dragentered, dragstart, dragleave, dragend, itemsBeforePlaceholder, itemsAfterPlaceholder}
   }
 }

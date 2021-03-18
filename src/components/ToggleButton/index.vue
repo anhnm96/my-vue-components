@@ -62,13 +62,13 @@ export default {
       return typeof props.labels === 'object' && Object.prototype.hasOwnProperty.call(props.labels, 'unchecked') ? props.labels.unchecked : 'off'
     })
     const styleVars = reactive({
-      width: props.width,
-      height: props.height,
-      inActiveColor: props.inActiveColor,
-      activeColor: props.activeColor,
-      margin: props.margin
+      sWidth: props.width,
+      sHeight: props.height,
+      sInActiveColor: props.inActiveColor,
+      sActiveColor: props.activeColor,
+      sMargin: props.margin
     })
-    return { styleVars, toggle, labelChecked, labelUnChecked}
+    return { ...styleVars, toggle, labelChecked, labelUnChecked}
   }
 }
 </script>
@@ -80,20 +80,20 @@ export default {
   box-sizing: border-box;
   transition: background .3s;
   user-select: none;
-  width: v-bind('styleVars.width');
-  height: v-bind('styleVars.height');
+  width: v-bind('sWidth');
+  height: v-bind('sHeight');
   border-radius: 999px;
 }
 
 .toggle-button:hover,
 .toggle-button:focus {
-  box-shadow: 0 0 0.5rem v-bind('styleVars.inActiveColor');
+  box-shadow: 0 0 0.5rem v-bind('sInActiveColor');
   outline: none;
 }
 
 .toggle-button[aria-pressed=true]:hover,
 .toggle-button[aria-pressed=true]:focus {
-  box-shadow: 0 0 0.5rem v-bind('styleVars.activeColor');
+  box-shadow: 0 0 0.5rem v-bind('sActiveColor');
 }
 
 .toggle-button span {
@@ -102,8 +102,8 @@ export default {
   font-weight: 600;
   color: #fff;
   pointer-events: none;
-  line-height: v-bind('styleVars.height');
-  height: v-bind('styleVars.height');
+  line-height: v-bind('sHeight');
+  height: v-bind('sHeight');
   font-size: 10px;
 }
 
@@ -116,11 +116,11 @@ export default {
 }
 
 .toggle-button[aria-pressed=true] {
-  background: v-bind('styleVars.activeColor');
+  background: v-bind('sActiveColor');
 }
 
 .toggle-button[aria-pressed=false] {
-  background: v-bind('styleVars.inActiveColor');
+  background: v-bind('sInActiveColor');
 }
 
 .toggle-button::before {
@@ -131,16 +131,16 @@ export default {
   top: 0;
   left: 0;
   z-index: 20;
-  transform: translate(v-bind('styleVars.margin'), v-bind('styleVars.margin'));
+  transform: translate(v-bind('sMargin'), v-bind('sMargin'));
   transition: transform .3s;
   border-radius: 100%;
   background-color: #fff;
-  width: calc(v-bind('styleVars.height') - (2 * v-bind('styleVars.margin')));
-  height: calc(v-bind('styleVars.height') - (2 * v-bind('styleVars.margin')));
+  width: calc(v-bind('sHeight') - (2 * v-bind('sMargin')));
+  height: calc(v-bind('sHeight') - (2 * v-bind('sMargin')));
 }
 
 .toggle-button[aria-pressed=true]::before {
-  transform: translate(calc(v-bind('styleVars.width') - v-bind('styleVars.height') + v-bind('styleVars.margin')), v-bind('styleVars.margin'));
+  transform: translate(calc(v-bind('sWidth') - v-bind('sHeight') + v-bind('sMargin')), v-bind('sMargin'));
 }
 
 /* Reduced motion */
@@ -153,11 +153,11 @@ export default {
 
 *[dir="rtl"] .toggle-button::before {
   right: 0;
-  transform: translate(calc(-1 * v-bind('styleVars.margin')), v-bind('styleVars.margin'));
+  transform: translate(calc(-1 * v-bind('sMargin')), v-bind('sMargin'));
 }
 
 *[dir="rtl"] .toggle-button[aria-pressed=true]::before {
-  transform: translate(calc(-1 * (v-bind('styleVars.width') - v-bind('styleVars.height') + v-bind('styleVars.margin'))), v-bind('styleVars.margin'));
+  transform: translate(calc(-1 * (v-bind('sWidth') - v-bind('sHeight') + v-bind('sMargin'))), v-bind('sMargin'));
 }
 
 *[dir="rtl"] .toggle-button[aria-pressed=false] span {

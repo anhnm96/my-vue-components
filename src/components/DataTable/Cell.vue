@@ -1,7 +1,6 @@
 <template>
   <td
     @mousedown="onSelectCell"
-    @dblclick="onDbClickCell"
     :data-row-index="rowIndex"
     :data-column-index="columnIndex"
     :class="`cell-${rowIndex}-${columnIndex}`"
@@ -24,12 +23,7 @@ export default {
       $cursor.selectedCell.rowIndex = props.rowIndex
       $cursor.selectedCell.columnIndex = props.columnIndex
     }
-
-    const onDbClickCell = () => {
-      $cursor.editing.value = true
-    }
-
-    return {onSelectCell, onDbClickCell}
+    return {onSelectCell}
   }
 }
 </script>

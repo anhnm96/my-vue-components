@@ -45,6 +45,7 @@
       />
     </label>
   </div>
+  <div class="w-full h-5 bg-green" @paste="test" tabindex="0"></div>
 </template>
 
 <script>
@@ -81,8 +82,10 @@ export default {
       context.show = false
     }
     const selected = ref([])
-
-    return { countries, nameList, columns, items, onInput, val, arr, insertRow, reactive, selected }
+    function test(e) {
+      console.log('paste', e)
+    }
+    return { test, countries, nameList, columns, items, onInput, val, arr, insertRow, reactive, selected }
   }
 }
 

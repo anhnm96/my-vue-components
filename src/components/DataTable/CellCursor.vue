@@ -5,6 +5,7 @@
     tabindex="0"
     :style="cursorStyle"
     @keydown="onKeyDown"
+    @dblclick="setEditMode(true)"
     v-click-outside="clickOutSide"
   >
     <slot
@@ -28,7 +29,7 @@
 <script>
 import VInput from '../VInput'
 import clickOutSide from '@/directives/clickOutSide'
-import {computed, inject, ref, watch, nextTick, getCurrentInstance } from 'vue'
+import {computed, inject, ref, watch, nextTick, getCurrentInstance, onMounted } from 'vue'
 export default {
   name: 'CellCursor',
   components: {VInput},
@@ -47,7 +48,7 @@ export default {
       // make table emit on-input event to the wrapper
     const onInput = (value) => instance.ctx.$parent.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
 
-    // Re-focus CellCursor if cursor updated. This is to allow interact with keyboard 
+    // Re-focus CellCursor if cursor updated. This is to allow interact with keyboard
     const cursorRef = ref(null)
     watch($cursor.selectedCell, async () => {
       $cursor.editing.value = false
@@ -58,7 +59,7 @@ export default {
     })
     // Turn off edit mode when select autocomplete, clickoutside
     const clickOutSide = (event) => {
-      // Because we've set pointer-events: none. Click on current 
+      // Because we've set pointer-events: none. Click on current
       // cell will trigger td element instead
       // so we should return in this case
       if (event.target.dataset.columnIndex == $cursor.selectedCell.columnIndex && event.target.dataset.rowIndex == $cursor.selectedCell.rowIndex ) return
@@ -78,7 +79,8 @@ export default {
         })
       }
     })
-    watch($cursor.containerElementRef, () => $cursor.containerElementRef.value.addEventListener('click', () => cursorRef.value.focus()))
+    // if click on header, footer need to refocus cursor
+    // watch($cursor.containerElementRef, () => $cursor.containerElementRef.value.addEventListener('click', () => console.log(cursorRef.value)))
 
     // style
     const td = computed(() => {
@@ -118,6 +120,7 @@ export default {
 
     // handle keyboard
     function setEditMode (state) {
+      console.log('setEdit', state)
       $cursor.editing.value = state
     }
 
@@ -263,8 +266,17 @@ export default {
       return {onKeyDown}
     }
     const { onKeyDown } = setupNavigation({items: props.items, columns: $columns}, setEditMode)
-    
-    return { clickOutSide, blur, onInput, item, column, cell, cursorRef, cursorStyle, editing: $cursor.editing, onKeyDown, rowIndex: $cursor.selectedCell.rowIndex }
+    // Chrome cannot perform @paste event on element has `user-select: none`
+    // so we need to manually select element to enable @paste event
+    // https://stackoverflow.com/questions/31207253/onpaste-paste-event-not-firing-for-table-on-first-few-attempts
+    onMounted(() => {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(cursorRef.value);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    })
+    return { setEditMode, clickOutSide, blur, onInput, item, column, cell, cursorRef, cursorStyle, editing: $cursor.editing, onKeyDown, rowIndex: $cursor.selectedCell.rowIndex }
   }
 }
 </script>
@@ -273,9 +285,10 @@ export default {
 .cursor {
   position: absolute;
   border: 2px solid rgb(124, 179, 66);
-  pointer-events: none;
-  & > ::v-deep * {
-    pointer-events: initial;
-  }
+  outline: none;
+  // pointer-events: none;
+  // & > ::v-deep * {
+  //   pointer-events: initial;
+  // }
 }
 </style>
