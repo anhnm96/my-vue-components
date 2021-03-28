@@ -14,18 +14,18 @@
 - [x] Click outside to cancel edit
 - [x] `ctrl+c` to copy cell
 - [x] `ctrl+v` to paste cell
-- [] `delete` cell
+- [ ] `delete` cell
 - [x] Select area
 - [x] `ctrl+c` to copy area
 - [x] `ctrl+v` to paste area
 - [x] paste data from xls, csv...
-- [] `delete` area
+- [ ] `delete` area
 - [x] Right click menu context
 - [x] Add row below|above
 - [x] drag drop row
-- [] multiple drag
-- [] undo
-- [] redo
+- [ ] multiple drag
+- [ ] undo
+- [ ] redo
 
 ## Drag and drop
 
