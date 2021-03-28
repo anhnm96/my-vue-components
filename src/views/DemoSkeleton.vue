@@ -1,39 +1,14 @@
 <template>
 <div>
-    <button @click="load">Load async content</button>
-    <button @click="make">Make loading</button>
-  <div style="display: flex">
-
-  <article class="default">
-    <div :aria-hidden="hidden" class="skeleton C3t1 link-heading-img-txt">
-      <div aria-hidden="true"></div>
-      <div aria-hidden="true"></div>
-      <div aria-hidden="true"></div>
-      <span>Loading</span>
-    </div>
-    <div :aria-busy="busy">
-      <a href="https://example.com/linkwrap" rel="nofollow">
-        <h3>Wrapping Entire Thing</h3>
-        <img src="https://www.fillmurray.com/640/360" width="640" height="360" alt="Bill Murray on the award carpet.">
-        <p>
-          Gastropub sartorial venmo hashtag, franzen actually umami small batch vinyl taiyaki. Seitan organic dreamcatcher
-          pinterest, tilde franzen ugh tattooed PBR&B etsy bitters brooklyn yuccie listicle bicycle rights. Keytar
-          keffiyeh glossier roof party. YOLO palo santo godard, organic lomo roof party tumeric affogato bicycle rights.
-        </p>
-      </a>
-    </div>
-  </article>
-  </div>
-
   <article class="default">
     <div :aria-hidden="false">
         <skeleton-box width="100%" height="3em" /><br>
         <skeleton-box height="6em" /><br>
         <skeleton-box width="100%" :min-width="50" height="6em" :max-width="70" />
-      <span>Loading</span>
+      <span class="sr-only">Loading</span>
     </div>
   </article>
-  
+
 </div>
 </template>
 
@@ -41,28 +16,6 @@
 import SkeletonBox from '@/components/SkeletonBox'
 export default {
   components: {SkeletonBox},
-    data() {
-        return {
-            hidden: true,
-            busy: false
-        }
-    },
-    methods: {
-        load() {
-            setTimeout(async () => {
-                this.hidden = true
-                this.busy = false
-                await this.sleep(500)
-            }, 3000)
-        },
-        make() {
-          this.hidden = ''
-          this.busy = true
-        },
-        sleep (ms) {
-          return new Promise(resolve => setTimeout(resolve, ms))
-        }
-    }
 }
 </script>
 
@@ -100,10 +53,10 @@ aside > * {
   padding: 0;
   border-radius: .25em;
   background: linear-gradient(-60deg,
-   rgba(238,238,238,1) 0, 
-   rgba(238,238,238,1) 120px, 
-   rgba(250,250,250,1) 150px, 
-   rgba(238,238,238,1) 180px, 
+   rgba(238,238,238,1) 0,
+   rgba(238,238,238,1) 120px,
+   rgba(250,250,250,1) 150px,
+   rgba(238,238,238,1) 180px,
    rgba(238,238,238,1) 100%);
 }
 .skeleton.C3t1 div {
