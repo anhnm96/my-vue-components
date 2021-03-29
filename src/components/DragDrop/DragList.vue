@@ -211,13 +211,13 @@ export default {
           placeholderIndex.value = payload.index
           console.log('placeholder', placeholderIndex.value, payload.index, enteringRef.value, props.list[0])
         } else {
-          console.log('# entering', placeholderIndex.value,payload.index, props.list[0])
+          console.log('# entering ph:', placeholderIndex.value, 'item index:',payload.index, props.list[0])
           if (placeholderIndex.value > payload.index) {
             placeholderIndex.value = payload.index + 1
           } else {
             placeholderIndex.value = payload.index
           }
-          console.log('after enter', placeholderIndex.value)
+          console.log('after enter. ph:', placeholderIndex.value)
         }
         // ?
         enteringRef.value = payload.ref

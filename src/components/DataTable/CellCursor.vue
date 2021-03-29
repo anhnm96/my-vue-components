@@ -29,7 +29,7 @@
 <script>
 import VInput from '../VInput'
 import clickOutSide from '@/directives/clickOutSide'
-import {computed, inject, ref, watch, nextTick, getCurrentInstance, onMounted } from 'vue'
+import {computed, inject, ref, watch, nextTick, onMounted } from 'vue'
 export default {
   name: 'CellCursor',
   components: {VInput},
@@ -42,11 +42,10 @@ export default {
     const $cursor = inject('$cursor')
     const item = computed(() => props.items[$cursor.selectedCell.rowIndex])
     const column = computed(() => $columns[$cursor.selectedCell.columnIndex])
-    const instance = getCurrentInstance()
     const cell = computed(() => item.value[column.value.name])
 
       // make table emit on-input event to the wrapper
-    const onInput = (value) => instance.ctx.$parent.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
+    const onInput = (value) => $cursor.containerElementRef.value.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
 
     // Re-focus CellCursor if cursor updated. This is to allow interact with keyboard
     const cursorRef = ref(null)

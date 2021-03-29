@@ -4,55 +4,56 @@
 
 <script>
 import {throttle} from 'lodash-es'
-import { computed, inject, onMounted, getCurrentInstance } from "vue"
+import { computed, inject, onMounted, nextTick } from "vue"
 export default {
   name: "CellSelectingRegion",
   setup() {
     const cursor = inject('$cursor')
-    const instance = getCurrentInstance()
     // Setup event onMouseDown
     onMounted(() => {
-      const $table = instance.ctx.$parent.$el
-      let tbody
-      $table?.addEventListener("mousedown", (event) => {
-        const td = event.target.closest("td")
-        // Return if not found and td
-        if (!td) return
-        // If user didn't clicked on any regular cell, clear the cell region
-        if (!td.dataset.columnIndex) {
-            return
+      nextTick(() => {
+        const $table = cursor.containerElementRef.value
+        let tbody
+        $table.addEventListener("mousedown", (event) => {
+          const td = event.target.closest("td")
+          // Return if not found and td
+          if (!td) return
+          // If user didn't clicked on any regular cell, clear the cell region
+          if (!td.dataset.columnIndex) {
+              return
+          }
+          // If user right clicked on a regular cell,
+          // and the cell is in the current selected region, do not clear the selected region
+          // const cellRegion = selectedCellRegionRef.value
+          // if (event.button === 2 && cellRegion &&
+          //     inInclusiveRange(rowIndex, cellRegion.start.rowIndex, cellRegion.end.rowIndex) &&
+          //     inInclusiveRange(columnIndex, cellRegion.start.columnIndex, cellRegion.end.columnIndex)
+          // ) {
+          //     return
+          // }
+          tbody = $table.querySelector("tbody")
+          tbody.addEventListener("mousemove", onMouseMove)
+          document.addEventListener('mouseup', onMouseUp)
+        })
+  
+        const onMouseMove = throttle(function (event) {
+          const td = event.target.closest("td")
+            if (!td.dataset.columnIndex) return
+            // cursor.selectedRegion.start.rowIndex = cursor.selectedCell.rowIndex
+            // cursor.selectedRegion.start.columnIndex = cursor.selectedCell.columnIndex
+            cursor.selectedRegion.end.rowIndex = parseInt(td.dataset.rowIndex)
+            cursor.selectedRegion.end.columnIndex = parseInt(td.dataset.columnIndex)
+          }, 20)
+            
+        function onMouseUp () {
+          tbody.removeEventListener('mousemove', onMouseMove)
+          document.removeEventListener('mouseup', onMouseUp)
         }
-        // If user right clicked on a regular cell,
-        // and the cell is in the current selected region, do not clear the selected region
-        // const cellRegion = selectedCellRegionRef.value
-        // if (event.button === 2 && cellRegion &&
-        //     inInclusiveRange(rowIndex, cellRegion.start.rowIndex, cellRegion.end.rowIndex) &&
-        //     inInclusiveRange(columnIndex, cellRegion.start.columnIndex, cellRegion.end.columnIndex)
-        // ) {
-        //     return
-        // }
-        tbody = $table.querySelector("tbody")
-        tbody.addEventListener("mousemove", onMouseMove)
-        document.addEventListener('mouseup', onMouseUp)
       })
-
-      const onMouseMove = throttle(function (event) {
-        const td = event.target.closest("td")
-          if (!td.dataset.columnIndex) return
-          // cursor.selectedRegion.start.rowIndex = cursor.selectedCell.rowIndex
-          // cursor.selectedRegion.start.columnIndex = cursor.selectedCell.columnIndex
-          cursor.selectedRegion.end.rowIndex = parseInt(td.dataset.rowIndex)
-          cursor.selectedRegion.end.columnIndex = parseInt(td.dataset.columnIndex)
-        }, 20)
-          
-      function onMouseUp () {
-        tbody.removeEventListener('mousemove', onMouseMove)
-        document.removeEventListener('mouseup', onMouseUp)
-      }
     })
     // Calculate style for region
     const selectedCellRegionStyle = computed(() => {
-      const $table = instance.ctx.$parent.$el
+      const $table = cursor.containerElementRef.value
       const cellRegion = cursor.selectedRegion
       const startCellClass = `.cell-${cellRegion.start.rowIndex}-${cellRegion.start.columnIndex}`
       const endCellClass = `.cell-${cellRegion.end.rowIndex}-${cellRegion.end.columnIndex}`

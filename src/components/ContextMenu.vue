@@ -41,7 +41,7 @@ export default {
     const instance = getCurrentInstance()
     onMounted(() => {
       nextTick(() => {
-        instance.ctx.$parent.$el.addEventListener('contextmenu', (event) => {
+        instance.proxy.$parent.$el.addEventListener('contextmenu', (event) => {
           event.preventDefault()
           context.show = true
           context.event = event
