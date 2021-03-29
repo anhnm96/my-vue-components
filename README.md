@@ -1,5 +1,5 @@
 # vue-3-components
-
+- [Demo](https://xiaosasori.github.io/my-vue-components/?path=/story/datatable-sample--sample)
 - storybook [docs](https://github.com/storybookjs/storybook/tree/next/addons/docs/vue) with vue
 - [vue-docgen-api](https://github.com/vue-styleguidist/vue-styleguidist/tree/dev/packages/vue-docgen-api)
 - csf stories with [mdx](https://github.com/storybookjs/storybook/blob/next/addons/docs/docs/recipes.md#csf-stories-with-mdx-docs)
