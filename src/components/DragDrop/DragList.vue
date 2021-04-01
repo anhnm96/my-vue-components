@@ -5,6 +5,9 @@
       @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
     <div key="dummy-el" ref="dummyEl"></div>
     <template v-if="showPlaceholderMove || showPlaceholderAdd">
+      <!-- We still add @dragstart when show placeholder because in production
+      mode DragItem in placeholder may be reused after a success drop.
+      So @dragstart may not be fired if we perform drag drop again. -->
       <DragItem
         v-for="(item, index) in itemsBeforePlaceholder"
         :key="idAdapter(item)"
@@ -15,6 +18,7 @@
         :accept-data="acceptData"
         :trigger-move="triggerMove"
         :tag="childTag"
+        @dragstart="dragstart"
         @dragentered="dragentered"
       >
         <template v-for="name of Object.keys($slots)" #[name]="scope">
@@ -40,6 +44,7 @@
         :accept-data="acceptData"
         :trigger-move="triggerMove"
         :tag="childTag"
+        @dragstart="dragstart"
         @dragentered="dragentered"
       >
         <template v-for="name of Object.keys($slots)" #[name]="scope">
@@ -246,10 +251,12 @@ export default {
     })
     const showPlaceholderMove = computed(() => {
       const res = hasPlaceholderMoveSlot && draggingItem.inProgress && listBeingDraggedOver.value
+      console.log('showPlaceholderMove:', res, 'dragging:', draggingItem.inProgress, props.list[0])
       return res
     })
     const showPlaceholderAdd = computed(() => {
       const res = hasPlaceholderAddSlot && !draggingItem.inProgress && listBeingDraggedOver.value
+      console.log('showPlaceholderAdd:', res, 'dragging:', draggingItem.inProgress, props.list[0])
       return res
     })
     // list events
