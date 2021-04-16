@@ -70,6 +70,11 @@ const routes = [
     name: 'ErrorCapture',
     component: () => import('../views/DemoError.vue')
   },
+  {
+    path: '/dropzone',
+    name: 'Dropzone',
+    component: () => import('../views/DemoDropzone.vue')
+  },
 ]
 
 const router = createRouter({

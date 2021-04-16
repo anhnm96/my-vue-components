@@ -13,6 +13,7 @@
     <router-link to="/expand">Expand</router-link> |
     <router-link to="/useFetch">Use Fetch</router-link> |
     <router-link to="/error">Error</router-link> |
+    <router-link to="/dropzone">Dropzone</router-link> |
   </div>
   <router-view />
 </template>
