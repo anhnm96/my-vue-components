@@ -14,6 +14,9 @@
     <router-link to="/useFetch">Use Fetch</router-link> |
     <router-link to="/error">Error</router-link> |
     <router-link to="/dropzone">Dropzone</router-link> |
+    <router-link to="/contextmenu">Context Menu</router-link> |
+    <router-link to="/zoomer">Zoomer</router-link> |
+    <router-link to="/zoomin">Zoom In</router-link> |
   </div>
   <router-view />
 </template>

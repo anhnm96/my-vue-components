@@ -75,6 +75,21 @@ const routes = [
     name: 'Dropzone',
     component: () => import('../views/DemoDropzone.vue')
   },
+  {
+    path: '/contextmenu',
+    name: 'ContextMenu',
+    component: () => import('../views/DemoContext.vue')
+  },
+  {
+    path: '/zoomer',
+    name: 'Zoomer',
+    component: () => import('../views/DemoZoomer.vue')
+  },
+  {
+    path: '/zoomin',
+    name: 'ZoomIn',
+    component: () => import('../views/ZoomIn.vue')
+  },
 ]
 
 const router = createRouter({
