@@ -1,6 +1,6 @@
 <template>
     <div>
-        <VDragDrop @dragstart="dragstart" tag="span" @dragend="dragend" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+        <VDragDrop @dragstart="dragstart" group="DragImgOnDrop" tag="span" @dragend="dragend" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
             <template #default="{dragging}">
                 <span class="drag" :class="{ghost: dragging}">{{i}}</span>
             </template>
