@@ -7,10 +7,10 @@
 <script>
 export default {
   name: `SliderSlides`,
-};
+}
 </script>
 
-<style lang="scss">
+<style scoped>
 .SliderSlides {
   position: relative;
 }

@@ -23,20 +23,20 @@ export default {
     // Deactivate and hide the slide and
     // also activate the correct transition.
     hide(direction) {
-      this.transition = `SliderSlide--transition-${direction}`;
-      this.active = false;
+      this.transition = `SliderSlide--transition-${direction}`
+      this.active = false
     },
     // Activate and show the slide and
     // also activate the correct transition.
     show(direction) {
-      this.transition = `SliderSlide--transition-${direction}`;
-      this.active = true;
+      this.transition = `SliderSlide--transition-${direction}`
+      this.active = true
     },
   },
 };
 </script>
 
-<style lang="scss">
+<style scoped>
 .SliderSlide--transition-left-enter-active,
 .SliderSlide--transition-left-leave-active,
 .SliderSlide--transition-right-enter-active,

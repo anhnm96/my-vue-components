@@ -51,12 +51,12 @@
           </p>
         </template>
         <template #placeholder-move="{data}">
-          <p class="p-2 font-normal shadow border-2 border-light-blue-500 border-dashed">
+          <p class="p-2 font-normal border-2 border-dashed shadow border-light-blue-500">
             {{ data.value }} - {{ data.index }}
           </p>
         </template>
         <!-- <template #drag-image="{data, width, height}">
-          <p class="p-2 font-normal shadow border-2 border-green-300 rounded-md" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
+          <p class="p-2 font-normal border-2 border-green-300 rounded-md shadow" :style="{width: width + 6 + 'px', height: height + 6 +'px'}">
             :)) - {{ data.value }}
           </p>
         </template> -->
@@ -80,7 +80,7 @@
       </DragList>
     </div>
     <!-- h1 h2 h3 -->
-    <div class="demo mt-5">
+    <div class="mt-5 demo">
       <VDragDrop @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
         <template #default="{dragging}">
             <span class="drag" :class="{ghost: dragging}">h{{i}}</span>
@@ -105,16 +105,13 @@
 <script>
 import {shuffle} from 'lodash-es'
 import DragList from '@/components/DragDrop/DragList'
-import DragList2 from '@/components/DragDrop/DragList2'
 import VDragDrop from '@/components/DragDrop/DragItem'
-import VDrag from '@/components/DragDrop/VDrag'
-import VDrop from '@/components/DragDrop/VDrop'
 import NestedDrag from './NestedDrag'
 import DynamicDragImage from '@/views/SingleDnD/DynamicDragImage'
 
 export default {
   // eslint-disable-next-line
-  components: {DynamicDragImage, DragList, VDragDrop, VDrag, VDrop, DragList2, NestedDrag},
+  components: {DynamicDragImage, DragList, VDragDrop, NestedDrag},
   data() {
     return {
       list: ['vue', 'ReactiveX', 'Drag and Drop', 'react', 'preact', 'golang', 'docker'],

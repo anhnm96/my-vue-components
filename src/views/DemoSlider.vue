@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-sm mx-auto py-2 px-1">
-    <h1 class="text-center font-semibold">Building a Simple Content Slider with Vue.js</h1>
+  <div class="max-w-sm px-1 py-2 mx-auto">
+    <h1 class="font-semibold text-center">Building a Simple Content Slider with Vue.js</h1>
 
     <section class="p-4 mt-4 shadow-md">
         <SliderFrame>
@@ -39,17 +39,17 @@
       </SliderFrame>
     </section>
 
-    <section class="mt-4 p-4 shadow-md">
+    <section class="p-4 mt-4 shadow-md">
       <h2 class="font-semibold">Tabs</h2>
 
       <SliderFrame>
         <template #default="{ activeIndex, goToIndex }">
-          <ul class="mt-2 flex">
+          <ul class="flex mt-2">
             <li>
               <button
                 @click="goToIndex(0)"
                 :class="{ 'is-active': activeIndex === 0 }"
-                class="shadow px-2 py-1 border border-gray-400"
+                class="px-2 py-1 border border-gray-400 shadow"
               >
                 Tab 1
               </button>
@@ -58,7 +58,7 @@
               <button
                 @click="goToIndex(1)"
                 :class="{ 'is-active': activeIndex === 1 }"
-                class="shadow px-2 py-1 border border-gray-400"
+                class="px-2 py-1 border border-gray-400 shadow"
               >
                 Tab 2
               </button>
@@ -67,7 +67,7 @@
               <button
                 @click="goToIndex(2)"
                 :class="{ 'is-active': activeIndex === 2 }"
-                class="shadow px-2 py-1 border border-gray-400"
+                class="px-2 py-1 border border-gray-400 shadow"
               >
                 Tab 3
               </button>
@@ -75,7 +75,7 @@
           </ul>
 
             <SliderSlides>
-              <SliderSlide class="p-4 border border-gray-500">
+              <SliderSlide key="1" class="p-4 border border-gray-500">
                 <h3>Lorem Ipsum dolor</h3>
                 <p>
                   Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
@@ -84,7 +84,7 @@
                   justo duo dolores et ea rebum. Stet clita kasd gubergren.
                 </p>
               </SliderSlide>
-              <SliderSlide class="p-4 border border-gray-500">
+              <SliderSlide key="2" class="p-4 border border-gray-500">
                 <h3>Dolor Sit</h3>
                 <p>
                   Dolor sit amet, consetetur sadipscing elitr, sed
@@ -93,7 +93,7 @@
                   justo duo dolores et ea rebum. Stet clita kasd gubergren.
                 </p>
               </SliderSlide>
-              <SliderSlide class="p-4 border border-gray-500">
+              <SliderSlide key="3" class="p-4 border border-gray-500">
                 <h3>Consetetur</h3>
                 <p>
                   Consetetur sadipscing elitr, sed
@@ -110,7 +110,7 @@
       </SliderFrame>
     </section>
 
-     <section class="mt-4 p-2">
+     <section class="p-2 mt-4">
       <h2 class="font-semibold">Image Slider</h2>
       <SliderFrame>
         <template #default="{ goToIndex, next, prev }">
@@ -122,17 +122,17 @@
               </SliderSlide>
             </SliderSlides>
             <button
-              class="ImageSlider__direction ImageSlider__direction--prev text-white"
+              class="text-white ImageSlider__direction ImageSlider__direction--prev"
               @click="prev"
             >&laquo; Prev</button>
             <button
-              class="ImageSlider__direction ImageSlider__direction--next text-white"
+              class="text-white ImageSlider__direction ImageSlider__direction--next"
               @click="next"
             >Next &raquo;</button>
 
             <ol class="ImageSlider__dots">
               <li v-for="n in slides.length" :key="n">
-                <button class="bg-white px-2 border border-gray-200" @click="goToIndex(n - 1)">{{ n }}</button>
+                <button class="px-2 bg-white border border-gray-200" @click="goToIndex(n - 1)">{{ n }}</button>
               </li>
             </ol>
           </div>

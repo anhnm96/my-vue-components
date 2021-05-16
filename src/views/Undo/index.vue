@@ -31,16 +31,27 @@
     <div>{{ a.current }}</div>
     <div>{{ a.past }}</div>
     <div>{{ a.future }}</div>
+    <Child v-model:items="items" />
+    <div>
+      {{count.state.value}}
+      <button @click="count.state.value+=1">Incre</button>
+      <button @click="count.undo">Undo</button>
+      <button @click="count.redo">Redo</button>
+    </div>
   </div>
 </template>
 
 <script>
 import Tracker from '@/hooks/useTracker'
-import {reactive} from 'vue'
+import {reactive, ref} from 'vue'
+import Child from './child'
 export default {
+  components: {Child},
   setup() {
     const a = new Tracker(reactive([{count: 0, count2: 0}, {count: 0, count2: 0}]))
-    return {a}
+    const items = ref([{count: Math.random(), count2: 0}, {count: 0, count2: 0}])
+    const count = new Tracker(ref(10))
+    return {a, items, count}
   }
 
 }

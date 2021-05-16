@@ -1,10 +1,13 @@
 <template>
+  <!-- prevent undo and redo because it
+  may make CellCursor emit on-input event
+  on some browsers -->
   <table
     @copy="copy"
     @paste="paste"
     ref="tableRef"
-    @keydown.ctrl.z.exact="undo"
-    @keydown.ctrl.shift.z="redo"
+    @keydown.ctrl.z.exact.prevent="undo"
+    @keydown.ctrl.shift.z.prevent="redo"
   >
     <thead>
       <tr>
@@ -120,6 +123,7 @@ import {Cursor} from '@/components/DataTable/useCursor'
 import ContextMenu from '@/components/ContextMenu'
 import {getCsvFromClipboardData} from '@/services/utils'
 import Tracker from '@/hooks/useTracker'
+import useTrackRef from '@/hooks/useTrackRef'
 import DragList from '@/components/DragDrop/DragList'
 
 export default {
@@ -132,6 +136,7 @@ export default {
     }
   },
   components: {DragList, Cell, CellCursor, CellSelectingRegion, ContextMenu},
+  emits: ['update:items', 'on-input'],
   setup(props, {emit}) {
     const list = computed({
       get: () => props.items,
@@ -142,7 +147,8 @@ export default {
     provide('$cursor', cursor)
     provide('$columns', props.columns)
 
-    const itemsTracker = new Tracker(props.items)
+    // const itemsTracker = new Tracker(props.items)
+    const itemsTracker = useTrackRef(props.items)
     const undo = () => {
       itemsTracker.undo()
     }

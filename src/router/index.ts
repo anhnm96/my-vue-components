@@ -13,11 +13,6 @@ const routes = [
     component: () => import('../views/Transition.vue')
   },
   {
-    path: '/transition2',
-    name: 'Transition2',
-    component: () => import('../views/Transition2.vue')
-  },
-  {
     path: '/menu',
     name: 'DemoMenu',
     component: () => import('../views/DemoMenu.vue')
@@ -49,6 +44,11 @@ const routes = [
     path: '/slider',
     name: 'Slider',
     component: () => import('../views/DemoSlider.vue')
+  },
+  {
+    path: '/tab',
+    name: 'Tab',
+    component: () => import('../views/DemoTab.vue')
   },
   {
     path: '/drag',
@@ -89,6 +89,11 @@ const routes = [
     path: '/zoomin',
     name: 'ZoomIn',
     component: () => import('../views/ZoomIn.vue')
+  },
+  {
+    path: '/undo',
+    name: 'Undo',
+    component: () => import('../views/Undo/index.vue')
   },
 ]
 

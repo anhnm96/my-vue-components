@@ -1,5 +1,5 @@
 import { isEqual, cloneDeep, pick } from 'lodash-es'
-import { watch, unref } from 'vue'
+import { watch, unref, isRef, isReactive } from 'vue'
 
 // state is object
 class Tracker {
@@ -12,6 +12,7 @@ class Tracker {
   constructor(state: any) {
     this.past = []
     this.state = state
+    console.log('isRef',isRef(state), isReactive(this.state))
     this.future = []
     this.current = cloneDeep(unref(state))
     this.unwatch = this.handleWatch()
@@ -34,7 +35,8 @@ class Tracker {
     this.future.push(this.current)
     // undo state
     const lastValue = this.past.pop()
-    Object.assign(this.state, lastValue)
+    // Object.assign(this.state, lastValue)
+    this.state.value = unref(lastValue)
     this.current = cloneDeep(unref(this.state))
     this.unwatch = this.handleWatch()
   }

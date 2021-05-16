@@ -7,8 +7,8 @@
     <router-link to="/skeleton">Skeleton</router-link> |
     <router-link to="/menu">Menu</router-link> |
     <router-link to="/transition">Transition</router-link> |
-    <router-link to="/transition2">Transition2</router-link> |
     <router-link to="/slider">Slider</router-link> |
+    <router-link to="/tab">Tab</router-link> |
     <router-link to="/drag">Drag</router-link> |
     <router-link to="/expand">Expand</router-link> |
     <router-link to="/useFetch">Use Fetch</router-link> |

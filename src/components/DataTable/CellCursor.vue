@@ -32,6 +32,7 @@ import clickOutSide from '@/directives/clickOutSide'
 import {computed, inject, ref, watch, nextTick, getCurrentInstance, onMounted } from 'vue'
 export default {
   name: 'CellCursor',
+  emits: ['on-input'],
   components: {VInput},
   directives: {'click-outside': clickOutSide},
   props: {
