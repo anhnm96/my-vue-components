@@ -8,6 +8,8 @@
     ref="tableRef"
     @keydown.ctrl.z.exact.prevent="undo"
     @keydown.ctrl.shift.z.prevent="redo"
+    @keydown.meta.z.exact.prevent="undo"
+    @keydown.meta.shift.z.prevent="redo"
   >
     <thead>
       <tr>
@@ -147,13 +149,41 @@ export default {
     provide('$cursor', cursor)
     provide('$columns', props.columns)
 
+    function getOS() {
+      let userAgent = window.navigator.userAgent,
+          platform = window.navigator.platform,
+          macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+          windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+          iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+          os = null;
+
+      if (macosPlatforms.indexOf(platform) !== -1) {
+        os = 'Mac OS';
+      } else if (iosPlatforms.indexOf(platform) !== -1) {
+        os = 'iOS';
+      } else if (windowsPlatforms.indexOf(platform) !== -1) {
+        os = 'Windows';
+      } else if (/Android/.test(userAgent)) {
+        os = 'Android';
+      } else if (!os && /Linux/.test(platform)) {
+        os = 'Linux';
+      }
+
+      return os;
+    }
+    const os = getOS()
+
     // const itemsTracker = new Tracker(props.items)
     const itemsTracker = useTrackRef(props.items)
-    const undo = () => {
+    const undo = (e) => {
+      // return if ctrl.z on Mac or meta.z on other os
+      if ((os === 'Mac OS' && e.ctrlKey) || (os !== 'Mac OS' && e.metaKey)) return
       itemsTracker.undo()
     }
 
-    const redo = () => {
+    const redo = (e) => {
+      // return if ctrl.shift.z on Mac or meta.shift.z on other
+      if ((os === 'Mac OS' && e.ctrlKey) || (os !== 'Mac OS' && e.metaKey)) return
       itemsTracker.redo()
     }
 
