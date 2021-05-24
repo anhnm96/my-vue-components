@@ -1,9 +1,7 @@
 <template>
   <div style="height: 1000px">
-    <DataTable v-model:items="items" :columns="columns" @onInput="onInput">
-      <template #cell-input-cutpot="{ cell }">
-        <span style="background-color: green">{{ cell }}asd</span>
-      </template>
+    <!-- @keydown.stop to prevent storybook behavior in demo -->
+    <DataTable @keydown.stop v-model:items="items" :columns="columns" @onInput="onInput">
       <template #cell-input-origin="{ cell, onInput }">
         <v-autocomplete
           @update:input="onInput"

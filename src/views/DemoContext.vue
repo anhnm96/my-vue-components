@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import ContextMenu from '@/components/ContextMenu/context-menu'
+import ContextMenu from '@/components/ContextMenuDummy/context-menu'
 export default {
   components: {
     ContextMenu

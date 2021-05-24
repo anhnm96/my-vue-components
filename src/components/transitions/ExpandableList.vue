@@ -25,7 +25,7 @@ export default {
       // Methods
       setAll: this.setAll,
       toggleAll: this.toggleAll,
-      setPanels: this.setPanels
+      bind: {ref: this.setPanels}
     });
   }
 }

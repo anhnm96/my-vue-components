@@ -1,16 +1,16 @@
 <template>
-  <!-- prevent undo and redo because it
-  may make CellCursor emit on-input event
-  on some browsers -->
   <table
+    ref="tableRef"
     @copy="copy"
     @paste="paste"
-    ref="tableRef"
     @keydown.ctrl.z.exact.prevent="undo"
     @keydown.ctrl.shift.z.prevent="redo"
     @keydown.meta.z.exact.prevent="undo"
     @keydown.meta.shift.z.prevent="redo"
   >
+  <!-- `prevent` undo and redo because it
+  may make CellCursor emit on-input event
+  on some browsers -->
     <thead>
       <tr>
         <th class="datatable__header"></th>
@@ -261,21 +261,6 @@ export default {
                 }
                 rows.push(row)
             }
-
-            // Build HTML version
-            let html = '<meta http-equiv="content-type" content="text/html; charset=utf-8">'
-            html += '<table><tbody>'
-            rows.forEach(row => {
-                html += '<tr>'
-                row.forEach((cell) => {
-                    html += '<td>'
-                    html += escape(`${cell}`)
-                    html += '</td>'
-                })
-                html += '</tr>'
-            })
-            html += '</tbody></table>'
-            event.clipboardData.setData('text/html', html)
 
             // Build text version
             const text = rows.map(row => row.join('\t')).join('\n')
