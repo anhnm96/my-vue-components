@@ -1,14 +1,82 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+  <div class="min-h-screen">
+    <div class="flex flex-wrap mt-2 ml-2 space-x-2">
+      <BaseButton variant="blue" @click="showSimple = !showSimple">Primary</BaseButton>
+      <BaseButton variant="red" @click="showToast">Danger</BaseButton>
+      <BaseButton as="router-link" to="/table" variant="link">Link</BaseButton>
+      <BaseButton>Default</BaseButton>
+      <BaseButton variant="purple" class="rounded-full">Custom Button</BaseButton>
+      <BaseButton disabled variant="red">Disabeld</BaseButton>
+      <BaseButton disabled>Default</BaseButton>
+      <BaseButton disabled class="rounded-full">+</BaseButton>
+    </div>
+    <div class="mt-2 space-x-2">
+      <BaseTag>Badge</BaseTag>
+      <BaseTag color="red">Badge</BaseTag>
+      <BaseTag color="yellow" size="lg">Badge</BaseTag>
+      <BaseTag color="green" size="lg">Badge</BaseTag>
+      <BaseTag color="indigo" class="px-2.5">
+        <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-indigo-400" fill="currentColor" viewBox="0 0 8 8">
+          <circle cx="4" cy="4" r="3" />
+        </svg>
+        Small
+      </BaseTag>
+      <BaseTag color="indigo" size="lg" class="px-2.5">
+        <svg class="-ml-1 mr-1.5 h-2 w-2 text-indigo-400" fill="currentColor" viewBox="0 0 8 8">
+          <circle cx="4" cy="4" r="3" />
+        </svg>
+        Large
+      </BaseTag>
+      <BaseTag class="pl-2 pr-0.5">
+        Small
+        <button
+          type="button"
+          class="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-indigo-400 hover:bg-indigo-200 hover:text-indigo-500 focus:outline-none focus:bg-indigo-500 focus:text-white"
+        >
+          <span class="sr-only">Remove small option</span>
+          <svg class="w-2 h-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+            <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+          </svg>
+        </button>
+      </BaseTag>
+      <BaseTag size="lg" color="indigo" class="pl-2.5 pr-1">
+        Large
+        <button
+          type="button"
+          class="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-indigo-400 hover:bg-indigo-200 hover:text-indigo-500 focus:outline-none focus:bg-indigo-500 focus:text-white"
+        >
+          <span class="sr-only">Remove large option</span>
+          <svg class="w-2 h-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+            <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+          </svg>
+        </button>
+      </BaseTag>
+    </div>
+    <div>
+      <Simple v-model:show="showSimple" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { ref } from 'vue'
+import BaseButton from "@/components/BaseButton.vue";
+import BaseTag from "@/components/BaseTag.vue"
+import Simple from "@/components/Notifications/Simple.vue"
+import { show } from '@/components/Notifications/createNoti'
+export default {
+  name: 'Home',
+  components: { BaseButton, BaseTag, Simple },
+  setup() {
+    const showSimple = ref(false)
+    async function showToast() {
+      const result = await show({ position: 'top-right' })
+      console.log(result)
+    }
 
-@Options({
-  components: {},
-})
-export default class Home extends Vue {}
+    return { showSimple, showToast }
+  }
+}
 </script>
+<style module>
+</style>
