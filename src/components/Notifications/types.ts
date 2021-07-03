@@ -1,8 +1,7 @@
-
 import { VNode } from '@vue/runtime-core'
 import { Component } from 'vue'
 
-export type ToastType = 'info' | 'danger' | 'warning' | 'success' | 'default'
+export type ToastType = 'info' | 'danger' | 'warn' | 'success' | 'default'
 
 export type Position =
   | 'top-left'
@@ -24,10 +23,7 @@ export interface DisplayContentObject {
   description?: string
 }
 
-export type ToastContent =
-  | string
-  | ContentObject
-  | Component
+export type ToastContent = string | ContentObject | Component
 
 export interface ToastObject {
   toastVNode: VNode
@@ -37,13 +33,11 @@ export interface ToastObject {
 export interface ToastOptions {
   type?: ToastType
   timeout?: number
-  showCloseButton?: boolean
   position?: Position
-  showIcon?: boolean
-  transition?: TransitionType
-  hideProgressBar?: boolean
+  showProgressbar?: boolean
   useComponentContent?: boolean
-  toastBackgroundColor?: string
   swipeClose?: boolean
   onClose?: () => void
+  title: string
+  description?: string
 }
