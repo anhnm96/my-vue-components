@@ -1,4 +1,4 @@
-import { createVNode, createApp, ref } from 'vue'
+import { createVNode, createApp, ref, Component } from 'vue'
 import DefaultNotification from './DefaultNotification.vue'
 import NotificationContainer from './NotificationContainer.vue'
 import { ToastOptions } from './types'
@@ -19,22 +19,29 @@ const defaultOptions = {
   showProgressBar: true,
 }
 
-function mergeOptions(options = {}) {
-  const onClose = ({ position, id }, payload) => {
-    result(payload)
-    const removeIndex = notifications.value[position].findIndex(
-      n => n.props.id === id
-    )
-    notifications.value[position].splice(removeIndex, 1)
-  }
-
-  return { ...defaultOptions, ...options, key: newId, id: newId, onClose }
-}
-
-let result // this is promise resolve
 let newId = 0
 let parentEl
-export function show(options: ToastOptions, component = DefaultNotification) {
+
+function mergeOptions(options = {}) {
+  let mergedOptions = { ...defaultOptions, ...options, id: newId, key: newId }
+
+  // @ts-ignore
+  mergedOptions.onClose = (payload) => {
+    const removeIndex = notifications.value[mergedOptions.position].findIndex(
+      n => n.props.id === mergedOptions.id
+    )
+
+    notifications.value[mergedOptions.position][removeIndex].result(payload)
+    notifications.value[mergedOptions.position].splice(removeIndex, 1)
+    // release from memory
+    mergedOptions = null
+  }
+
+  return mergedOptions
+}
+
+
+export function show(options: ToastOptions, component: Component = DefaultNotification) {
   const mergedOptions = mergeOptions(options)
   let toastVNode = createVNode(component, mergedOptions)
   notifications.value[mergedOptions.position].push(toastVNode)
@@ -46,5 +53,8 @@ export function show(options: ToastOptions, component = DefaultNotification) {
   }
   newId++
 
-  return new Promise(resolve => (result = resolve))
+  return new Promise(resolve => {
+    // @ts-ignore
+    toastVNode.result = resolve // we'll call resolve in onClose function
+  })
 }

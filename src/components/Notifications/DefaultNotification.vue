@@ -7,7 +7,7 @@
     leave-from-class="opacity-100"
     leave-to-class="-translate-y-2 opacity-0 "
     appear
-    @after-leave="emitClose('payload')"
+    @after-leave="() => onClose()"
   >
     <div
       v-show="show"
@@ -26,12 +26,8 @@
             />
           </div>
           <div class="ml-3 flex-1 pt-0.5">
-            <p class="text-sm font-medium text-gray-900">
-              {{ title }}
-            </p>
-            <p class="mt-1 text-sm text-gray-500">
-              {{ description }}
-            </p>
+            <p class="text-sm font-medium text-gray-900">{{ title }}</p>
+            <p class="mt-1 text-sm text-gray-500">{{ description }}</p>
           </div>
           <div class="flex flex-shrink-0 ml-4">
             <button
@@ -39,10 +35,7 @@
               @click="show = false"
             >
               <span class="sr-only">Close</span>
-              <XIcon
-                class="w-5 h-5"
-                aria-hidden="true"
-              />
+              <XIcon class="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -51,7 +44,7 @@
         v-if="showProgressbar"
         class="w-full h-1"
         :class="[`bg-${typeStyle.color}-500`]"
-        :style="{width: progress + '%'}"
+        :style="{ width: progress + '%' }"
       />
     </div>
   </transition>
@@ -84,10 +77,6 @@ export default defineComponent({
     XCircleIcon,
   },
   props: {
-    id: {
-      type: Number,
-      required: true,
-    },
     title: {
       type: String,
       default: '',
@@ -98,7 +87,7 @@ export default defineComponent({
     },
     onClose: {
       type: Function,
-      default: () => {},
+      default: () => { },
     },
     position: {
       type: String as PropType<Position>,
@@ -164,10 +153,6 @@ export default defineComponent({
         break
     }
 
-    function emitClose(payload) {
-      props.onClose({ id: props.id, position: props.position }, payload)
-    }
-
     const notiEl = ref(null)
     let progress
     if (props.timeout > 0) {
@@ -198,7 +183,7 @@ export default defineComponent({
       })
     }
 
-    return { show, positionClass, progress, notiEl, emitClose, typeStyle }
+    return { show, positionClass, progress, notiEl, typeStyle }
   },
 })
 </script>

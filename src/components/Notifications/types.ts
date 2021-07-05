@@ -35,9 +35,8 @@ export interface ToastOptions {
   timeout?: number
   position?: Position
   showProgressbar?: boolean
-  useComponentContent?: boolean
   swipeClose?: boolean
   onClose?: () => void
-  title: string
+  title?: string
   description?: string
 }

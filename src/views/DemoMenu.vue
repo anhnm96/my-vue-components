@@ -1,63 +1,172 @@
 <template>
   <div class="h-screen bg-gray-300">
     <Dropdown
-      triggerClass="btn bg-purple-500 text-white"
-      containerStyle="max-height: 200px; overflow: auto"
+      trigger-class="text-white bg-purple-500 btn"
+      container-style="max-height: 200px; overflow: auto"
       animation="scale"
     >
       <template #trigger>
         <span class="px-2 font-medium">Adam Wathan</span>
       </template>
       <template #dropdown>
-        <button role="option" tabindex="1" @click="test" class="item">test</button>
-        <a role="option" tabindex="0">asd</a>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
+        <button
+          role="option"
+          tabindex="1"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <a
+          role="option"
+          tabindex="0"
+        >asd</a>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
       </template>
     </Dropdown>
     <Dropdown
-      triggerClass="px-2 btn bg-blue-500 text-white"
+      trigger-class="px-2 text-white bg-blue-500 btn"
       :triggers="['hover']"
     >
       <template #trigger>
         <span class="ml-2 font-medium">Adam Wathan</span>
       </template>
       <template #dropdown>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
       </template>
     </Dropdown>
-    <Dropdown triggerClass="px-2 btn bg-blue-500 text-white" :disabled="true">
+    <Dropdown
+      trigger-class="px-2 text-white bg-blue-500 btn"
+      :disabled="true"
+    >
       <template #trigger>
         <span class="font-medium">Disabled button</span>
       </template>
       <template #dropdown>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
       </template>
     </Dropdown>
     <Dropdown
-      triggerClass="px-2 btn bg-blue-500 text-white"
+      trigger-class="px-2 text-white bg-blue-500 btn"
       :triggers="['contextmenu']"
     >
       <template #trigger>
         <span class="font-medium">Right click</span>
       </template>
       <template #dropdown>
-        <button role="menuitem" @click="test" class="item">test</button>
-        <button role="menuitem" @click="test" class="item">test</button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
+        <button
+          role="menuitem"
+          class="item"
+          @click="test"
+        >
+          test
+        </button>
       </template>
     </Dropdown>
     <Dropdown
-      triggerClass="px-2 btn bg-blue-500 text-white"
+      trigger-class="px-2 text-white bg-blue-500 btn"
       popup-role="listbox"
     >
       <template #trigger>
@@ -70,13 +179,13 @@
             <input
               class="w-full border border-gray-400 border-solid"
               type="text"
-            />
+            >
           </label>
         </div>
       </template>
     </Dropdown>
     <Dropdown
-      triggerClass="px-2 btn bg-purple-600 text-white"
+      trigger-class="px-2 text-white bg-purple-600 btn"
       popup-role="listbox"
     >
       <template #trigger>
@@ -93,7 +202,7 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M19 9l-7 7-7-7"
-          ></path>
+          />
         </svg>
       </template>
       <template #dropdown="{ toggle }">
@@ -106,6 +215,7 @@
             'bg-purple-600': selected === i,
             'hover:bg-gray-400': selected !== i,
           }"
+          tabindex="0"
           @click="
             selected = i;
             toggle();
@@ -114,7 +224,6 @@
             selected = i;
             toggle(false);
           "
-          tabindex="0"
         >
           <div>
             <h3>{{ i.value }}</h3>
@@ -126,7 +235,7 @@
 
     <Dropdown
       :multiple="true"
-      triggerClass="px-2 btn bg-purple-600 text-white"
+      trigger-class="px-2 text-white bg-purple-600 btn"
       popup-role="listbox"
     >
       <template #trigger>
@@ -143,7 +252,7 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M19 9l-7 7-7-7"
-          ></path>
+          />
         </svg>
       </template>
       <template #dropdown>
@@ -156,10 +265,10 @@
             'bg-purple-600': selected2.includes(i),
             'hover:bg-gray-400': !selected2.includes(i),
           }"
+          tabindex="0"
           @keydown.space="safePush(i)"
           @keydown.enter="safePush(i)"
           @click="safePush(i)"
-          tabindex="0"
         >
           <h3>{{ i }}</h3>
         </div>
@@ -181,8 +290,7 @@
       <p>in select mode. add attributes role="option".</p>
       <a
         href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/listbox/listbox-collapsible.html"
-        >W3 reference</a
-      >
+      >W3 reference</a>
     </div>
   </div>
 </template>
@@ -219,17 +327,17 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 :deep(.btn) {
   @apply py-2 relative inline-flex items-center rounded-md;
 }
 .item {
   @apply block w-full px-4 py-2 text-left;
-  &:hover {
-    @apply bg-indigo-500 text-white;
-  }
 }
-deep(.dropdown-menu) {
+.item:hover {
+  @apply bg-indigo-500 text-white;
+}
+:deep(.dropdown-menu) {
   margin-top: 0;
 }
 .focused:focus {

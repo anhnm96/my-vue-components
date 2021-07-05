@@ -24,6 +24,7 @@
       <BaseButton
         variant="purple"
         class="rounded-full"
+        @click="showCustomNoti"
       >
         Custom Button
       </BaseButton>
@@ -149,31 +150,41 @@
 import BaseButton from '@/components/BaseButton.vue'
 import BaseTag from '@/components/BaseTag.vue'
 import { show } from '@/components/Notifications'
+import FriendRequestNoti from '@/components/Notifications/FriendRequestNoti.vue'
+
 export default {
   name: 'Home',
   components: { BaseButton, BaseTag },
   setup() {
     async function showToastDanger() {
-      const result = await show({
+      show({
         position: 'bottom-right',
         type: 'danger',
         timeout: 0,
         title: 'Attention!',
       })
-      console.log(result)
     }
 
     async function showToastSuccess() {
-      const result = await show({
+      show({
         position: 'top-right',
         type: 'warn',
         title: 'Warning',
         description: 'It might has side effect',
       })
-      console.log(result)
     }
 
-    return { showToastDanger, showToastSuccess }
+    async function showCustomNoti() {
+      const result = await show(undefined, FriendRequestNoti)
+      show({
+        position: 'top-right',
+        type: 'info',
+        title: 'Notification Title',
+        description: `Friend request ${result}`
+      })
+    }
+
+    return { showToastDanger, showToastSuccess, showCustomNoti }
   },
 }
 </script>
