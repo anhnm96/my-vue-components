@@ -68,39 +68,39 @@ export default {
      */
     input: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     /** `array` let select multiplt value */
     selected: {
       type: [String, Number, Object, Array],
-      default: null
+      default: null,
     },
     options: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     optionAdapter: {
       type: Function,
-      default: value => ({
+      default: (value) => ({
         id: value,
         label: value,
-        value
-      })
+        value,
+      }),
     },
     localFilter: {
       type: Boolean,
-      default: true
+      default: true,
     },
     /** aria-label for input */
-    arialLabel: String
+    arialLabel: String,
   },
-  data () {
+  data() {
     return {
       localInput: '',
       shown: false,
       arrowCounter: 0,
       isListInViewportVertically: true,
-      timeId: Date.now()
+      timeId: Date.now(),
     }
   },
   computed: {
@@ -111,17 +111,17 @@ export default {
       get: function () {
         return this.useLocal ? this.localInput : this.input
       },
-      set: function(value) {
+      set: function (value) {
         this.useLocal
-          ? this.localInput = value
+          ? (this.localInput = value)
           : this.$emit('update:input', value)
-      }
+      },
     },
     adaptedOptions() {
-      return this.options.map(x => this.optionAdapter(x));
+      return this.options.map((x) => this.optionAdapter(x))
     },
     multiple() {
-      return Array.isArray(this.selected);
+      return Array.isArray(this.selected)
     },
   },
   watch: {
@@ -131,7 +131,7 @@ export default {
         this.isListInViewportVertically = true
         this.calcDropdownInViewportVertical()
       }
-    }
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -139,7 +139,7 @@ export default {
     })
   },
   methods: {
-    close () {
+    close() {
       this.shown = false
       this.arrowCounter = 0
       console.log('close')
@@ -148,15 +148,17 @@ export default {
      * Enter key listener.
      * Select the hovered option.
      */
-    safeSalect (item) {
+    safeSalect(item) {
       if (this.shown) {
         this.select(item)
       }
     },
-    select (item){
+    select(item) {
       this.inputValue = item.label
-      const newValue = this.multiple ? this.selected.concat(item.value) : item.value
-      
+      const newValue = this.multiple
+        ? this.selected.concat(item.value)
+        : item.value
+
       this.$emit('update:selected', newValue)
       this.$refs.input?.focus()
       this.close()
@@ -164,36 +166,35 @@ export default {
     /**
      * Arrows keys listener.
      * If dropdown is active, set hovered option, or else just open.
-    */
+     */
     keyArrows(direction) {
-        const sum = direction === 'down' ? 1 : -1
-        if (this.shown) {
-            let index = this.arrowCounter + sum
-            index = index >= this.options.length ? this.options.length - 1 : index
-            index = index < 0 ? 0 : index
+      const sum = direction === 'down' ? 1 : -1
+      if (this.shown) {
+        let index = this.arrowCounter + sum
+        index = index >= this.options.length ? this.options.length - 1 : index
+        index = index < 0 ? 0 : index
 
-            this.arrowCounter = index
+        this.arrowCounter = index
 
-            const list = this.$refs.dropdown.querySelector('.dropdown-content')
-            const element = list.querySelectorAll('.dropdown-item:not(.is-disabled)')[index]
+        const list = this.$refs.dropdown.querySelector('.dropdown-content')
+        const element = list.querySelectorAll(
+          '.dropdown-item:not(.is-disabled)'
+        )[index]
 
-            if (!element) return
+        if (!element) return
 
-            const visMin = list.scrollTop
-            const visMax = list.scrollTop + list.clientHeight - element.clientHeight
+        const visMin = list.scrollTop
+        const visMax = list.scrollTop + list.clientHeight - element.clientHeight
 
-            if (element.offsetTop < visMin) {
-                list.scrollTop = element.offsetTop
-            } else if (element.offsetTop >= visMax) {
-                list.scrollTop = (
-                    element.offsetTop -
-                    list.clientHeight +
-                    element.clientHeight
-                )
-            }
-        } else {
-            this.shown = true
+        if (element.offsetTop < visMin) {
+          list.scrollTop = element.offsetTop
+        } else if (element.offsetTop >= visMax) {
+          list.scrollTop =
+            element.offsetTop - list.clientHeight + element.clientHeight
         }
+      } else {
+        this.shown = true
+      }
     },
     /**
      * Calculate if the dropdown is vertically visible when activated,
@@ -202,32 +203,29 @@ export default {
     calcDropdownInViewportVertical() {
       this.$nextTick(() => {
         /**
-        * this.$refs.dropdown may be undefined
-        * when Autocomplete is conditional rendered
-        */
+         * this.$refs.dropdown may be undefined
+         * when Autocomplete is conditional rendered
+         */
         if (this.$refs.dropdown === undefined) return
 
         const rect = this.$refs.dropdown.getBoundingClientRect()
 
-        this.isListInViewportVertically = (
+        this.isListInViewportVertically =
           rect.top >= 0 &&
-          rect.bottom <= (window.innerHeight ||
-            document.documentElement.clientHeight)
-        )
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight)
       })
-    }
-  }
+    },
+  },
 }
 </script>
-<style scoped lang="scss">
+<style scoped>
 .autocomplete__container {
   position: relative;
-
-  & input {
-    width: 100%;
-  }
 }
-
+.autocomplete__container input {
+  width: 100%;
+}
 .dropdown-menu {
   position: absolute;
   z-index: 1;
@@ -257,11 +255,10 @@ export default {
   cursor: pointer;
   user-select: none;
   text-align: left;
-
-  &:hover,
-  &.is-active {
-    color: #161e2e;
-    background-color: #f4f5f7;
-  }
+}
+.dropdown-item:hover,
+.dropdown-item.is-active {
+  color: #161e2e;
+  background-color: #f4f5f7;
 }
 </style>

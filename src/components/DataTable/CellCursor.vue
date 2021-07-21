@@ -29,13 +29,21 @@
 <script>
 import VInput from '../VInput'
 import clickOutSide from '@/directives/clickOutSide'
-import {computed, inject, ref, watch, nextTick, getCurrentInstance, onMounted } from 'vue'
+import {
+  computed,
+  inject,
+  ref,
+  watch,
+  nextTick,
+  getCurrentInstance,
+  onMounted,
+} from 'vue'
 export default {
   name: 'CellCursor',
-  components: {VInput},
-  directives: {'click-outside': clickOutSide},
+  components: { VInput },
+  directives: { 'click-outside': clickOutSide },
   props: {
-    items: Array
+    items: Array,
   },
   emits: ['on-input'],
   setup(props) {
@@ -46,8 +54,13 @@ export default {
     const instance = getCurrentInstance()
     const cell = computed(() => item.value[column.value.name])
 
-      // make table emit on-input event to the wrapper
-    const onInput = (value) => instance.proxy.$parent.$emit('on-input', {rowIndex: $cursor.selectedCell.rowIndex, column: column.value, value})
+    // make table emit on-input event to the wrapper
+    const onInput = (value) =>
+      instance.proxy.$parent.$emit('on-input', {
+        rowIndex: $cursor.selectedCell.rowIndex,
+        column: column.value,
+        value,
+      })
 
     // Re-focus CellCursor if cursor updated. This is to allow interact with keyboard
     const cursorRef = ref(null)
@@ -63,7 +76,11 @@ export default {
       // Because we've set pointer-events: none. Click on current
       // cell will trigger td element instead
       // so we should return in this case
-      if (event.target.dataset.columnIndex == $cursor.selectedCell.columnIndex && event.target.dataset.rowIndex == $cursor.selectedCell.rowIndex ) return
+      if (
+        event.target.dataset.columnIndex == $cursor.selectedCell.columnIndex &&
+        event.target.dataset.rowIndex == $cursor.selectedCell.rowIndex
+      )
+        return
       setEditMode(false)
     }
     // Focus input when $cursor.editing is true
@@ -85,13 +102,15 @@ export default {
 
     // style
     const td = computed(() => {
-      return $cursor.containerElementRef.value?.querySelector(`.cell-${$cursor.selectedCell.rowIndex}-${$cursor.selectedCell.columnIndex}`)
+      return $cursor.containerElementRef.value?.querySelector(
+        `.cell-${$cursor.selectedCell.rowIndex}-${$cursor.selectedCell.columnIndex}`
+      )
     })
     const cursorStyle = computed(() => {
       // Hide the cell when cursor is not on any cell yet
       if (!td.value) {
         return {
-          display: 'none'
+          display: 'none',
         }
       }
       return {
@@ -99,7 +118,7 @@ export default {
         width: td.value.offsetWidth + 2 + 'px',
         height: td.value.offsetHeight + 2 + 'px',
         top: td.value.offsetTop + 'px',
-        left: td.value.offsetLeft - 1 + 'px'
+        left: td.value.offsetLeft - 1 + 'px',
       }
     })
 
@@ -107,7 +126,7 @@ export default {
       // Hide the cell when cursor is not on any cell yet
       if (!td.value) {
         return {
-          display: 'none'
+          display: 'none',
         }
       }
       return {
@@ -115,17 +134,17 @@ export default {
         width: td.value.offsetWidth - 2 + 'px',
         height: td.value.offsetHeight - 2 + 'px',
         'padding-left': '1px',
-        'padding-right': '1px'
+        'padding-right': '1px',
       }
     })
 
     // handle keyboard
-    function setEditMode (state) {
+    function setEditMode(state) {
       console.log('setEdit', state)
       $cursor.editing.value = state
     }
 
-    function setupNavigation({items, columns}, setEditMode) {
+    function setupNavigation({ items, columns }, setEditMode) {
       function onKeyDown(event) {
         // We do not want to alter behavior of most keys while in edit mode.
         // Only except:
@@ -134,13 +153,17 @@ export default {
         // + Esc: to exit edit mode
         if (
           $cursor.editing.value &&
-          !(event.key === "Tab" || event.key === "Enter" || event.key === "Escape")
+          !(
+            event.key === 'Tab' ||
+            event.key === 'Enter' ||
+            event.key === 'Escape'
+          )
         ) {
-          return;
+          return
         }
 
         // Do not intercept any key combination with modifier
-        if (event.ctrlKey || event.altKey || event.metaKey) return;
+        if (event.ctrlKey || event.altKey || event.metaKey) return
 
         // Character key events should not be prevented so user could start typing
         // when cell is not in edit mode
@@ -151,18 +174,18 @@ export default {
             // setTimeout(() => setEditMode(true));
             setEditMode(true)
           }
-          return;
+          return
         }
 
         // Prevent default behavior of all keys
-        event.preventDefault();
+        event.preventDefault()
 
-        navigateFromEvent(event);
+        navigateFromEvent(event)
       }
 
       function navigateFromEvent(event) {
         switch (event.key) {
-          case "Enter":
+          case 'Enter':
             // Integrate with vuetify's menuable component
             // Do not handle Enter if the menuable component is showing while in edit mode
             // if (
@@ -174,50 +197,50 @@ export default {
 
             if (!$cursor.editing.value) {
               // If not in edit mode, enable edit mode
-              setEditMode(true);
+              setEditMode(true)
             } else {
               // If in edit mode, move cursor down
-              const cursorMoved = moveCursorDown({ force: true });
+              const cursorMoved = moveCursorDown({ force: true })
               // If the cursor wasn't moved (i.e., cursor at last line), manually disable edit mode
-              if (!cursorMoved) setEditMode(false);
+              if (!cursorMoved) setEditMode(false)
             }
-            break;
-          case "ArrowDown":
-            moveCursorDown();
-            break;
-          case "ArrowUp":
-            moveCursorUp();
-            break;
-          case "ArrowRight":
-            moveCursorRight();
-            break;
-          case "ArrowLeft":
-            moveCursorLeft();
-            break;
-          case "F2":
-            setEditMode(true);
-            break;
-          case "Escape":
-            setEditMode(false);
-            break;
-          case "Tab":
+            break
+          case 'ArrowDown':
+            moveCursorDown()
+            break
+          case 'ArrowUp':
+            moveCursorUp()
+            break
+          case 'ArrowRight':
+            moveCursorRight()
+            break
+          case 'ArrowLeft':
+            moveCursorLeft()
+            break
+          case 'F2':
+            setEditMode(true)
+            break
+          case 'Escape':
+            setEditMode(false)
+            break
+          case 'Tab':
             // Ignore Alt+Tab or Ctrl+Tab
-            if (event.ctrlKey || event.altKey) break;
+            if (event.ctrlKey || event.altKey) break
 
             if (!event.shiftKey) {
-              moveCursorRight({ force: true, nextLineOnEnd: true });
+              moveCursorRight({ force: true, nextLineOnEnd: true })
             } else {
-              moveCursorLeft({ force: true, prevLineOnStart: true });
+              moveCursorLeft({ force: true, prevLineOnStart: true })
             }
-            break;
+            break
           default:
-            break;
+            break
         }
       }
 
       function moveCursorRight({ force = false, nextLineOnEnd = false } = {}) {
-        if ($cursor.editing.value && !force) return;
-        const nextIndex = $cursor.selectedCell.columnIndex + 1;
+        if ($cursor.editing.value && !force) return
+        const nextIndex = $cursor.selectedCell.columnIndex + 1
         if (columns.length > nextIndex) {
           $cursor.selectedCell.columnIndex = nextIndex
         } else if (nextLineOnEnd) {
@@ -228,26 +251,26 @@ export default {
       }
 
       function moveCursorLeft({ force = false, prevLineOnStart = false } = {}) {
-        if ($cursor.editing.value && !force) return;
-        const prevIndex = $cursor.selectedCell.columnIndex - 1;
+        if ($cursor.editing.value && !force) return
+        const prevIndex = $cursor.selectedCell.columnIndex - 1
         if (prevIndex >= 0) {
-          $cursor.selectedCell.columnIndex = prevIndex;
+          $cursor.selectedCell.columnIndex = prevIndex
         } else if (prevLineOnStart) {
           if (moveCursorUp({ force })) {
-            $cursor.selectedCell.columnIndex = columns.length - 1;
+            $cursor.selectedCell.columnIndex = columns.length - 1
           }
         }
       }
 
       function moveCursorDown({ force = false } = {}) {
-        if ($cursor.editing.value && !force) return false;
-        const nextIndex = $cursor.selectedCell.rowIndex + 1;
+        if ($cursor.editing.value && !force) return false
+        const nextIndex = $cursor.selectedCell.rowIndex + 1
         if (items.length > nextIndex) {
-          $cursor.selectedCell.rowIndex = nextIndex;
-          return true;
+          $cursor.selectedCell.rowIndex = nextIndex
+          return true
         }
 
-        return false;
+        return false
       }
 
       /**
@@ -255,41 +278,57 @@ export default {
        * @returns {boolean}
        */
       function moveCursorUp({ force = false } = {}) {
-        if ($cursor.editing.value && !force) return false;
-        const prevIndex = $cursor.selectedCell.rowIndex - 1;
+        if ($cursor.editing.value && !force) return false
+        const prevIndex = $cursor.selectedCell.rowIndex - 1
         if (prevIndex >= 0) {
-          $cursor.selectedCell.rowIndex = prevIndex;
-          return true;
+          $cursor.selectedCell.rowIndex = prevIndex
+          return true
         }
-        return false;
+        return false
       }
 
-      return {onKeyDown}
+      return { onKeyDown }
     }
-    const { onKeyDown } = setupNavigation({items: props.items, columns: $columns}, setEditMode)
+    const { onKeyDown } = setupNavigation(
+      { items: props.items, columns: $columns },
+      setEditMode
+    )
     // Chrome cannot perform @paste event on element has `user-select: none`
     // so we need to manually select element to enable @paste event
     // https://stackoverflow.com/questions/31207253/onpaste-paste-event-not-firing-for-table-on-first-few-attempts
     onMounted(() => {
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(cursorRef.value);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      const selection = window.getSelection()
+      const range = document.createRange()
+      range.selectNodeContents(cursorRef.value)
+      selection.removeAllRanges()
+      selection.addRange(range)
     })
-    return { setEditMode, clickOutSide, blur, onInput, item, column, cell, cursorRef, cursorStyle, editing: $cursor.editing, onKeyDown, rowIndex: $cursor.selectedCell.rowIndex }
-  }
+    return {
+      setEditMode,
+      clickOutSide,
+      blur,
+      onInput,
+      item,
+      column,
+      cell,
+      cursorRef,
+      cursorStyle,
+      editing: $cursor.editing,
+      onKeyDown,
+      rowIndex: $cursor.selectedCell.rowIndex,
+    }
+  },
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .cursor {
   position: absolute;
   border: 2px solid rgb(124, 179, 66);
   outline: none;
-  // pointer-events: none;
+  /* // pointer-events: none;
   // & > ::v-deep * {
   //   pointer-events: initial;
-  // }
+  // } */
 }
 </style>

@@ -27,7 +27,7 @@ export default {
 }
 </script>
 
-<style lang="scss" module>
+<style module>
 .tabBtn {
   cursor: pointer;
   background: transparent;
@@ -35,9 +35,9 @@ export default {
   border: none;
   border-bottom: 1px solid #ccc;
   padding: 0.4rem 0.6rem;
-  &:hover {
-    background-color: #eee;
-  }
+}
+.tabBtn:hover {
+  background-color: #eee;
 }
 .tabActive {
   border-bottom: 2px solid indigo;

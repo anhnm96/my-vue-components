@@ -30,7 +30,10 @@
           :key="item.title"
           class="flex-shrink-0 w-1/4 px-3 lg:w-1/5 xl:w-1/6"
         >
-          <div class="relative pb-[56.25%] bg-gray-400">
+          <div
+            class="relative bg-gray-400"
+            style="padding-bottom: 56.25%;"
+          >
             <img
               class="absolute inset-0 rounded"
               :src="item.thumbnail"

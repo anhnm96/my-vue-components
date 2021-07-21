@@ -1,12 +1,10 @@
 <template>
-  <div
-    :class="[
+  <div :class="[
       $options.name,
       {
         'has-exceeded-limit': limitStatus > 100,
       },
-    ]"
-  >
+    ]">
     <div
       :class="`${$options.name}__htmlarea`"
       aria-hidden
@@ -77,19 +75,19 @@ export default {
   },
   computed: {
     valueAllowed() {
-      return this.limit ? this.modelValue.slice(0, this.limit) : this.modelValue;
+      return this.limit ? this.modelValue.slice(0, this.limit) : this.modelValue
     },
     valueExcess() {
-      return this.limit ? this.modelValue.slice(this.limit) : '';
+      return this.limit ? this.modelValue.slice(this.limit) : ''
     },
     limitStatus() {
-      return (this.modelValue.length / this.limit) * 100;
+      return (this.modelValue.length / this.limit) * 100
     },
     remainingCharacters() {
-      return this.limit - this.modelValue.length;
+      return this.limit - this.modelValue.length
     },
     textareaStyle() {
-      return getComputedStyle(this.$refs.textarea);
+      return getComputedStyle(this.$refs.textarea)
     },
   },
   // It might be tempting to use a watcher instead of
@@ -99,134 +97,121 @@ export default {
   // are triggered before evaluating computed properties,
   // a watcher wouldn't work.
   mounted() {
-    this.textareaGrow();
+    this.textareaGrow()
   },
   methods: {
     updateValue(e) {
-      this.textareaGrow();
+      this.textareaGrow()
       this.$emit(`update:modelValue`, e.target.value)
     },
     // Update the size of the textarea to fit the number
     // of lines of text.
     textareaGrow() {
-      const paddingTop = parseInt(this.textareaStyle.getPropertyValue(`padding-top`), 10);
-      const paddingBottom = parseInt(this.textareaStyle.getPropertyValue(`padding-bottom`), 10);
-      const lineHeight = parseInt(this.textareaStyle.getPropertyValue(`line-height`), 10);
+      const paddingTop = parseInt(
+        this.textareaStyle.getPropertyValue(`padding-top`),
+        10
+      )
+      const paddingBottom = parseInt(
+        this.textareaStyle.getPropertyValue(`padding-bottom`),
+        10
+      )
+      const lineHeight = parseInt(
+        this.textareaStyle.getPropertyValue(`line-height`),
+        10
+      )
       // Resetting the row count to `1` is necessary for
       // recalculating the `scrollHeight` of the textarea.
-      this.$refs.textarea.rows = 1;
+      this.$refs.textarea.rows = 1
       // We're calculating the inner height of the textare
       // and take this value to also calculate the number
       // of rows needed to fit the currently entered text.
-      const innerHeight = this.$refs.textarea.scrollHeight - paddingTop - paddingBottom;
-      this.$refs.textarea.rows = innerHeight / lineHeight;
+      const innerHeight =
+        this.$refs.textarea.scrollHeight - paddingTop - paddingBottom
+      this.$refs.textarea.rows = innerHeight / lineHeight
     },
   },
-};
+}
 </script>
 
-<style lang="scss">
+<style>
 .TweetBox {
-  $color-border: #99dde6;
-  $color-danger: #e0245e;
-  $color-danger-light: #ffb8c2;
-  $color-gray: #657786;
-  $color-gray-light: #ccd6dd;
-  $color-primary: #1da1f2;
   position: relative;
-  // 1. Account for the width of the remaining characters
-  //    and visual counters.
-  // 2. Harmonize differences between <div> and <textarea>.
-  &__htmlarea,
-  &__textarea {
-    padding: 1rem;
-    padding-right: 3.75rem; // 1
-    width: 100%; // 2
-    line-height: 1.25; // 2
-    border: 2px solid transparent;
-    border-radius: 0.5rem;
+}
+.TweetBox__htmlarea,
+.TweetBox__textarea {
+  padding: 1rem;
+  padding-right: 3.75rem;
+  width: 100%;
+  line-height: 1.25;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+}
+.TweetBox__htmlarea {
+  position: absolute;
+  height: 100%;
+  background-color: #fff;
+  color: transparent;
+  word-wrap: break-word;
+  word-spacing: 0;
+  font-size: 0;
+}
+.TweetBox__htmlarea span {
+  font-size: 1rem;
+}
+.TweetBox__textarea {
+  display: block;
+  position: relative;
+  border-color: #99dde6;
+  outline: 0;
+  background-color: transparent;
+  resize: none;
+}
+.TweetBox__textarea:focus {
+  border-color: #47c2d2;
+}
+.TweetBox .text-excess {
+  background: #ffb8c2;
+}
+.TweetBox__limit {
+  display: flex;
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  align-items: center;
+}
+.TweetBox__remainingCharacters {
+  margin-right: 0.5rem;
+  color: #657786;
+  font-size: 0.75rem;
+}
+.has-exceeded-limit .TweetBox__remainingCharacters {
+  color: #e0245e;
+}
+.TweetBox__counter {
+  overflow: visible;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.TweetBox__counterUnderlay {
+  stroke: #ccd6dd;
+}
+.TweetBox__counterProgress {
+  stroke: #1da1f2;
+}
+.has-exceeded-limit .TweetBox__counterProgress {
+  stroke: #e0245e;
+  animation: counterPulse 0.3s ease-in-out;
+  animation-iteration-count: 1;
+}
+@keyframes counterPulse {
+  0% {
+    stroke-width: 4;
   }
-  // 1. Remove the element from the normal document flow,
-  //    so the <textarea> lies above this element, and
-  //    make the HTML area <div> as tall as the <textarea>.
-  // 2. Make the text color transparent, so only the
-  //    background color of the <em> is visible.
-  // 3. Make word breaks behave exactly like in a textarea.
-  // 4. Remove little space between 2 span
-  &__htmlarea {
-    position: absolute; // 1
-    height: 100%; // 1
-    background-color: #fff;
-    color: transparent; // 2
-    word-wrap: break-word; // 3
-    word-spacing: 0; // 3
-    font-size: 0; // 4
-    & span {
-      font-size: 1rem; // 4
-    }
+  50% {
+    stroke-width: 6;
   }
-  // 1. Make the <textarea> a block level element to make
-  //    its sizing behave like that of a <div>.
-  // 2. By making the background color transparent, the user
-  //    sees the content of the HTML area <div> behind the <textarea>.
-  &__textarea {
-    display: block; // 1
-    position: relative;
-    border-color: $color-border;
-    outline: 0;
-    background-color: transparent; // 2
-    resize: none;
-    &:focus {
-      border-color: darken($color-border, 20%);
-    }
-  }
-  .text-excess {
-    background: $color-danger-light;
-  }
-  &__limit {
-    display: flex;
-    position: absolute;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    align-items: center;
-  }
-  &__remainingCharacters {
-    margin-right: 0.5rem;
-    color: $color-gray;
-    font-size: 0.75rem;
-    .has-exceeded-limit & {
-      color: $color-danger;
-    }
-  }
-  // 1. Making overflowing content visible, because
-  //    otherwise the `counterPulse` animation would be
-  //    cut off.
-  &__counter {
-    overflow: visible; // 1
-    transform: rotate(-90deg);
-    transform-origin: center;
-  }
-  &__counterUnderlay {
-    stroke: $color-gray-light;
-  }
-  &__counterProgress {
-    stroke: $color-primary;
-    .has-exceeded-limit & {
-      stroke: $color-danger;
-      animation: counterPulse 0.3s ease-in-out;
-      animation-iteration-count: 1;
-    }
-  }
-  @keyframes counterPulse {
-    0% {
-      stroke-width: 4;
-    }
-    50% {
-      stroke-width: 6;
-    }
-    100% {
-      stroke-width: 4;
-    }
+  100% {
+    stroke-width: 4;
   }
 }
 </style>
