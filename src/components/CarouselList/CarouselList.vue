@@ -1,11 +1,20 @@
 <template>
   <section>
+    <!--
+      @slot CarouselList header
+        @binding {number} index first showing index of list
+        @binding {function} prev trigger slide to previous list
+        @binding {function} next trigger slide to next list
+     -->
     <slot
       name="header"
       :index="childData.activeIndex"
       :prev="childData.prev"
       :next="childData.next"
     />
+    <!--
+      @slot CarouselList default. This is used to render CarouselContent
+     -->
     <slot />
   </section>
 </template>

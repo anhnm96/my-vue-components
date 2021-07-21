@@ -24,8 +24,8 @@
 - [x] Add row below|above
 - [x] drag drop row
 - [ ] multiple drag
-- [ ] undo
-- [ ] redo
+- [x] undo
+- [x] redo
 
 ## Drag and drop
 

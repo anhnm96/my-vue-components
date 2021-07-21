@@ -11,7 +11,7 @@
       <slot />
     </ul>
     <slot
-      name="item-actions"
+      name="controls"
       :index="activeIndex"
       :prev="prev"
       :next="next"

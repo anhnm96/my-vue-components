@@ -8,27 +8,28 @@ module.exports = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/preset-scss",
-   {
-     name: '@storybook/addon-postcss',
-     options: {
-       postcssLoaderOptions: {
-         implementation: require('postcss'),
-       },
-     },
-   },
+    "@storybook/addon-docs",
+    {
+      name: '@storybook/addon-postcss',
+      options: {
+        postcssLoaderOptions: {
+          implementation: require('postcss'),
+        },
+      },
+    },
   ],
   webpackFinal: async (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname, "../src/"),
-    };
+    }
     config.module.rules.push({
       test: /\.scss$/,
       use: ['style-loader', 'css-loader', 'sass-loader'],
       include: path.resolve(__dirname, '../'),
-    });
+    })
     // keep this if you're doing typescript
     // config.resolve.extensions.push(".ts", ".tsx");
-    return config;
+    return config
   },
 }
