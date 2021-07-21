@@ -1,20 +1,24 @@
-import { CarouselList, CarouselListContent, CarouselListItem } from '@/components/CarouselList'
+import {
+  CarouselList,
+  CarouselListContent,
+  CarouselListItem,
+} from '@/components/CarouselList'
 
 export default {
   title: 'CarouselList',
   component: CarouselListContent,
-  subcomponents: { CarouselList, CarouselListItem }
+  subcomponents: { CarouselList, CarouselListItem },
 }
 
-const Template = (args) => ({
+const Template = args => ({
   components: { CarouselList, CarouselListContent, CarouselListItem },
   argTypes: {
     repeat: {
-      control: { type: 'boolean' }
+      control: { type: 'boolean' },
     },
     itemsToList: {
-      control: { type: 'number' }
-    }
+      control: { type: 'number' },
+    },
   },
   setup() {
     const items = [
@@ -122,11 +126,11 @@ const Template = (args) => ({
     </CarouselListItem>
   </CarouselListContent>
 </CarouselList>
-  `
+  `,
 })
 
 export const CarouselListStory = Template.bind({})
 CarouselListStory.args = {
-  itemsToList: Infinity,
-  repeat: true
+  itemsToList: -1,
+  repeat: true,
 }

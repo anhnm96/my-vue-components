@@ -40,7 +40,7 @@
         role="dialog"
         aria-modal="true"
         v-bind="$attrs"
-        tabindex="-1"
+        :tabindex="-1"
         :aria-labelledby="labelledBy"
         :aria-describedby="describedBy"
       >
@@ -52,12 +52,22 @@
 
 <script lang="ts">
 // https://www.w3.org/TR/wai-aria-practices-1.2/examples/dialog-modal/dialog.html#
-import { defineComponent, ref, onMounted, onBeforeUnmount, watch, provide, inject, InjectionKey, Ref } from 'vue'
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  provide,
+  inject,
+  InjectionKey,
+  Ref,
+} from 'vue'
 import trapFocus from '@/directives/trapFocus'
 // export modal context
 interface ModalContext {
-  labelledBy: Ref<string>;
-  describedBy: Ref<string>;
+  labelledBy: Ref<string>
+  describedBy: Ref<string>
 }
 const MODAL_SYMBOL = Symbol('Modal') as InjectionKey<ModalContext>
 export const useModal = () => inject(MODAL_SYMBOL)
@@ -77,13 +87,18 @@ export default defineComponent({
     const describedBy = ref()
     provide(MODAL_SYMBOL, {
       labelledBy,
-      describedBy
+      describedBy,
     })
     // display logic
     const showModal = ref(false)
     const showContent = ref(false)
     const backdropLeaving = ref(false)
     const cardLeaving = ref(false)
+
+    function close() {
+      // start closing animation
+      showContent.value = false
+    }
 
     function onEscape(e: KeyboardEvent) {
       if (props.modelValue && e.key === 'Escape') {
@@ -101,10 +116,7 @@ export default defineComponent({
       showModal.value = true
       showContent.value = true
     }
-    function close() {
-      // start closing animation
-      showContent.value = false
-    }
+
     watch(
       () => props.modelValue,
       (newValue) => {

@@ -40,7 +40,7 @@ export default defineComponent({
     },
     itemsToList: {
       type: Number,
-      default: Infinity,
+      default: -1,
     },
     repeat: {
       type: Boolean,
@@ -71,7 +71,7 @@ export default defineComponent({
       }
 
       const gap =
-        props.itemsToList === Infinity ? itemsToShow.value : props.itemsToList
+        props.itemsToList === -1 ? itemsToShow.value : props.itemsToList
       activeIndex.value -= gap
       if (activeIndex.value < 0) activeIndex.value = 0
     }
@@ -85,7 +85,7 @@ export default defineComponent({
       }
 
       const gap =
-        props.itemsToList === Infinity ? itemsToShow.value : props.itemsToList
+        props.itemsToList === -1 ? itemsToShow.value : props.itemsToList
       const nextActiveIndex = activeIndex.value + gap
       // make sure we don't over translateX
       if (nextActiveIndex > lastAllowIndex) {

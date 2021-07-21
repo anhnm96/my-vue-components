@@ -1,6 +1,5 @@
 module.exports = {
-  mode: 'jit',
-  purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  purge: [],
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {},
@@ -8,7 +7,7 @@ module.exports = {
   variants: {
     extend: {
       backgroundColor: ['active', 'disabled'],
-      opacity: ['disabled']
+      opacity: ['disabled'],
     },
   },
   plugins: [],

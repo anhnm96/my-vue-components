@@ -9,7 +9,7 @@ module.exports = {
        * recommended set `include` for speedup page-loaded time
        * @default {}
        */
-      optimizeDeps: {}
-    }
-  }
+      optimizeDeps: {},
+    },
+  },
 }

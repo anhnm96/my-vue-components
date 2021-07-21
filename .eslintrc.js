@@ -17,11 +17,13 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'vue/no-unused-components': 'warn',
+    'vue/one-component-per-file': 'off',
     'prefer-const': 'warn',
     '@typescript-eslint/no-empty-function': 'warn',
     '@typescript-eslint/no-use-before-define': 'warn',
     '@typescript-eslint/camelcase': 'warn',
-    '@typescript-eslint/ban-ts-ignore': 'off'
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/member-delimiter-style': 'off',
   },
   overrides: [
     {
