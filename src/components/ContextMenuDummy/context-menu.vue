@@ -1,28 +1,33 @@
 <template lang="html">
-	<div
-		ref="contextMenu"
-		@click.stop
-		@contextmenu.stop
+  <div
     :id="id"
+    ref="contextMenu"
     :style="ctxStyle"
-    class="ctx-menu-container">
-		<div style="background-color:transparent" class="ctx open">
+    class="ctx-menu-container"
+    @click.stop
+    @contextmenu.stop
+  >
+    <div
+      style="background-color:transparent"
+      class="ctx open"
+    >
       <ul
         role="menu"
         class="ctx-menu"
         :class="{
           'ctx-menu-right': align==='right',
           'ctx-menu-left': align==='left'
-        }">
-        <slot></slot>
+        }"
+      >
+        <slot />
       </ul>
-		</div>
-	</div>
+    </div>
+  </div>
 </template>
 <script>
 import createBodyClickListener from './body-click-listener'
 export default {
-  name: 'context-menu',
+  name: 'ContextMenu',
   props: {
     id: {
       type: String,
@@ -38,8 +43,8 @@ export default {
       ctxVisible: false,
       bodyClickListener: createBodyClickListener(
         (e) => {
-          let isOpen = !!this.ctxVisible
-          let outsideClick = isOpen && !this.$el.contains(e.target)
+          const isOpen = !!this.ctxVisible
+          const outsideClick = isOpen && !this.$el.contains(e.target)
 
           if (outsideClick) {
             if (e.which !== 1) {
@@ -57,6 +62,25 @@ export default {
           }
         }
       )
+    }
+  },
+  computed: {
+    ctxStyle() {
+      return {
+        'display': this.ctxVisible ? 'block' : 'none',
+        'top': (this.ctxTop || 0) + 'px',
+        'left': (this.ctxLeft || 0) + 'px'
+      }
+    }
+  },
+  watch: {
+    ctxVisible(newVal, oldVal) {
+      if (oldVal === true && newVal === false) {
+        this.bodyClickListener.stop((e) => {
+          // console.log('context menu sequence finished', e)
+          // this.locals = {}
+        })
+      }
     }
   },
   methods: {
@@ -103,25 +127,6 @@ export default {
       this.$el.setAttribute('tab-index', -1)
       this.bodyClickListener.start()
       return this
-    }
-  },
-  watch: {
-    ctxVisible(newVal, oldVal) {
-      if (oldVal === true && newVal === false) {
-        this.bodyClickListener.stop((e) => {
-          // console.log('context menu sequence finished', e)
-          // this.locals = {}
-        })
-      }
-    }
-  },
-  computed: {
-    ctxStyle() {
-      return {
-        'display': this.ctxVisible ? 'block' : 'none',
-        'top': (this.ctxTop || 0) + 'px',
-        'left': (this.ctxLeft || 0) + 'px'
-      }
     }
   }
 }

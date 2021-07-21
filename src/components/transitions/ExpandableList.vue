@@ -11,7 +11,7 @@ export default {
       this.panels.push(el)
     },
     setAll (value) {
-      for (let panel of this.panels) {
+      for (const panel of this.panels) {
         panel.$expand = value
       }
     },

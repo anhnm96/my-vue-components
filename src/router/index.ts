@@ -95,6 +95,11 @@ const routes = [
     name: 'Undo',
     component: () => import('../views/Undo/index.vue')
   },
+  {
+    path: '/carousel-list',
+    name: 'CarouselList',
+    component: () => import('../views/DemoCarouselList.vue')
+  },
 ]
 
 const router = createRouter({

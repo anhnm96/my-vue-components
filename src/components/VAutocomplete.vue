@@ -5,7 +5,7 @@
     class="fixed inset-0 w-full cursor-default"
     arial-label="close"
     @click.prevent="close"
-  ></button>
+  />
   <div
     role="combobox"
     :aria-expanded="shown"
@@ -15,36 +15,36 @@
     v-bind="$attrs"
   >
     <input
-      type="text"
-      aria-autocomplete="list"
       ref="input"
       v-model="inputValue"
+      type="text"
+      aria-autocomplete="list"
+      :aria-controls="`VAutocomplete__${timeId}--listbox`"
+      :aria-activedescendant="`VAutocomplete__${timeId}--opt${arrowCounter}`"
+      :aria-label="arialLabel"
       @keyup.esc.prevent="shown = false"
       @keydown.down.prevent="keyArrows('down')"
       @keydown.up.prevent="keyArrows('up')"
       @keydown.enter="safeSalect(adaptedOptions[arrowCounter])"
       @keydown.tab.prevent="safeSalect(adaptedOptions[arrowCounter])"
       @click="shown = true"
-      :aria-controls="`VAutocomplete__${timeId}--listbox`"
-      :aria-activedescendant="`VAutocomplete__${timeId}--opt${arrowCounter}`"
-      :aria-label="arialLabel"
-    />
+    >
     <div
-      class="dropdown-menu"
       ref="dropdown"
+      class="dropdown-menu"
       :style="!isListInViewportVertically && { bottom: '100%' }"
     >
       <ul
-        :id="`VAutocomplete__${timeId}--listbox`"
         v-if="shown"
+        :id="`VAutocomplete__${timeId}--listbox`"
         role="listbox"
         class="dropdown-content"
         :aria-label="arialLabel"
       >
         <li
           v-for="(item, index) in adaptedOptions"
-          :key="index"
           :id="`VAutocomplete__${timeId}--opt${index}`"
+          :key="index"
           role="option"
           :aria-selected="index === arrowCounter"
           :class="{ 'is-active': index === arrowCounter }"
@@ -94,11 +94,6 @@ export default {
     /** aria-label for input */
     arialLabel: String
   },
-  mounted() {
-    this.$nextTick(() => {
-      if (document.activeElement === this.$refs.input) this.shown = true
-    })
-  },
   data () {
     return {
       localInput: '',
@@ -106,15 +101,6 @@ export default {
       arrowCounter: 0,
       isListInViewportVertically: true,
       timeId: Date.now()
-    }
-  },
-  watch: {
-    shown(val) {
-      if (val) {
-        // reset to inital state
-        this.isListInViewportVertically = true
-        this.calcDropdownInViewportVertical()
-      }
     }
   },
   computed: {
@@ -137,6 +123,20 @@ export default {
     multiple() {
       return Array.isArray(this.selected);
     },
+  },
+  watch: {
+    shown(val) {
+      if (val) {
+        // reset to inital state
+        this.isListInViewportVertically = true
+        this.calcDropdownInViewportVertical()
+      }
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (document.activeElement === this.$refs.input) this.shown = true
+    })
   },
   methods: {
     close () {

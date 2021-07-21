@@ -1,13 +1,17 @@
 <template>
-	<label v-if="label" :for="`input__${label}`" v-text="label" />
-	<input
-		:id="`input__${label}`"
-		v-bind="{
-			...$attrs,
-			onInput: (event) => $emit('update:modelValue', event.target.value)
-		}"
-		:value="modelValue"
-	/>
+  <label
+    v-if="label"
+    :for="`input__${label}`"
+    v-text="label"
+  />
+  <input
+    :id="`input__${label}`"
+    v-bind="{
+      ...$attrs,
+      onInput: (event) => $emit('update:modelValue', event.target.value)
+    }"
+    :value="modelValue"
+  >
 </template>
 
 <script>

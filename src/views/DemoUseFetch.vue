@@ -1,12 +1,20 @@
 <template>
   <div ref="zxc">
-      <input class="border border-black" type="text" v-model="searchTerms" >
-      <button @click="search">Search</button>
-      <p v-if="results">results: {{results}}</p>
-      <p>loading: {{loading}}</p>
-      <p>errors: {{hasErrors}}</p>
-      <p>v1: {{v1}}</p>
-      <p>v2: {{v2}}</p>
+    <input
+      v-model="searchTerms"
+      class="border border-black"
+      type="text"
+    >
+    <button @click="search">
+      Search
+    </button>
+    <p v-if="results">
+      results: {{ results }}
+    </p>
+    <p>loading: {{ loading }}</p>
+    <p>errors: {{ hasErrors }}</p>
+    <p>v1: {{ v1 }}</p>
+    <p>v2: {{ v2 }}</p>
   </div>
 </template>
 

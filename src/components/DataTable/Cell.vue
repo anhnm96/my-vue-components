@@ -1,10 +1,10 @@
 <template>
   <td
-    @mousedown="onSelectCell"
     :data-row-index="rowIndex"
     :data-column-index="columnIndex"
     :class="`cell-${rowIndex}-${columnIndex}`"
     class="text-truncate"
+    @mousedown="onSelectCell"
   >
     <slot />
   </td>

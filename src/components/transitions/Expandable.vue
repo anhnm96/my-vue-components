@@ -1,22 +1,27 @@
 <template>
   <div>
-    <slot name="header" :expand="$expand" :toggle="toggle" />
-    <transition :name="name"
-                @before-appear="beforeAppear"
-                @appear="appear"
-                @after-appear="afterAppear"
-                @appear-cancelled="appearCancelled"
-                @before-enter="beforeEnter"
-                @enter="enter"
-                @after-enter="afterEnter"
-                @enter-cancelled="enterCancelled"
-                @before-leave="beforeLeave"
-                @leave="leave"
-                @after-leave="afterLeave"
-                @leave-cancelled="leaveCancelled"
+    <slot
+      name="header"
+      :expand="$expand"
+      :toggle="toggle"
+    />
+    <transition
+      :name="name"
+      @before-appear="beforeAppear"
+      @appear="appear"
+      @after-appear="afterAppear"
+      @appear-cancelled="appearCancelled"
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @enter-cancelled="enterCancelled"
+      @before-leave="beforeLeave"
+      @leave="leave"
+      @after-leave="afterLeave"
+      @leave-cancelled="leaveCancelled"
     >
       <template v-if="$expand">
-        <slot/>
+        <slot />
       </template>
     </transition>
   </div>
@@ -54,11 +59,6 @@ export default {
       default: 'ease-in-out'
     },
   },
-  watch: {
-    dimension() {
-      this.clearCachedDimensions()
-    }
-  },
   data: () => ({
     internalExpand: false,
     cachedStyles: null,
@@ -73,11 +73,16 @@ export default {
       }
     },
     transition() {
-      let transitions = []
+      const transitions = []
       Object.keys(this.cachedStyles).forEach((key) => {
           transitions.push(`${this.convertToCssProperty(key)} ${this.duration}ms ${this.easing}`)
       })
       return transitions.join(', ')
+    }
+  },
+  watch: {
+    dimension() {
+      this.clearCachedDimensions()
     }
   },
   methods: {

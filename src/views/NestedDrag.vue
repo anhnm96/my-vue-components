@@ -1,16 +1,24 @@
 <template>
-    <DragList trigger-move=".title" class="nest" v-model:list="taskList" :id-adapter="(val) => val.name" mode="cut">
-      <template #default="{item}">
-        <p class="title">{{item.name}}</p>
-        <NestedDrag :tasks="item.tasks" />
-      </template>
-      <template #placeholder-add>
-        add
-      </template>
-      <template #placeholder-move>
-        <div>move</div>
-      </template>
-    </DragList>
+  <DragList
+    v-model:list="taskList"
+    trigger-move=".title"
+    class="nest"
+    :id-adapter="(val) => val.name"
+    mode="cut"
+  >
+    <template #default="{item}">
+      <p class="title">
+        {{ item.name }}
+      </p>
+      <NestedDrag :tasks="item.tasks" />
+    </template>
+    <template #placeholder-add>
+      add
+    </template>
+    <template #placeholder-move>
+      <div>move</div>
+    </template>
+  </DragList>
 </template>
 
 <script>

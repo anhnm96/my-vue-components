@@ -1,13 +1,13 @@
 <script>
 export default {
+  provide() {
+    return {slides: this.slides}
+  },
   data() {
     return {
       activeIndex: 0,
       slides: []
     }
-  },
-  provide() {
-    return {slides: this.slides}
   },
   computed: {
     slidesCount() {

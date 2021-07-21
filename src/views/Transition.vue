@@ -1,38 +1,57 @@
 <template>
   <div class="pb-20">
-    <input class="border border-solid" type="text" v-model="text" />
-    <button @click="add2">add</button>
-    <button @click="swap">swap</button>
-    <button @click="swap2">swap 2</button>
+    <input
+      v-model="text"
+      class="border border-solid"
+      type="text"
+    >
+    <button @click="add2">
+      add
+    </button>
+    <button @click="swap">
+      swap
+    </button>
+    <button @click="swap2">
+      swap 2
+    </button>
     <div class="flex">
-      <DragList handle=".handle" v-model:list="list">
+      <DragList
+        v-model:list="list"
+        handle=".handle"
+      >
         <template #default="{ item, index }">
           <p class="p-2 font-normal shadow">
-            <button class="handle">&#9776;</button>
+            <button class="handle">
+              &#9776;
+            </button>
             <span class="p-2">{{ item }} - {{ index }}</span>
           </p>
         </template>
         <template #placeholder-move>
-          <div style="border: 1px solid green;height: 1px"></div>
+          <div style="border: 1px solid green;height: 1px" />
         </template>
         <template #placeholder-add>
-          <div style="border: 1px solid green;height: 1px"></div>
+          <div style="border: 1px solid green;height: 1px" />
         </template>
       </DragList>
       <DragList v-model:list="items">
         <template #default="{ item, index, gg }">
           <p class="p-2 font-normal shadow">
-            {{ item }} - {{ index }} {{gg}}
+            {{ item }} - {{ index }} {{ gg }}
           </p>
         </template>
         <template #placeholder-move>
           moving
         </template>
         <template #placeholder-add="{data}">
-          {{data.value}}
+          {{ data.value }}
         </template>
       </DragList>
-      <DragList mode="cut" name="fade" v-model:list="list">
+      <DragList
+        v-model:list="list"
+        mode="cut"
+        name="fade"
+      >
         <template #default="{ item, index }">
           <p class="p-2 font-normal shadow">
             {{ item }} - {{ index }}
@@ -46,7 +65,10 @@
       </DragList>
       <DragList v-model:list="list">
         <template #default="{ item, index, inProgress }">
-          <p class="p-2 font-normal shadow" :class="{ghost: inProgress}">
+          <p
+            class="p-2 font-normal shadow"
+            :class="{ghost: inProgress}"
+          >
             {{ item }} - {{ index }}
           </p>
         </template>
@@ -61,7 +83,10 @@
           </p>
         </template> -->
       </DragList>
-      <DragList v-model:list="items" :accept-data="({value}) => typeof value === 'number'">
+      <DragList
+        v-model:list="items"
+        :accept-data="({value}) => typeof value === 'number'"
+      >
         <template #default="{ item, index }">
           <p class="p-2 font-normal shadow">
             {{ item }} - {{ index }}
@@ -74,29 +99,58 @@
         </template>
         <template #placeholder-add="{data}">
           <p class="p-2 font-normal shadow">
-            {{data.value}}
+            {{ data.value }}
           </p>
         </template>
       </DragList>
     </div>
     <!-- h1 h2 h3 -->
     <div class="mt-5 demo">
-      <VDragDrop @dragstart="test" tag="span" @dragend="dragendEx2" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
+      <VDragDrop
+        v-for="i in items"
+        :key="i"
+        tag="span"
+        :droppable="false"
+        :data-transfer="{value: i}"
+        @dragstart="test"
+        @dragend="dragendEx2"
+      >
         <template #default="{dragging}">
-            <span class="drag" :class="{ghost: dragging}">h{{i}}</span>
+          <span
+            class="drag"
+            :class="{ghost: dragging}"
+          >h{{ i }}</span>
         </template>
         <template #drag-image="{data}">
-          <span v-show="!entering" class="drag">{{data.value}}</span>
-          <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
+          <span
+            v-show="!entering"
+            class="drag"
+          >{{ data.value }}</span>
+          <span
+            v-show="entering"
+            class="drag"
+            style="border-radius: 50%"
+          >DROP</span>
         </template>
       </VDragDrop>
-      <VDragDrop :draggable="false" hover-class="hovering" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop3" :accept-data="(val) => val.value % 2 === 0">
+      <VDragDrop
+        :draggable="false"
+        hover-class="hovering"
+        class="copy"
+        :accept-data="(val) => val.value % 2 === 0"
+        @dragenter="dragenter"
+        @dragleave="dragleave"
+        @dropped="drop3"
+      >
         <div style="pointer-events: none">
-          <span v-for="i in droplist" :key="i">{{i}}</span>
+          <span
+            v-for="i in droplist"
+            :key="i"
+          >{{ i }}</span>
         </div>
       </VDragDrop>
-        <!-- trash -->
-        <DynamicDragImage />
+      <!-- trash -->
+      <DynamicDragImage />
     </div>
     <NestedDrag v-model:tasks="nest" />
   </div>

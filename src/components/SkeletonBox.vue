@@ -1,5 +1,9 @@
 <template>
-  <span aria-hidden="true" :style="{ height, width: computedWidth }" class="SkeletonBox" />
+  <span
+    aria-hidden="true"
+    :style="{ height, width: computedWidth }"
+    class="SkeletonBox"
+  />
 </template>
 
 <script>

@@ -1,6 +1,10 @@
 <template>
-  <div class="container" :class="{'is-dragover': dragging}">
-    <slot name="input"
+  <div
+    class="container"
+    :class="{'is-dragover': dragging}"
+  >
+    <slot
+      name="input"
       :on="{
         key: inputKey,
         type: 'file',
@@ -11,20 +15,26 @@
         onDrop: e => {e.preventDefault();onChange(e.dataTransfer.files);dragging = false}
       }"
     >
-      <label :for="`dropzone-${inputKey}`" class="image-message">
+      <label
+        :for="`dropzone-${inputKey}`"
+        class="image-message"
+      >
         <span v-show="files.length === 0">Drop files</span>
       </label>
-      <input :id="`dropzone-${inputKey}`" type="file" class="image-input"
+      <input
+        :id="`dropzone-${inputKey}`"
+        :key="inputKey"
+        type="file"
+        class="image-input"
+        :multiple="multiple"
+        :class="{'is-dragover':dragging}"
+        :accept="accept"
         @change="onChange($event.target.files)"
+        ref="input"
         @dragenter="dragging = true"
         @dragover.prevent
         @dragleave="dragging = false"
         @drop.prevent="onChange($event.dataTransfer.files); dragging = false;"
-        :key="inputKey"
-        :multiple="multiple"
-        :class="{'is-dragover':dragging}"
-        :accept="accept"
-        ref="input"
       >
     </slot>
     <slot />
@@ -33,12 +43,6 @@
 
 <script>
 export default {
-  data () {
-    return {
-      inputKey: Date.now().toString(36),
-      dragging: false
-    }
-  },
   props: {
     files: Array,
     multiple: {
@@ -54,12 +58,32 @@ export default {
       default: null
     }
   },
+  data () {
+    return {
+      inputKey: Date.now().toString(36),
+      dragging: false
+    }
+  },
+  watch: {
+    'files.length': {
+      handler(newVal, oldVal) {
+        // reset input if remove a file in props.files
+        if (newVal < oldVal)
+          this.resetInput()
+      }
+    }
+  },
+  beforeUnmount () {
+    for (const file of this.files) {
+      URL.revokeObjectURL(file.url)
+    }
+  },
   methods: {
     onChange (files) {
       // Check file type match accept attribute
       if (this.accept !== '*') {
         const filesAccept = []
-        for (let file of files) {
+        for (const file of files) {
           if (file.type.match('image/')) {
             filesAccept.push(file)
           }
@@ -73,8 +97,8 @@ export default {
     },
     receiveFiles (files) {
       console.log(files)
-      let res = [...this.files]
-      for (let file of files) {
+      const res = [...this.files]
+      for (const file of files) {
         // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
         const url = URL.createObjectURL(file)
         res.push({url, type: file.type, name: file.name})
@@ -83,20 +107,6 @@ export default {
     },
     resetInput () {
       this.inputKey = Date.now().toString(36)
-    }
-  },
-  watch: {
-    'files.length': {
-      handler(newVal, oldVal) {
-        // reset input if remove a file in props.files
-        if (newVal < oldVal)
-          this.resetInput()
-      }
-    }
-  },
-  beforeUnmount () {
-    for (let file of this.files) {
-      URL.revokeObjectURL(file.url)
     }
   }
 }

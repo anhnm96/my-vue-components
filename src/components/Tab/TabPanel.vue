@@ -1,5 +1,8 @@
 <template>
-  <div :id="`tab-panel-${id}`" v-show="activeTab === id">
+  <div
+    v-show="activeTab === id"
+    :id="`tab-panel-${id}`"
+  >
     <slot />
   </div>
 </template>

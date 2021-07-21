@@ -1,12 +1,12 @@
 <template>
   <div
     ref="cursorRef"
+    v-click-outside="clickOutSide"
     class="cursor"
     tabindex="0"
     :style="cursorStyle"
     @keydown="onKeyDown"
     @dblclick="setEditMode(true)"
-    v-click-outside="clickOutSide"
   >
     <slot
       v-if="editing"
@@ -19,7 +19,7 @@
     >
       <v-input
         class="cell-input"
-        :modelValue="cell"
+        :model-value="cell"
         @update:modelValue="onInput"
       />
     </slot>
@@ -32,12 +32,12 @@ import clickOutSide from '@/directives/clickOutSide'
 import {computed, inject, ref, watch, nextTick, getCurrentInstance, onMounted } from 'vue'
 export default {
   name: 'CellCursor',
-  emits: ['on-input'],
   components: {VInput},
   directives: {'click-outside': clickOutSide},
   props: {
     items: Array
   },
+  emits: ['on-input'],
   setup(props) {
     const $columns = inject('$columns')
     const $cursor = inject('$cursor')
@@ -72,7 +72,7 @@ export default {
         nextTick(() => {
           const input = cursorRef.value.querySelector('input')
           if (input) {
-            for (let i of Object.keys(inputStyle.value)) {
+            for (const i of Object.keys(inputStyle.value)) {
               input.style[i] = inputStyle.value[i]
             }
             if (document.activeElement !== input) input.focus()

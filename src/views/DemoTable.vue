@@ -1,12 +1,17 @@
 <template>
   <div style="height: 1000px">
     <!-- @keydown.stop to prevent storybook behavior in demo -->
-    <DataTable @keydown.stop v-model:items="items" :columns="columns" @onInput="onInput">
+    <DataTable
+      v-model:items="items"
+      :columns="columns"
+      @keydown.stop
+      @onInput="onInput"
+    >
       <template #cell-input-origin="{ cell, onInput }">
         <v-autocomplete
-          @update:input="onInput"
           :input="cell"
           :options="countries"
+          @update:input="onInput"
         />
       </template>
       <!-- <template #context-menu="{ cursor, context }">
@@ -25,50 +30,60 @@
       </template> -->
     </DataTable>
     <v-autocomplete
-      :optionAdapter="
+      v-model:selected="selected"
+      :option-adapter="
         (val) => ({ id: val.id, label: val.user['first_name'], value: val })
       "
-      v-model:selected="selected"
       :options="nameList"
       class="border border-gray-400 border-solid"
-      arialLabel="select name"
+      arial-label="select name"
     />
-    selected name: {{selected}} <br>
+    selected name: {{ selected }} <br>
     <label>
       Select country
       <v-autocomplete
-        class="border border-gray-400 border-solid"
         v-model:input="val"
+        class="border border-gray-400 border-solid"
         :options="countries"
       />
     </label>
   </div>
-  <div class="w-full h-5 bg-green" @paste="test" tabindex="0"></div>
+  <div
+    class="w-full h-5 bg-green"
+    :tabindex="0"
+    @paste="test"
+  />
 </template>
 
 <script>
 import nameList from './name'
-import {items as dataItems, countries} from './items'
+import { items as dataItems, countries } from './items'
 import DataTable from '@/components/DataTable'
 import VAutocomplete from '@/components/VAutocomplete'
-import {ref, reactive} from 'vue'
+import { ref, reactive } from 'vue'
 export default {
-  components: {DataTable, VAutocomplete},
+  components: { DataTable, VAutocomplete },
   setup() {
     const columns = ref([
-                {name: 'cutpot'},
-                {name: 'origin'},
-                {name: 'family', required: true, rules: 'required'},
-                {name: 'variety', required: true, rules: 'required'},
-                {name: 'color'},
-                {name: 'quantity', required: true, rules: 'required', type: 'number', help: 'Sll'},
-                {name: 'unit', help: 'Bn cay'},
-                {name: 'grade'},
-                {name: 'price', required: true, rules: 'required', help: 'Gia'},
-                {name: 'note', help: 'Note ne'}
-            ])
+      { name: 'cutpot' },
+      { name: 'origin' },
+      { name: 'family', required: true, rules: 'required' },
+      { name: 'variety', required: true, rules: 'required' },
+      { name: 'color' },
+      {
+        name: 'quantity',
+        required: true,
+        rules: 'required',
+        type: 'number',
+        help: 'Sll',
+      },
+      { name: 'unit', help: 'Bn cay' },
+      { name: 'grade' },
+      { name: 'price', required: true, rules: 'required', help: 'Gia' },
+      { name: 'note', help: 'Note ne' },
+    ])
     const items = ref(dataItems)
-    const onInput = ({rowIndex, column, value}) => {
+    const onInput = ({ rowIndex, column, value }) => {
       console.log('update', items.value.length, rowIndex)
       items.value[rowIndex][column.name] = value
     }
@@ -83,24 +98,36 @@ export default {
     function test(e) {
       console.log('paste', e)
     }
-    return { test, countries, nameList, columns, items, onInput, val, arr, insertRow, reactive, selected }
-  }
+    return {
+      test,
+      countries,
+      nameList,
+      columns,
+      items,
+      onInput,
+      val,
+      arr,
+      insertRow,
+      reactive,
+      selected,
+    }
+  },
 }
 
 const dumpItem = {
-  "color": "",
-  "cutpot": "cut",
-  "family": "",
-  "grade": "",
-  "id": `${Math.random()}`,
-  "note": null,
-  "origin": "",
-  "price": null,
-  "product_id": "",
-  "quantity": null,
-  "unit": "",
-  "variety": "",
-  "$errors": {}
+  color: '',
+  cutpot: 'cut',
+  family: '',
+  grade: '',
+  id: `${Math.random()}`,
+  note: null,
+  origin: '',
+  price: null,
+  product_id: '',
+  quantity: null,
+  unit: '',
+  variety: '',
+  $errors: {},
 }
 </script>
 

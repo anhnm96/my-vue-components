@@ -4,26 +4,34 @@
     <div class="flex flex-col flex-1 min-w-0 bg-white">
       <div class="flex-1 overflow-auto">
         <!-- <main class="inline-flex h-full p-3"> -->
-          <!-- <BoardColumn
+        <!-- <BoardColumn
             v-for="(column, columnIndex) in data"
             :key="columnIndex"
             :column="column"
             :columnIndex="columnIndex"
           /> -->
-          <DragList group="column" tag="main" class="inline-flex h-full p-3" :id-adapter="(val) => val.name" v-model:list="data">
-            <template #default="{item, index}">
-              <BoardColumn 
-                :column="item"
-                :columnIndex="index"
-              />
-            </template>
-            <template #placeholder-move>
-              <p style="border: 1px solid red;background: green; width: 1px; z-index: 9999;height: 100%"></p>
-            </template>
-            <template #drag-image={width}>
-              <p :style="{width: width + 'px'}">Moving column :)</p>
-            </template>
-          </DragList>
+        <DragList
+          v-model:list="data"
+          group="column"
+          tag="main"
+          class="inline-flex h-full p-3"
+          :id-adapter="(val) => val.name"
+        >
+          <template #default="{item, index}">
+            <BoardColumn 
+              :column="item"
+              :column-index="index"
+            />
+          </template>
+          <template #placeholder-move>
+            <p style="border: 1px solid red;background: green; width: 1px; z-index: 9999;height: 100%" />
+          </template>
+          <template #drag-image="{width}">
+            <p :style="{width: width + 'px'}">
+              Moving column :)
+            </p>
+          </template>
+        </DragList>
         <!-- </main> -->
       </div>
     </div>

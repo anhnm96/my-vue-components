@@ -1,11 +1,15 @@
 <template>
   <div class="max-w-sm px-1 py-2 mx-auto">
-    <h1 class="font-semibold text-center">Building a Simple Content Slider with Vue.js</h1>
+    <h1 class="font-semibold text-center">
+      Building a Simple Content Slider with Vue.js
+    </h1>
 
     <section class="p-4 mt-4 shadow-md">
-        <SliderFrame>
+      <SliderFrame>
         <template #default="{ next, prev }">
-          <h2 class="font-semibold">Basic Slider</h2>
+          <h2 class="font-semibold">
+            Basic Slider
+          </h2>
           <SliderSlides>
             <SliderSlide class="mt-2">
               <h3>Lorem Ipsum dolor</h3>
@@ -40,99 +44,133 @@
     </section>
 
     <section class="p-4 mt-4 shadow-md">
-      <h2 class="font-semibold">Tabs</h2>
+      <h2 class="font-semibold">
+        Tabs
+      </h2>
 
       <SliderFrame>
         <template #default="{ activeIndex, goToIndex }">
           <ul class="flex mt-2">
             <li>
               <button
-                @click="goToIndex(0)"
                 :class="{ 'is-active': activeIndex === 0 }"
                 class="px-2 py-1 border border-gray-400 shadow"
+                @click="goToIndex(0)"
               >
                 Tab 1
               </button>
             </li>
             <li>
               <button
-                @click="goToIndex(1)"
                 :class="{ 'is-active': activeIndex === 1 }"
                 class="px-2 py-1 border border-gray-400 shadow"
+                @click="goToIndex(1)"
               >
                 Tab 2
               </button>
             </li>
             <li>
               <button
-                @click="goToIndex(2)"
                 :class="{ 'is-active': activeIndex === 2 }"
                 class="px-2 py-1 border border-gray-400 shadow"
+                @click="goToIndex(2)"
               >
                 Tab 3
               </button>
             </li>
           </ul>
 
-            <SliderSlides>
-              <SliderSlide key="1" class="p-4 border border-gray-500">
-                <h3>Lorem Ipsum dolor</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                  diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                  aliquyam erat, sed diam voluptua. At vero eos et accusam et
-                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
-                </p>
-              </SliderSlide>
-              <SliderSlide key="2" class="p-4 border border-gray-500">
-                <h3>Dolor Sit</h3>
-                <p>
-                  Dolor sit amet, consetetur sadipscing elitr, sed
-                  diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                  aliquyam erat, sed diam voluptua. At vero eos et accusam et
-                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
-                </p>
-              </SliderSlide>
-              <SliderSlide key="3" class="p-4 border border-gray-500">
-                <h3>Consetetur</h3>
-                <p>
-                  Consetetur sadipscing elitr, sed
-                  diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                  aliquyam erat, sed diam voluptua. At vero eos et accusam et
-                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
-                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
-                  justo duo dolores et ea rebum. Stet clita kasd gubergren.
-                </p>
-              </SliderSlide>
-            </SliderSlides>
-
+          <SliderSlides>
+            <SliderSlide
+              key="1"
+              class="p-4 border border-gray-500"
+            >
+              <h3>Lorem Ipsum dolor</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+                diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                aliquyam erat, sed diam voluptua. At vero eos et accusam et
+                justo duo dolores et ea rebum. Stet clita kasd gubergren.
+              </p>
+            </SliderSlide>
+            <SliderSlide
+              key="2"
+              class="p-4 border border-gray-500"
+            >
+              <h3>Dolor Sit</h3>
+              <p>
+                Dolor sit amet, consetetur sadipscing elitr, sed
+                diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                aliquyam erat, sed diam voluptua. At vero eos et accusam et
+                justo duo dolores et ea rebum. Stet clita kasd gubergren.
+              </p>
+            </SliderSlide>
+            <SliderSlide
+              key="3"
+              class="p-4 border border-gray-500"
+            >
+              <h3>Consetetur</h3>
+              <p>
+                Consetetur sadipscing elitr, sed
+                diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                aliquyam erat, sed diam voluptua. At vero eos et accusam et
+                justo duo dolores et ea rebum. Stet clita kasd gubergren.
+                justo duo dolores et ea rebum. Stet clita kasd gubergren.
+                justo duo dolores et ea rebum. Stet clita kasd gubergren.
+              </p>
+            </SliderSlide>
+          </SliderSlides>
         </template>
       </SliderFrame>
     </section>
 
-     <section class="p-2 mt-4">
-      <h2 class="font-semibold">Image Slider</h2>
+    <section class="p-2 mt-4">
+      <h2 class="font-semibold">
+        Image Slider
+      </h2>
       <SliderFrame>
         <template #default="{ goToIndex, next, prev }">
           <div class="relative">
             <SliderSlides>
-              <SliderSlide v-for="slide in slides" :key="slide.image" class="ImageSlider__slide">
-                <img :src="slide.image" :alt="slide.headline" class="ImageSlider__image" />
-                <h2 class="ImageSlider__headline">{{ slide.headline }}</h2>
+              <SliderSlide
+                v-for="slide in slides"
+                :key="slide.image"
+                class="ImageSlider__slide"
+              >
+                <img
+                  :src="slide.image"
+                  :alt="slide.headline"
+                  class="ImageSlider__image"
+                >
+                <h2 class="ImageSlider__headline">
+                  {{ slide.headline }}
+                </h2>
               </SliderSlide>
             </SliderSlides>
             <button
               class="text-white ImageSlider__direction ImageSlider__direction--prev"
               @click="prev"
-            >&laquo; Prev</button>
+            >
+              &laquo; Prev
+            </button>
             <button
               class="text-white ImageSlider__direction ImageSlider__direction--next"
               @click="next"
-            >Next &raquo;</button>
+            >
+              Next &raquo;
+            </button>
 
             <ol class="ImageSlider__dots">
-              <li v-for="n in slides.length" :key="n">
-                <button class="px-2 bg-white border border-gray-200" @click="goToIndex(n - 1)">{{ n }}</button>
+              <li
+                v-for="n in slides.length"
+                :key="n"
+              >
+                <button
+                  class="px-2 bg-white border border-gray-200"
+                  @click="goToIndex(n - 1)"
+                >
+                  {{ n }}
+                </button>
               </li>
             </ol>
           </div>

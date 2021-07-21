@@ -12,12 +12,16 @@
       </p>
       <div class="mt-6">
         <button
-          @click="open = true"
           class="px-4 py-2 font-semibold text-white bg-red-500 border border-transparent rounded hover:bg-red-600 focus:outline-none focus:shadow-outline"
+          @click="open = true"
         >
           Delete my account
         </button>
-        <Modal aria-labelledby="dialog-title" v-model="open" :persistent="true">
+        <Modal
+          v-model="open"
+          aria-labelledby="dialog-title"
+          :persistent="true"
+        >
           <div class="w-full max-w-lg px-6 py-6 bg-white rounded-lg shadow-2xl">
             <h2
               id="dialog-title"
@@ -32,14 +36,14 @@
             <div class="mt-6">
               <button
                 type="button"
-                @click="open = false"
                 class="px-4 py-2 font-semibold text-white bg-red-500 border border-transparent rounded hover:bg-red-600 focus:outline-none focus:shadow-outline"
+                @click="open = false"
               >
                 Delete my account
               </button>
               <button
-                @click="open = false"
                 class="px-4 py-2 ml-4 font-semibold text-gray-800 bg-white border rounded hover:bg-gray-100 focus:outline-none focus:shadow-outline"
+                @click="open = false"
               >
                 Cancel
               </button>

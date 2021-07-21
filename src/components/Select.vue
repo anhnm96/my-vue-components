@@ -1,6 +1,14 @@
 <template>
-  <select :class="$options.name" :multiple="multiple" v-model="selected" @change="updateValue">
-    <option disabled v-text="disabledOption" />
+  <select
+    v-model="selected"
+    :class="$options.name"
+    :multiple="multiple"
+    @change="updateValue"
+  >
+    <option
+      disabled
+      v-text="disabledOption"
+    />
     <option
       v-for="option in adaptedOptions"
       :key="option.id"

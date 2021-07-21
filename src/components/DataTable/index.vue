@@ -8,12 +8,12 @@
     @keydown.meta.z.exact.prevent="undo"
     @keydown.meta.shift.z.prevent="redo"
   >
-  <!-- `prevent` undo and redo because it
+    <!-- `prevent` undo and redo because it
   may make CellCursor emit on-input event
   on some browsers -->
     <thead>
       <tr>
-        <th class="datatable__header"></th>
+        <th class="datatable__header" />
         <th
           v-for="(col, $columnIndex) in columns"
           :key="col.name"
@@ -24,26 +24,36 @@
         </th>
       </tr>
     </thead>
-     <DragList tag="tbody" child-tag="tr" handle=".datatable__index" :id-adapter="(i) => i.id" v-model:list="list">
-       <template #default="{ item, index }">
-          <td
-            class="datatable__index"
-            @mousedown="selectHeader('row', index)"
-          >
-            {{ index + 1 }}
-          </td>
-          <Cell
-            v-for="(col, $columnIndex) in columns"
-            :key="col.name"
-            :row-index="index"
-            :column-index="$columnIndex"
-            >{{ item[col.name] }}</Cell
-          >
-        </template>
-        <template #placeholder-move>
-          <td :colspan="columns.length + 1" style="border: 1px solid red;height: 2px"></td>
-        </template>
-     </DragList>
+    <DragList
+      v-model:list="list"
+      tag="tbody"
+      child-tag="tr"
+      handle=".datatable__index"
+      :id-adapter="(i) => i.id"
+    >
+      <template #default="{ item, index }">
+        <td
+          class="datatable__index"
+          @mousedown="selectHeader('row', index)"
+        >
+          {{ index + 1 }}
+        </td>
+        <Cell
+          v-for="(col, $columnIndex) in columns"
+          :key="col.name"
+          :row-index="index"
+          :column-index="$columnIndex"
+        >
+          {{ item[col.name] }}
+        </Cell>
+      </template>
+      <template #placeholder-move>
+        <td
+          :colspan="columns.length + 1"
+          style="border: 1px solid red;height: 2px"
+        />
+      </template>
+    </DragList>
     <!-- <tbody>
       <tr v-for="(item, $rowIndex) in items" :key="item.id">
         <td
@@ -65,13 +75,23 @@
     <cell-cursor :items="items">
       <!-- Pass-through all slots to cell-input component. -->
       <!-- May filter later to only pass cell-input* slots -->
-      <template v-for="name of Object.keys($slots)" #[name]="scope">
-        <slot :name="name" v-bind="scope" />
+      <template
+        v-for="name of Object.keys($slots)"
+        #[name]="scope"
+      >
+        <slot
+          :name="name"
+          v-bind="scope"
+        />
       </template>
     </cell-cursor>
     <context-menu :actions="actions">
       <template #default="scope">
-        <slot name="context-menu" v-bind="scope" :cursor="cursor">
+        <slot
+          name="context-menu"
+          v-bind="scope"
+          :cursor="cursor"
+        >
           <button
             class="block w-full p-2 text-left hover:bg-gray-400"
             :disabled="scope.context.event.target.tagName === 'TH'"
@@ -129,6 +149,7 @@ import useTrackRef from '@/hooks/useTrackRef'
 import DragList from '@/components/DragDrop/DragList'
 
 export default {
+  components: {DragList, Cell, CellCursor, CellSelectingRegion, ContextMenu},
   props: {
     items: Array,
     columns: Array,
@@ -137,7 +158,6 @@ export default {
       default: false
     }
   },
-  components: {DragList, Cell, CellCursor, CellSelectingRegion, ContextMenu},
   emits: ['update:items', 'on-input'],
   setup(props, {emit}) {
     const list = computed({

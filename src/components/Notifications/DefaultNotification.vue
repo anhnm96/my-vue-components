@@ -26,8 +26,12 @@
             />
           </div>
           <div class="ml-3 flex-1 pt-0.5">
-            <p class="text-sm font-medium text-gray-900">{{ title }}</p>
-            <p class="mt-1 text-sm text-gray-500">{{ description }}</p>
+            <p class="text-sm font-medium text-gray-900">
+              {{ title }}
+            </p>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ description }}
+            </p>
           </div>
           <div class="flex flex-shrink-0 ml-4">
             <button
@@ -35,7 +39,10 @@
               @click="show = false"
             >
               <span class="sr-only">Close</span>
-              <XIcon class="w-5 h-5" aria-hidden="true" />
+              <XIcon
+                class="w-5 h-5"
+                aria-hidden="true"
+              />
             </button>
           </div>
         </div>

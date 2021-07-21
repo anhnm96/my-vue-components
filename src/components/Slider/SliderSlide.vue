@@ -1,6 +1,9 @@
 <template>
   <transition :name="transition">
-    <div v-show="active" class="SliderSlide">
+    <div
+      v-show="active"
+      class="SliderSlide"
+    >
       <slot />
     </div>
   </transition>

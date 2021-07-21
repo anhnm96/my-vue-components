@@ -43,7 +43,7 @@ function mergeOptions(options = {}) {
 
 export function show(options: ToastOptions, component: Component = DefaultNotification) {
   const mergedOptions = mergeOptions(options)
-  let toastVNode = createVNode(component, mergedOptions)
+  const toastVNode = createVNode(component, mergedOptions)
   notifications.value[mergedOptions.position].push(toastVNode)
 
   if (!parentEl) {

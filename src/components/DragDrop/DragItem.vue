@@ -1,9 +1,9 @@
 <template>
   <component
+    :is="tag"
     ref="el"
     class="drag-container"
     :class="clazz"
-    :is="tag"
     :draggable="draggable && !handleLock"
     @dragstart.self="dragstart"
     @dragenter.prevent="dragenter"
@@ -17,14 +17,23 @@
       @binding dragging item is being dragged status
      -->
     <slot :dragging="dragging" />
-    <div v-if="dragging && hasDragImageSlot" class="drag-image" ref="dragImageEl">
+    <div
+      v-if="dragging && hasDragImageSlot"
+      ref="dragImageEl"
+      class="drag-image"
+    >
       <!--
         @slot drag-image
         @binding data dataTransfer passed as props
         @binding width width of the element
         @binding height height of the element
        -->
-      <slot name="drag-image" :data="dataTransfer" :width="width" :height="height" />
+      <slot
+        name="drag-image"
+        :data="dataTransfer"
+        :width="width"
+        :height="height"
+      />
     </div>
   </component>
 </template>

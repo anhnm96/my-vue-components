@@ -7,15 +7,28 @@
     </h3>
     <div class="flex-1 min-h-0 overflow-y-auto">
       <ul class="px-3 pt-1 pb-3">
-        <DragList group="task" name="sca" mode="cut" v-model:list="tasks" :id-adapter="(item) => (item['_id'])" >
+        <DragList
+          v-model:list="tasks"
+          group="task"
+          name="sca"
+          mode="cut"
+          :id-adapter="(item) => (item['_id'])"
+        >
           <template #default="{item, index}">
-            <div :class="{ 'mt-3': index > 0 }" class="block p-5 bg-white rounded-md shadow">
+            <div
+              :class="{ 'mt-3': index > 0 }"
+              class="block p-5 bg-white rounded-md shadow"
+            >
               <div class="flex justify-between">
                 <p class="text-sm font-semibold leading-snug text-gray-900">
                   {{ item.title }}
                 </p>
                 <span class="flex-shrink-0">
-                  <img class="w-6 h-6 rounded-full" :src="item.avatar" alt="avatar" />
+                  <img
+                    class="w-6 h-6 rounded-full"
+                    :src="item.avatar"
+                    alt="avatar"
+                  >
                 </span>
               </div>
               <div class="flex items-baseline justify-between">
@@ -31,18 +44,22 @@
                       fill="currentColor"
                       viewBox="0 0 8 8"
                     >
-                      <circle cx="4" cy="4" r="3" />
+                      <circle
+                        cx="4"
+                        cy="4"
+                        r="3"
+                      />
                     </svg>
-                    <span class="ml-2 text-sm font-medium text-teal-900"
-                      >Feature Request</span
-                    >
+                    <span
+                      class="ml-2 text-sm font-medium text-teal-900"
+                    >Feature Request</span>
                   </span>
                 </div>
               </div>
             </div>
           </template>
           <template #placeholder-add>
-            <div style="background: green; height: 1px"></div>
+            <div style="background: green; height: 1px" />
           </template>
         </DragList>
       </ul>
@@ -54,12 +71,6 @@
 import DragList from '@/components/DragDrop/DragList'
 
 export default {
-  data () {
-    return {
-      ghostItemPosition: null,
-      newItem: null
-    }
-  },
   components: {
     DragList
   },
@@ -71,6 +82,12 @@ export default {
     columnIndex: {
       type: Number,
       required: true
+    }
+  },
+  data () {
+    return {
+      ghostItemPosition: null,
+      newItem: null
     }
   },
   computed: {

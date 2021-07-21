@@ -1,18 +1,25 @@
 <template>
-    <button role="switch" v-bind="$attrs" type="button" class="toggle-button" :aria-pressed="modelValue" @click="toggle">
-      <template v-if="labels">
-        <span v-if="modelValue">
-          <slot name="checked">
-            {{labelChecked}}
-          </slot>
-        </span>
-        <span v-else>
-          <slot>
-            {{labelUnChecked}}
-          </slot>
-        </span>
-      </template>
-    </button>
+  <button
+    role="switch"
+    v-bind="$attrs"
+    type="button"
+    class="toggle-button"
+    :aria-pressed="modelValue"
+    @click="toggle"
+  >
+    <template v-if="labels">
+      <span v-if="modelValue">
+        <slot name="checked">
+          {{ labelChecked }}
+        </slot>
+      </span>
+      <span v-else>
+        <slot>
+          {{ labelUnChecked }}
+        </slot>
+      </span>
+    </template>
+  </button>
 </template>
 
 <script>

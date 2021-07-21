@@ -1,20 +1,50 @@
 <template>
-    <div>
-        <VDragDrop @dragstart="dragstart" group="DragImgOnDrop" tag="span" @dragend="dragend" :droppable="false" v-for="i in items" :key="i" :dataTransfer="{value: i}">
-            <template #default="{dragging}">
-                <span class="drag" :class="{ghost: dragging}">{{i}}</span>
-            </template>
-            <template #drag-image="{data}">
-                <span v-show="!entering" class="drag">{{data.value}}</span>
-                <span v-show="entering" class="drag" style="border-radius: 50%">DROP</span>
-            </template>
-      </VDragDrop>
-      <VDragDrop :draggable="false" group="DragImgOnDrop" hover-class="hovering" class="copy" @dragenter="dragenter" @dragleave="dragleave" @dropped="drop">
-        <div style="pointer-events: none">
-          <span v-for="i in droplist" :key="i">{{i}}</span>
-        </div>
-      </VDragDrop>
-    </div>
+  <div>
+    <VDragDrop
+      v-for="i in items"
+      group="DragImgOnDrop"
+      :key="i"
+      tag="span"
+      :droppable="false"
+      :data-transfer="{value: i}"
+      @dragstart="dragstart"
+      @dragend="dragend"
+    >
+      <template #default="{dragging}">
+        <span
+          class="drag"
+          :class="{ghost: dragging}"
+        >{{ i }}</span>
+      </template>
+      <template #drag-image="{data}">
+        <span
+          v-show="!entering"
+          class="drag"
+        >{{ data.value }}</span>
+        <span
+          v-show="entering"
+          class="drag"
+          style="border-radius: 50%"
+        >DROP</span>
+      </template>
+    </VDragDrop>
+    <VDragDrop
+      :draggable="false"
+      group="DragImgOnDrop"
+      hover-class="hovering"
+      class="copy"
+      @dragenter="dragenter"
+      @dragleave="dragleave"
+      @dropped="drop"
+    >
+      <div style="pointer-events: none">
+        <span
+          v-for="i in droplist"
+          :key="i"
+        >{{ i }}</span>
+      </div>
+    </VDragDrop>
+  </div>
 </template>
 
 <script>

@@ -56,8 +56,8 @@ import { defineComponent, ref, onMounted, onBeforeUnmount, watch, provide, injec
 import trapFocus from '@/directives/trapFocus'
 // export modal context
 interface ModalContext {
-  labelledBy: Ref<string>
-  describedBy: Ref<string>
+  labelledBy: Ref<string>;
+  describedBy: Ref<string>;
 }
 const MODAL_SYMBOL = Symbol('Modal') as InjectionKey<ModalContext>
 export const useModal = () => inject(MODAL_SYMBOL)

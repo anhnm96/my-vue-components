@@ -1,5 +1,5 @@
 export function createDragImage(el: HTMLElement): HTMLElement {
-    let clone = deepClone(el);
+    const clone = deepClone(el);
     // clone.style.position = 'fixed';
     clone.style.margin = '0';
     // clone.style["z-index"] = '1000';
@@ -11,13 +11,13 @@ export function createDragImage(el: HTMLElement): HTMLElement {
  * Clones the given element and all its descendants.
  */
 function deepClone(el: HTMLElement): HTMLElement {
-    let clone = el.cloneNode(true) as HTMLElement;
+    const clone = el.cloneNode(true) as HTMLElement;
     copyStyle(el, clone);
-    let vSrcElements = el.getElementsByTagName("*");
-    let vDstElements = clone.getElementsByTagName("*");
+    const vSrcElements = el.getElementsByTagName("*");
+    const vDstElements = clone.getElementsByTagName("*");
     for (let i = vSrcElements.length; i--;) {
-        let vSrcElement = vSrcElements[i] as HTMLElement;
-        let vDstElement = vDstElements[i] as HTMLElement;
+        const vSrcElement = vSrcElements[i] as HTMLElement;
+        const vDstElement = vDstElements[i] as HTMLElement;
         copyStyle(vSrcElement, vDstElement);
     }
     return clone;
@@ -31,13 +31,13 @@ function copyStyle(src: HTMLElement, destination: HTMLElement) {
     for (const key of computedStyle) {
         if (key === 'width') {
             // IE11
-            let width = computedStyle.getPropertyValue("box-sizing") === 'border-box' ?
+            const width = computedStyle.getPropertyValue("box-sizing") === 'border-box' ?
                 src.clientWidth :
                 src.clientWidth - parseFloat(computedStyle.paddingLeft) - parseFloat(computedStyle.paddingRight)
             destination.style.setProperty("width", width + "px");
         } else if (key === 'height') {
             // IE11
-            let height = computedStyle.getPropertyValue("box-sizing") === 'border-box' ?
+            const height = computedStyle.getPropertyValue("box-sizing") === 'border-box' ?
                 src.clientHeight :
                 src.clientHeight - parseFloat(computedStyle.paddingTop) - parseFloat(computedStyle.paddingBottom)
             destination.style.setProperty("height", height + "px");

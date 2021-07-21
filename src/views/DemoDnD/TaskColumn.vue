@@ -2,7 +2,7 @@
   <DragDrop
     tag="li"
     :draggable="true"
-    :dataTransfer="{
+    :data-transfer="{
       type: 'task',
       columnIndex: columnIndex,
       taskIndex: taskIndex,
@@ -17,7 +17,11 @@
           {{ item.title }}
         </p>
         <span class="flex-shrink-0">
-          <img class="w-6 h-6 rounded-full" :src="item.avatar" alt="avatar" />
+          <img
+            class="w-6 h-6 rounded-full"
+            :src="item.avatar"
+            alt="avatar"
+          >
         </span>
       </div>
       <div class="flex items-baseline justify-between">
@@ -33,11 +37,15 @@
               fill="currentColor"
               viewBox="0 0 8 8"
             >
-              <circle cx="4" cy="4" r="3" />
+              <circle
+                cx="4"
+                cy="4"
+                r="3"
+              />
             </svg>
-            <span class="ml-2 text-sm font-medium text-teal-900"
-              >Feature Request</span
-            >
+            <span
+              class="ml-2 text-sm font-medium text-teal-900"
+            >Feature Request</span>
           </span>
         </div>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <button
-    :class="[$style.tabBtn, activeTab === id && $style.tabActive]"
     :id="`tab-${id}`"
+    :class="[$style.tabBtn, activeTab === id && $style.tabActive]"
     @click.prevent="activateTab(id)"
   >
     <slot />

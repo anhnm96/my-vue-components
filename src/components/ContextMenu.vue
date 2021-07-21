@@ -1,8 +1,8 @@
 <template>
   <div
-    class="bg-white shadow-sm context__container"
     v-if="context.show"
     v-click-outside="() => (context.show = false)"
+    class="bg-white shadow-sm context__container"
     :style="{
       left: context.event.clientX + 'px',
       top: context.event.clientY + 'px',
@@ -12,10 +12,10 @@
     <ul role="menu">
       <slot :context="context">
         <li
-          role="menuitem"
-          class="hover:bg-gray-400"
           v-for="(action, index) in actions"
           :key="`menu-item-${index}`"
+          role="menuitem"
+          class="hover:bg-gray-400"
           @click="handleAction"
         >
           {{ action.label }}

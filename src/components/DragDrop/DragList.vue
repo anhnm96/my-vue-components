@@ -1,9 +1,26 @@
 <template>
-  <transition-group :id="id" class="drag-list" move-class="drag-list--move" :tag="tag" ref="listEl" :data-group="group"
-      @dragleave="dragleave" @dragend="dragend" @drop="drop" @dragover="dragover" @dragstart.stop @dragenter="dragenter"
-      @animationstart="setTransitionState(true)" @animationend="setTransitionState(false)"
-      @transitionstart="setTransitionState(true)" @transitionend="setTransitionState(false)">
-    <div key="dummy-el" ref="dummyEl"></div>
+  <transition-group
+    :id="id"
+    ref="listEl"
+    class="drag-list"
+    move-class="drag-list--move"
+    :tag="tag"
+    :data-group="group"
+    @dragleave="dragleave"
+    @dragend="dragend"
+    @drop="drop"
+    @dragover="dragover"
+    @dragstart.stop
+    @dragenter="dragenter"
+    @animationstart="setTransitionState(true)"
+    @animationend="setTransitionState(false)"
+    @transitionstart="setTransitionState(true)"
+    @transitionend="setTransitionState(false)"
+  >
+    <div
+      key="dummy-el"
+      ref="dummyEl"
+    />
     <template v-if="showPlaceholderMove || showPlaceholderAdd">
       <!-- We still add @dragstart when show placeholder because in production
       mode DragItem in placeholder may be reused after a success drop.
@@ -21,17 +38,43 @@
         @dragstart="dragstart"
         @dragentered="dragentered"
       >
-        <template v-for="name of Object.keys($slots)" #[name]="scope">
-          <slot :name="name" v-bind="scope" :item="item" :index="index" />
+        <template
+          v-for="name of Object.keys($slots)"
+          #[name]="scope"
+        >
+          <slot
+            :name="name"
+            v-bind="scope"
+            :item="item"
+            :index="index"
+          />
         </template>
       </DragItem>
       <!-- @slot use for swapping inside list -->
-      <DragItem :tag="childTag" ref="placeholderMoveEl" class="placeholder-move" v-if="showPlaceholderMove" key="drag-item--placeholder--move">
-        <slot name="placeholder-move" :data="draggingItem.data" />
+      <DragItem
+        v-if="showPlaceholderMove"
+        ref="placeholderMoveEl"
+        key="drag-item--placeholder--move"
+        :tag="childTag"
+        class="placeholder-move"
+      >
+        <slot
+          name="placeholder-move"
+          :data="draggingItem.data"
+        />
       </DragItem>
       <!-- @slot use for swapping outside list -->
-      <DragItem :tag="childTag" ref="placeholderAddEl" class="placeholder-add" v-if="showPlaceholderAdd" key="drag-item--placeholder--add">
-        <slot name="placeholder-add" :data="draggingItem.data" />
+      <DragItem
+        v-if="showPlaceholderAdd"
+        ref="placeholderAddEl"
+        key="drag-item--placeholder--add"
+        :tag="childTag"
+        class="placeholder-add"
+      >
+        <slot
+          name="placeholder-add"
+          :data="draggingItem.data"
+        />
       </DragItem>
       <!-- index + 1 for placeholder -->
       <DragItem
@@ -47,14 +90,22 @@
         @dragstart="dragstart"
         @dragentered="dragentered"
       >
-        <template v-for="name of Object.keys($slots)" #[name]="scope">
-          <slot :name="name" v-bind="scope" :item="item" :index="index + 1 + itemsBeforePlaceholder.length" />
+        <template
+          v-for="name of Object.keys($slots)"
+          #[name]="scope"
+        >
+          <slot
+            :name="name"
+            v-bind="scope"
+            :item="item"
+            :index="index + 1 + itemsBeforePlaceholder.length"
+          />
         </template>
       </DragItem>
     </template>
     <DragItem
-      v-else
       v-for="(item, index) in list"
+      v-else
       :key="idAdapter(item)"
       :data-transfer="{ index, value: item }"
       :group="group"
@@ -65,8 +116,16 @@
       @dragstart="dragstart"
       @dragentered="dragentered"
     >
-      <template v-for="name of Object.keys($slots)" #[name]="scope">
-        <slot :name="name" v-bind="scope" :item="item" :index="index" />
+      <template
+        v-for="name of Object.keys($slots)"
+        #[name]="scope"
+      >
+        <slot
+          :name="name"
+          v-bind="scope"
+          :item="item"
+          :index="index"
+        />
       </template>
     </DragItem>
   </transition-group>
@@ -76,6 +135,7 @@ import {ref, computed, reactive} from 'vue'
 import {DnDState, DragListState} from './DnDStore'
 import DragItem from './DragItem'
 export default {
+  components: {DragItem},
   props: {
     list: {
       type: Array,
@@ -111,7 +171,6 @@ export default {
       default: 'copy'
     }
   },
-  components: {DragItem},
   setup(props, {emit, slots}) {
     const listEl = ref(null)
     // draggingOver listEl
@@ -386,7 +445,7 @@ function array_move(arr, oldIndex, newIndex, allowNegative = true) {
             newIndex += arr.length;
         }
         if (newIndex >= arr.length) {
-            var k = newIndex - arr.length + 1;
+            let k = newIndex - arr.length + 1;
             while (k--) {
                 arr.push(undefined);
             }

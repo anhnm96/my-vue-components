@@ -1,15 +1,22 @@
 <template>
-<div>
-  <article class="default">
-    <div :aria-hidden="false">
-        <skeleton-box width="100%" height="3em" /><br>
+  <div>
+    <article class="default">
+      <div :aria-hidden="false">
+        <skeleton-box
+          width="100%"
+          height="3em"
+        /><br>
         <skeleton-box height="6em" /><br>
-        <skeleton-box width="100%" :min-width="50" height="6em" :max-width="70" />
-      <span class="sr-only">Loading</span>
-    </div>
-  </article>
-
-</div>
+        <skeleton-box
+          width="100%"
+          :min-width="50"
+          height="6em"
+          :max-width="70"
+        />
+        <span class="sr-only">Loading</span>
+      </div>
+    </article>
+  </div>
 </template>
 
 <script>

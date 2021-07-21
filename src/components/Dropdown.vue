@@ -5,7 +5,7 @@
     class="fixed inset-0 w-full cursor-default"
     arial-label="close"
     @click="active = false"
-  ></button>
+  />
   <div
     v-bind="$attrs"
     class="dropdown"
@@ -17,25 +17,35 @@
       ref="dropdownTrigger"
       class="dropdown-trigger"
       :class="[triggerClass, { 'cursor-not-allowed': disabled }]"
-      @click="onClick"
-      @contextmenu.prevent="onContextMenu"
       :aria-haspopup="popupRole"
       :aria-expanded="active"
       :disabled="disabled"
+      @click="onClick"
+      @contextmenu.prevent="onContextMenu"
     >
-      <slot name="trigger" :active="active"></slot>
+      <slot
+        name="trigger"
+        :active="active"
+      />
     </button>
     <transition :name="animation">
       <div
         v-if="active"
+        v-trap-focus
         class="dropdown-menu"
         :role="popupRole"
         :aria-labelledby="id"
         :aria-multiselectable="multiple"
-        v-trap-focus
       >
-        <div class="dropdown-content" :style="containerStyle">
-          <slot name="dropdown" :active="active" :toggle="toggle"></slot>
+        <div
+          class="dropdown-content"
+          :style="containerStyle"
+        >
+          <slot
+            name="dropdown"
+            :active="active"
+            :toggle="toggle"
+          />
         </div>
       </div>
     </transition>
@@ -43,38 +53,38 @@
 </template>
 
 <script>
-import {ref, onMounted, onBeforeUnmount, watch, nextTick} from 'vue'
-import trapFocus from '@/directives/trapFocus.js'
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import trapFocus from '@/directives/trapFocus.ts'
 export default {
   name: 'VDropdown',
+  directives: { 'trap-focus': trapFocus },
   props: {
     triggerClass: {
       type: String,
-      default: ''
+      default: '',
     },
     containerStyle: {
       type: String,
-      default: ''
+      default: '',
     },
     animation: {
       type: String,
-      default: 'fade'
+      default: 'fade',
     },
     popupRole: {
       type: String,
-      default: 'menu'
+      default: 'menu',
     },
     triggers: {
       type: Array,
-      default: () => ['click']
+      default: () => ['click'],
     },
     multiple: {
       type: Boolean,
-      default: null
+      default: null,
     },
-    disabled: Boolean
+    disabled: Boolean,
   },
-  directives: {'trap-focus': trapFocus},
   setup(props) {
     /** trigger button */
     const dropdownTrigger = ref(null)
@@ -82,27 +92,27 @@ export default {
     // trigger event setup
     const onClick = () => {
       if (props.triggers.indexOf('click') < 0) return
-        toggle()
+      toggle()
     }
     const onContextMenu = () => {
-        if (props.triggers.indexOf('contextmenu') < 0) return
-        toggle()
+      if (props.triggers.indexOf('contextmenu') < 0) return
+      toggle()
     }
     const onHover = (val) => {
-        if (props.triggers.indexOf('hover') < 0) return
-        toggle(val)
+      if (props.triggers.indexOf('hover') < 0) return
+      toggle(val)
     }
     const toggle = (val = null) => {
-        if (props.disabled) return
-        if (val !== null) active.value = val
-        else active.value = !active.value
+      if (props.disabled) return
+      if (val !== null) active.value = val
+      else active.value = !active.value
     }
     /** dropdown popup */
     const active = ref(false)
     function keyPress({ key }) {
-        if (active.value && (key === 'Escape' || key === 'Esc')) {
-            active.value = false
-        }
+      if (active.value && (key === 'Escape' || key === 'Esc')) {
+        active.value = false
+      }
     }
     // re-focus button trigger when close
     watch(active, (newActive) => {
@@ -111,14 +121,22 @@ export default {
 
     onMounted(() => {
       if (typeof window !== 'undefined') {
-          document.addEventListener('keyup', keyPress)
+        document.addEventListener('keyup', keyPress)
       }
     })
     onBeforeUnmount(() => {
       document.removeEventListener('keyup', keyPress)
     })
-    return {dropdownTrigger, id, onClick, onContextMenu, onHover, toggle, active}
-  }
+    return {
+      dropdownTrigger,
+      id,
+      onClick,
+      onContextMenu,
+      onHover,
+      toggle,
+      active,
+    }
+  },
 }
 </script>
 <style scoped>

@@ -4,10 +4,10 @@ const useTimer = (
   callback: () => any = () => {},
   delay: number
 ): {
-  start: () => void
-  stop: () => void
-  clear: () => void
-  progress: Ref<number>
+  start: () => void;
+  stop: () => void;
+  clear: () => void;
+  progress: Ref<number>;
 } => {
   let timeoutId: number
   let intervalId: number

@@ -12,9 +12,12 @@
     @touchend="onTouchEnd"
     @touchmove="onTouchMove"
   >
-  <!-- mousewheel.prevent is used to stop the page scroll elastic effects -->
-    <div class="zoomer" :style="wrapperStyle">
-      <slot></slot>
+    <!-- mousewheel.prevent is used to stop the page scroll elastic effects -->
+    <div
+      class="zoomer"
+      :style="wrapperStyle"
+    >
+      <slot />
     </div>
   </div>
 </template>
@@ -68,8 +71,8 @@ export default {
   },
   computed: {
     wrapperStyle () {
-      let translateX = this.containerWidth * this.animTranslateX
-      let translateY = this.containerHeight * this.animTranslateY
+      const translateX = this.containerWidth * this.animTranslateX
+      const translateY = this.containerHeight * this.animTranslateY
       return {
         transform: [
           `translate(${translateX}px, ${translateY}px)`,
@@ -137,8 +140,8 @@ export default {
       scaleDelta = newScale / this.scale
       this.scale = newScale
       if (this.pivot !== 'image-center') {
-        let normMousePosX = (this.pointerPosX - this.containerLeft) / this.containerWidth
-        let normMousePosY = (this.pointerPosY - this.containerTop) / this.containerHeight
+        const normMousePosX = (this.pointerPosX - this.containerLeft) / this.containerWidth
+        const normMousePosY = (this.pointerPosY - this.containerTop) / this.containerHeight
         this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
         this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
       }
@@ -150,8 +153,8 @@ export default {
     // pan
     onPointerMove (newMousePosX, newMousePosY) {
       if (this.isPointerDown) {
-        let pixelDeltaX = newMousePosX - this.pointerPosX
-        let pixelDeltaY = newMousePosY - this.pointerPosY
+        const pixelDeltaX = newMousePosX - this.pointerPosX
+        const pixelDeltaY = newMousePosY - this.pointerPosY
         // console.log('pixelDeltaX, pixelDeltaY', pixelDeltaX, pixelDeltaY)
         if (!this.panLocked) {
           this.translateX += pixelDeltaX / this.containerWidth
@@ -178,7 +181,7 @@ export default {
       }
       // translate
       if (this.limitTranslation) {
-        let translateLimit = this.calcTranslateLimit()
+        const translateLimit = this.calcTranslateLimit()
         if (Math.abs(this.translateX) > translateLimit.x) {
           this.translateX *= translateLimit.x / Math.abs(this.translateX)
         }
@@ -189,7 +192,7 @@ export default {
     },
     calcTranslateLimit () {
       if (this.getMarginDirection() === 'y') {
-        let imageToContainerRatio = this.containerWidth / this.aspectRatio / this.containerHeight
+        const imageToContainerRatio = this.containerWidth / this.aspectRatio / this.containerHeight
         let translateLimitY = (this.scale * imageToContainerRatio - 1) / 2
         if (translateLimitY < 0) translateLimitY = 0
         return {
@@ -197,7 +200,7 @@ export default {
           y: translateLimitY
         }
       } else {
-        let imageToContainerRatio = this.containerHeight * this.aspectRatio / this.containerWidth
+        const imageToContainerRatio = this.containerHeight * this.aspectRatio / this.containerWidth
         let translateLimitX = (this.scale * imageToContainerRatio - 1) / 2
         if (translateLimitX < 0) translateLimitX = 0
         return {
@@ -207,7 +210,7 @@ export default {
       }
     },
     getMarginDirection () {
-      let containerRatio = this.containerWidth / this.containerHeight
+      const containerRatio = this.containerWidth / this.containerHeight
       return containerRatio > this.aspectRatio ? 'x' : 'y'
     },
     onDoubleTap (ev) {
@@ -225,7 +228,7 @@ export default {
     // reactive
     onWindowResize () {
         console.log(this.$el)
-      let styles = window.getComputedStyle(this.$el)
+      const styles = window.getComputedStyle(this.$el)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
       this.setPointerPosCenter()
@@ -243,7 +246,7 @@ export default {
       // console.log('loop', this.raf)
     },
     gainOn (from, to) {
-      let delta = (to - from) * 0.3
+      const delta = (to - from) * 0.3
       // console.log('gainOn', from, to, from + delta)
       if (Math.abs(delta) > 1e-5) {
         return from + delta
@@ -254,7 +257,7 @@ export default {
     // Mouse Events ------------------------------------------------------------
     // Mouse wheel scroll,  TrackPad pinch or TrackPad scroll
     onMouseWheel (ev) {
-      let currTime = Date.now()
+      const currTime = Date.now()
       if (Math.abs(ev.wheelDelta) === 120) {
         // Throttle the TouchPad pinch on Mac, or it will be too sensitive
         if (currTime - this.lastFullWheelTime > 50) {
@@ -276,7 +279,7 @@ export default {
     },
     onMouseWheelDo (ev) {
       // Value basis: One mouse wheel (wheelDelta=+-120) means 1.25/0.8 scale.
-      let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
+      const scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
       this.tryToScale(scaleDelta)
       this.onInteractionEnd()
@@ -311,8 +314,8 @@ export default {
         this.pointerPosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
         this.pointerPosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
         // dist
-        let distX = ev.touches[0].clientX - ev.touches[1].clientX
-        let distY = ev.touches[0].clientY - ev.touches[1].clientY
+        const distX = ev.touches[0].clientX - ev.touches[1].clientX
+        const distY = ev.touches[0].clientY - ev.touches[1].clientY
         this.twoFingerInitDist = Math.sqrt(distX * distX + distY * distY)
       }
       // console.log('onTouchStart', ev.touches)
@@ -334,15 +337,15 @@ export default {
         this.onPointerMove(ev.touches[0].clientX, ev.touches[0].clientY)
       } else if (ev.touches.length === 2) {
         // pos
-        let newMousePosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
-        let newMousePosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
+        const newMousePosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
+        const newMousePosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
         this.onPointerMove(newMousePosX, newMousePosY)
         this.pointerPosX = newMousePosX
         this.pointerPosY = newMousePosY
         // dist
-        let distX = ev.touches[0].clientX - ev.touches[1].clientX
-        let distY = ev.touches[0].clientY - ev.touches[1].clientY
-        let newTwoFingerDist = Math.sqrt(distX * distX + distY * distY)
+        const distX = ev.touches[0].clientX - ev.touches[1].clientX
+        const distY = ev.touches[0].clientY - ev.touches[1].clientY
+        const newTwoFingerDist = Math.sqrt(distX * distX + distY * distY)
         this.tryToScale(newTwoFingerDist / this.twoFingerInitDist)
         this.twoFingerInitDist = newTwoFingerDist
       }

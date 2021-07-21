@@ -2,14 +2,26 @@
   <div id="app">
     <Tabs initial-active-tab="profile">
       <div :class="$style.section">
-        <Tab id="home">Home</Tab>
-        <Tab id="profile">Profile</Tab>
-        <Tab id="settings">Settings</Tab>
+        <Tab id="home">
+          Home
+        </Tab>
+        <Tab id="profile">
+          Profile
+        </Tab>
+        <Tab id="settings">
+          Settings
+        </Tab>
       </div>
       <div :class="$style.section">
-        <TabPanel id="home">Home content</TabPanel>
-        <TabPanel id="profile">Profile content</TabPanel>
-        <TabPanel id="settings">Settings content</TabPanel>
+        <TabPanel id="home">
+          Home content
+        </TabPanel>
+        <TabPanel id="profile">
+          Profile content
+        </TabPanel>
+        <TabPanel id="settings">
+          Settings content
+        </TabPanel>
       </div>
     </Tabs>
   </div>

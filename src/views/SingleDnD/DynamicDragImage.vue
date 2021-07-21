@@ -1,18 +1,59 @@
 <template>
   <div>
-    <VDragDrop hover-class="hovering" ref="trashRef" @dropped="trashDrop" :class="{full: hasTrash}" class="trash"></VDragDrop>
-    <VDragDrop :droppable="false" @customdrag="drag" @dragend="dragend" v-for="doc in docs" :key="doc" :dataTransfer="{value: doc}">
-      <img :draggable="false" class="document" src="@/assets/document.png">
+    <VDragDrop
+      ref="trashRef"
+      hover-class="hovering"
+      :class="{full: hasTrash}"
+      class="trash"
+      @dropped="trashDrop"
+    />
+    <VDragDrop
+      v-for="doc in docs"
+      :key="doc"
+      :droppable="false"
+      :data-transfer="{value: doc}"
+      @customdrag="drag"
+      @dragend="dragend"
+    >
+      <img
+        :draggable="false"
+        class="document"
+        src="@/assets/document.png"
+      >
       <template #drag-image>
-        <img v-show="idx === 0" class="drag-image" src="@/assets/smiley01.png" >
-        <img v-show="idx === 1" class="drag-image" src="@/assets/smiley02.png" >
-        <img v-show="idx === 2" class="drag-image" src="@/assets/smiley03.png" >
-        <img v-show="idx === 3" class="drag-image" src="@/assets/smiley04.png" >
-        <img v-show="idx === 4" class="drag-image" src="@/assets/smiley05.png" >
-        <img v-show="idx === 5" class="drag-image" src="@/assets/smiley06.png" >
+        <img
+          v-show="idx === 0"
+          class="drag-image"
+          src="@/assets/smiley01.png"
+        >
+        <img
+          v-show="idx === 1"
+          class="drag-image"
+          src="@/assets/smiley02.png"
+        >
+        <img
+          v-show="idx === 2"
+          class="drag-image"
+          src="@/assets/smiley03.png"
+        >
+        <img
+          v-show="idx === 3"
+          class="drag-image"
+          src="@/assets/smiley04.png"
+        >
+        <img
+          v-show="idx === 4"
+          class="drag-image"
+          src="@/assets/smiley05.png"
+        >
+        <img
+          v-show="idx === 5"
+          class="drag-image"
+          src="@/assets/smiley06.png"
+        >
       </template>
     </VDragDrop>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -31,7 +72,7 @@ components: { VDragDrop },
             if (startPosition.x === undefined) Object.assign(startPosition, {x: e.clientX, y: e.clientY})
             const {top, left, height, width} = trashRef.value.$el.getBoundingClientRect()
             const trashCenter = {x: left + width / 2, y: top + height / 2}
-            let remainingDistance = Math.sqrt(Math.pow(trashCenter.x-e.clientX, 2) + Math.pow(trashCenter.y-e.clientY, 2))
+            const remainingDistance = Math.sqrt(Math.pow(trashCenter.x-e.clientX, 2) + Math.pow(trashCenter.y-e.clientY, 2))
             // lock for calculating totalDistance only once since drag start
             if (!totalDistance.lock) {
               totalDistance.value = Math.sqrt(Math.pow(startPosition.x-trashCenter.x, 2) + Math.pow(startPosition.y-trashCenter.y, 2))

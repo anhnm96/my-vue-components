@@ -1,10 +1,16 @@
 <template>
   <div>
-      {{b.state.value}}
-      <button @click="undo">Undo b</button>
-      <button @click="redo">Redo b</button>
-      <button @click="setB">Set b</button>
-    </div>
+    {{ b.state.value }}
+    <button @click="undo">
+      Undo b
+    </button>
+    <button @click="redo">
+      Redo b
+    </button>
+    <button @click="setB">
+      Set b
+    </button>
+  </div>
 </template>
 
 <script>

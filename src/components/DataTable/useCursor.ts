@@ -1,9 +1,9 @@
 import { ref, reactive, watch, Ref } from 'vue'
 
-type Cell = { rowIndex: number, columnIndex: number }
+type Cell = { rowIndex: number; columnIndex: number }
 type CellRegion = {
-  start: { rowIndex: number, columnIndex: number },
-  end: { rowIndex: number, columnIndex: number }
+  start: { rowIndex: number; columnIndex: number };
+  end: { rowIndex: number; columnIndex: number };
 }
 export class Cursor {
   containerElementRef: HTMLElement

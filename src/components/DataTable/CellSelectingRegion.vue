@@ -1,5 +1,8 @@
 <template>
-  <span class="selecting-region" :style="selectedCellRegionStyle"></span>
+  <span
+    class="selecting-region"
+    :style="selectedCellRegionStyle"
+  />
 </template>
 
 <script>

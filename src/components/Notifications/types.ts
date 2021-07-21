@@ -14,29 +14,29 @@ export type Position =
 export type TransitionType = 'bounce' | 'zoom' | 'slide'
 
 export interface ContentObject {
-  title: string
-  description?: string
+  title: string;
+  description?: string;
 }
 
 export interface DisplayContentObject {
-  text: string
-  description?: string
+  text: string;
+  description?: string;
 }
 
 export type ToastContent = string | ContentObject | Component
 
 export interface ToastObject {
-  toastVNode: VNode
-  container: HTMLDivElement
+  toastVNode: VNode;
+  container: HTMLDivElement;
 }
 
 export interface ToastOptions {
-  type?: ToastType
-  timeout?: number
-  position?: Position
-  showProgressbar?: boolean
-  swipeClose?: boolean
-  onClose?: () => void
-  title?: string
-  description?: string
+  type?: ToastType;
+  timeout?: number;
+  position?: Position;
+  showProgressbar?: boolean;
+  swipeClose?: boolean;
+  onClose?: () => void;
+  title?: string;
+  description?: string;
 }

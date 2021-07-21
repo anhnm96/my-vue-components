@@ -1,6 +1,6 @@
 function TapDetector () {
-    let singleTapCallbacks = []
-    let doubleTapCallbacks = []
+    const singleTapCallbacks = []
+    const doubleTapCallbacks = []
   
     function triggerCallbacks (cbList, arg) {
       cbList.forEach(cbItem => {
@@ -100,7 +100,7 @@ function TapDetector () {
       touchMovedLength = 0
     }
     function onPointerUp () {
-      let currTimeStamp = Date.now()
+      const currTimeStamp = Date.now()
       // console.log('touchMovedLength', touchMovedLength)
       if (touchMovedLength < 10) {
         // Only when no sliding two far is considered as a valid tap
@@ -126,9 +126,9 @@ function TapDetector () {
       touchMovedLength = 0
     }
     function onPointerMove (x, y) {
-      let deltaX = lastPointerX - x
-      let deltaY = lastPointerY - y
-      let length = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+      const deltaX = lastPointerX - x
+      const deltaY = lastPointerY - y
+      const length = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
       // console.log('onTouchMove length', length)
       touchMovedLength += length
       lastPointerX = x

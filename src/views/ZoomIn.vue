@@ -1,8 +1,15 @@
 <template>
   <div>
     <!-- div.item(id="drawing" ref="img" ) -->
-    <img src="https://images.pexels.com/photos/556416/pexels-photo-556416.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=300&w=300" alt="img"
-     id="drawing" ref="img" width='555' height='320' @mouseout="removeDrag">
+    <img
+      id="drawing"
+      ref="img"
+      src="https://images.pexels.com/photos/556416/pexels-photo-556416.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=300&w=300"
+      alt="img"
+      width="555"
+      height="320"
+      @mouseout="removeDrag"
+    >
   </div>
 </template>
 
@@ -50,7 +57,7 @@ export default {
 
 		// this.$refs.img.addEventListener('wheelzoom.destroy', destroy);
 
-		let options = {};
+		const options = {};
 
 		// Object.keys(this.defaults).forEach(function(key){
 		// 	this.settings[key] = options[key] !== undefined ? options[key] : this.defaults[key];
@@ -107,17 +114,17 @@ export default {
 			// As far as I know, there is no good cross-browser way to get the cursor position relative to the event target.
 			// We have to calculate the target element's position relative to the document, and subtrack that from the
 			// cursor's position relative to the document.
-			let rect = this.$refs.img.getBoundingClientRect();
-			let offsetX = e.pageX - rect.left - window.pageXOffset;
-			let offsetY = e.pageY - rect.top - window.pageYOffset;
+			const rect = this.$refs.img.getBoundingClientRect();
+			const offsetX = e.pageX - rect.left - window.pageXOffset;
+			const offsetY = e.pageY - rect.top - window.pageYOffset;
 
 			// Record the offset between the bg edge and cursor:
-			let bgCursorX = offsetX - this.bgPosX;
-			let bgCursorY = offsetY - this.bgPosY;
+			const bgCursorX = offsetX - this.bgPosX;
+			const bgCursorY = offsetY - this.bgPosY;
 			
 			// Use the previous offset to get the percent offset between the bg edge and cursor:
-			let bgRatioX = bgCursorX/this.bgWidth;
-			let bgRatioY = bgCursorY/this.bgHeight;
+			const bgRatioX = bgCursorX/this.bgWidth;
+			const bgRatioY = bgCursorY/this.bgHeight;
 
 			// Update the bg size:
 			if (deltaY < 0) {
@@ -162,11 +169,11 @@ export default {
 			this.$refs.img.addEventListener('mouseup', this.removeDrag);
     },
     load() {
-			let initial = Math.max(this.settings.initialZoom, 1);
+			const initial = Math.max(this.settings.initialZoom, 1);
 
 			if (this.$refs.img.src === this.transparentSpaceFiller) return;
 
-			let computedStyle = window.getComputedStyle(this.$refs.img, null);
+			const computedStyle = window.getComputedStyle(this.$refs.img, null);
 
 			this.width = parseInt(computedStyle.width, 10);
 			this.height = parseInt(computedStyle.height, 10);

@@ -7,9 +7,15 @@
       },
     ]"
   >
-    <div :class="`${$options.name}__htmlarea`" aria-hidden>
+    <div
+      :class="`${$options.name}__htmlarea`"
+      aria-hidden
+    >
       <span>{{ valueAllowed }}</span>
-      <span class="text-excess" v-if="valueExcess">{{ valueExcess }}</span>
+      <span
+        v-if="valueExcess"
+        class="text-excess"
+      >{{ valueExcess }}</span>
     </div>
     <textarea
       ref="textarea"

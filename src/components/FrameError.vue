@@ -14,12 +14,6 @@ export default {
         error: null,
       };
     },
-    methods: {
-      reset() {
-        this.error = null;
-        this.$emit('reset');
-      },
-    },
     errorCaptured(error) {
       console.log('cap')
       this.error = error;
@@ -27,6 +21,12 @@ export default {
       alert(error.message)
       // Optionally capture errors.
       if (this.capture) return false;
+    },
+    methods: {
+      reset() {
+        this.error = null;
+        this.$emit('reset');
+      },
     }
   }
 </script>
