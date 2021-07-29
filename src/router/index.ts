@@ -41,6 +41,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/DemoTable.vue')
   },
   {
+    path: '/autocomplete',
+    name: 'Autocomplete',
+    component: () => import('../views/DemoAutocomplete.vue')
+  },
+  {
     path: '/slider',
     name: 'Slider',
     component: () => import('../views/DemoSlider.vue')

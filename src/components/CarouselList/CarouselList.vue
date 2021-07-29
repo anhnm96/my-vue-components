@@ -9,6 +9,8 @@
     <slot
       name="header"
       :index="childData.activeIndex"
+      :hasPrev="childData.hasPrev"
+      :hasNext="childData.hasNext"
       :prev="childData.prev"
       :next="childData.next"
     />
@@ -30,6 +32,8 @@ export default defineComponent({
   setup() {
     const childData = reactive({
       activeIndex: 0,
+      hasPrev: false,
+      hasNext: true,
       prev: () => ({}),
       next: () => ({}),
     })

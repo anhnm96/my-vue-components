@@ -11,7 +11,7 @@
   >
     <div
       v-if="show"
-      class="w-full max-w-sm bg-white rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5"
+      class="max-w-sm bg-white rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5"
     >
       <div class="p-4">
         <div class="flex items-start">

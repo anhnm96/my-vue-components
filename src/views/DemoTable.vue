@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 1000px">
+  <div class="min-h-screen">
     <!-- @keydown.stop to prevent storybook behavior in demo -->
     <DataTable
       v-model:items="items"
@@ -11,6 +11,7 @@
         <v-autocomplete
           :input="cell"
           :options="countries"
+          :use-filter="true"
           @update:input="onInput"
         />
       </template>
@@ -29,34 +30,10 @@
         </p>
       </template> -->
     </DataTable>
-    <v-autocomplete
-      v-model:selected="selected"
-      :option-adapter="
-        (val) => ({ id: val.id, label: val.user['first_name'], value: val })
-      "
-      :options="nameList"
-      class="border border-gray-400 border-solid"
-      arial-label="select name"
-    />
-    selected name: {{ selected }} <br>
-    <label>
-      Select country
-      <v-autocomplete
-        v-model:input="val"
-        class="border border-gray-400 border-solid"
-        :options="countries"
-      />
-    </label>
   </div>
-  <div
-    class="w-full h-5 bg-green"
-    :tabindex="0"
-    @paste="test"
-  />
 </template>
 
 <script>
-import nameList from './name'
 import { items as dataItems, countries } from './items'
 import DataTable from '@/components/DataTable'
 import VAutocomplete from '@/components/VAutocomplete'
@@ -87,29 +64,18 @@ export default {
       console.log('update', items.value.length, rowIndex)
       items.value[rowIndex][column.name] = value
     }
-    const val = ref('')
-    const arr = ref(['Vue', 'ReactiveX', 'Angular', 'Vue 3'])
 
     const insertRow = (rowIndex, context) => {
       items.value.splice(rowIndex, 0, dumpItem)
       context.show = false
     }
-    const selected = ref([])
-    function test(e) {
-      console.log('paste', e)
-    }
     return {
-      test,
       countries,
-      nameList,
       columns,
       items,
       onInput,
-      val,
-      arr,
       insertRow,
       reactive,
-      selected,
     }
   },
 }

@@ -1,191 +1,179 @@
 <template>
-  <button
-    v-if="shown"
-    type="button"
-    class="fixed inset-0 w-full cursor-default"
-    arial-label="close"
-    @click.prevent="close"
-  />
   <div
     role="combobox"
-    :aria-expanded="shown"
+    :aria-expanded="show"
     :aria-owns="`VAutocomplete__${timeId}--listbox`"
     aria-haspopup="listbox"
-    class="autocomplete__container"
-    v-bind="$attrs"
+    class="relative"
+    :class="containerClass"
   >
     <input
-      ref="input"
+      ref="inputEl"
       v-model="inputValue"
       type="text"
+      autocomplete="off"
       aria-autocomplete="list"
       :aria-controls="`VAutocomplete__${timeId}--listbox`"
-      :aria-activedescendant="`VAutocomplete__${timeId}--opt${arrowCounter}`"
-      :aria-label="arialLabel"
-      @keyup.esc.prevent="shown = false"
-      @keydown.down.prevent="keyArrows('down')"
-      @keydown.up.prevent="keyArrows('up')"
-      @keydown.enter="safeSalect(adaptedOptions[arrowCounter])"
-      @keydown.tab.prevent="safeSalect(adaptedOptions[arrowCounter])"
-      @click="shown = true"
+      :aria-activedescendant="`VAutocomplete__${timeId}--opt${hoverIndex}`"
+      v-bind="$attrs"
+      @keyup.esc.prevent="show = false"
+      @keydown.down.prevent="keyboardNavigate('down')"
+      @keydown.up.prevent="keyboardNavigate('up')"
+      @keydown.enter="safeSalect(filteredOptions[hoverIndex])"
+      @keydown.tab.prevent="safeSalect(filteredOptions[hoverIndex])"
+      @focus="show = true"
+      @click="show = true"
     >
     <div
-      ref="dropdown"
-      class="dropdown-menu"
-      :style="!isListInViewportVertically && { bottom: '100%' }"
+      v-if="show"
+      ref="dropdownEl"
+      v-click-outside:parent="close"
+      :class="['absolute w-full z-50', menuClass]"
+      :style="{ bottom: !isListInViewportVertically ? '100%' : '' }"
     >
       <ul
-        v-if="shown"
         :id="`VAutocomplete__${timeId}--listbox`"
         role="listbox"
         class="dropdown-content"
-        :aria-label="arialLabel"
       >
         <li
-          v-for="(item, index) in adaptedOptions"
+          v-for="(item, index) in filteredOptions"
           :id="`VAutocomplete__${timeId}--opt${index}`"
           :key="index"
           role="option"
-          :aria-selected="index === arrowCounter"
-          :class="{ 'is-active': index === arrowCounter }"
-          class="dropdown-item"
-          @click="select(item)"
-          @mouseenter="arrowCounter = index"
+          :aria-selected="index === hoverIndex"
+          @mouseenter="hoverIndex = index"
         >
-          {{ item.label }}
+          <slot
+            name="option"
+            :item="item"
+            :isActive="index === hoverIndex"
+            :select="select"
+            :close="close"
+          >
+            <div
+              class="block px-4 py-2 text-sm text-left truncate cursor-pointer select-none"
+              :class="[index === hoverIndex && 'opacity-50 bg-gray-200', item.selected && 'bg-blue-300 text-blue-500']"
+              @click="select(item)"
+            >
+              {{ item.label }}
+            </div>
+          </slot>
         </li>
       </ul>
     </div>
   </div>
 </template>
-<script>
-export default {
-  name: 'VAutocomplete',
+
+<script lang="ts">
+import { defineComponent, ref, computed, watch, nextTick, PropType } from 'vue'
+import clickOutside from '@/directives/clickOutSide'
+
+interface AdaptedOption {
+  id: string | number
+  label: string
+  value: any
+  selected?: boolean
+}
+
+export default defineComponent({
+  name: 'Autocomplete',
+  directives: {
+    clickOutside,
+  },
+  inheritAttrs: false,
   props: {
-    /**
-     * (optional) input value. Use when we want to pass input from parent.
-     * Otherwise we use localInput
-     */
-    input: {
+    containerClass: {
       type: String,
-      default: undefined,
+      default: '',
     },
-    /** `array` let select multiplt value */
-    selected: {
-      type: [String, Number, Object, Array],
-      default: null,
+    menuClass: {
+      type: String,
+      default: 'shadow mt-2 bg-white',
     },
     options: {
       type: Array,
-      default: () => [],
+      default: (): any[] => [],
     },
     optionAdapter: {
-      type: Function,
-      default: (value) => ({
+      type: Function as PropType<(value: any) => AdaptedOption>,
+      default: (value: any) => ({
         id: value,
         label: value,
         value,
       }),
     },
-    localFilter: {
+    input: {
+      type: String,
+      default: undefined,
+    },
+    selected: {
+      type: [Array, String, Number, Object],
+      default: (): any[] => [],
+    },
+    multiple: {
       type: Boolean,
-      default: true,
+      default: false,
     },
-    /** aria-label for input */
-    arialLabel: String,
-  },
-  data() {
-    return {
-      localInput: '',
-      shown: false,
-      arrowCounter: 0,
-      isListInViewportVertically: true,
-      timeId: Date.now(),
-    }
-  },
-  computed: {
-    useLocal() {
-      return this.input === undefined
+    blurOnSelect: {
+      type: Boolean,
+      default: false,
     },
-    inputValue: {
-      get: function () {
-        return this.useLocal ? this.localInput : this.input
+    useFilter: {
+      type: Boolean,
+      default: false,
+    },
+    filter: {
+      type: Function,
+      default: (keyword: string, item: AdaptedOption) =>
+        item.label.toLowerCase().indexOf(keyword.toLowerCase()) > -1,
+    },
+  },
+  emits: ['update:input', 'update:selected', 'select'],
+  setup(props, { emit }) {
+    const timeId = Date.now()
+    const show = ref(false)
+    const inputEl = ref()
+    const isDirty = ref(false)
+    const hoverIndex = ref<number>(0)
+
+    // input value logic
+    const localInput = ref('')
+    const useLocalValue = props.input === undefined
+    const inputValue = computed<string>({
+      set: (value: string) => {
+        isDirty.value = true
+        if (props.useFilter) hoverIndex.value = 0
+        useLocalValue ? (localInput.value = value) : emit('update:input', value)
       },
-      set: function (value) {
-        this.useLocal
-          ? (this.localInput = value)
-          : this.$emit('update:input', value)
+      get: () => {
+        return useLocalValue ? localInput.value : (props.input as string)
       },
-    },
-    adaptedOptions() {
-      return this.options.map((x) => this.optionAdapter(x))
-    },
-    multiple() {
-      return Array.isArray(this.selected)
-    },
-  },
-  watch: {
-    shown(val) {
-      if (val) {
-        // reset to inital state
-        this.isListInViewportVertically = true
-        this.calcDropdownInViewportVertical()
-      }
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      if (document.activeElement === this.$refs.input) this.shown = true
     })
-  },
-  methods: {
-    close() {
-      this.shown = false
-      this.arrowCounter = 0
-      console.log('close')
-    },
-    /**
-     * Enter key listener.
-     * Select the hovered option.
-     */
-    safeSalect(item) {
-      if (this.shown) {
-        this.select(item)
-      }
-    },
-    select(item) {
-      this.inputValue = item.label
-      const newValue = this.multiple
-        ? this.selected.concat(item.value)
-        : item.value
 
-      this.$emit('update:selected', newValue)
-      this.$refs.input?.focus()
-      this.close()
-    },
-    /**
-     * Arrows keys listener.
-     * If dropdown is active, set hovered option, or else just open.
-     */
-    keyArrows(direction) {
-      const sum = direction === 'down' ? 1 : -1
-      if (this.shown) {
-        let index = this.arrowCounter + sum
-        index = index >= this.options.length ? this.options.length - 1 : index
-        index = index < 0 ? 0 : index
+    //
+    function close() {
+      show.value = false
+      isDirty.value = false
+      // refocus selected item
+    }
 
-        this.arrowCounter = index
-
-        const list = this.$refs.dropdown.querySelector('.dropdown-content')
-        const element = list.querySelectorAll(
-          '.dropdown-item:not(.is-disabled)'
-        )[index]
-
+    const dropdownEl = ref()
+    function keyboardNavigate(direction: string) {
+      if (show.value) {
+        // update hoverIndex
+        const step = direction === 'down' ? 1 : -1
+        let nextIndex = hoverIndex.value + step
+        if (nextIndex >= props.options.length)
+          nextIndex = props.options.length - 1
+        else if (nextIndex < 0) nextIndex = 0
+        hoverIndex.value = nextIndex
+        // scroll to hoverIndex
+        const list = dropdownEl.value.querySelector('.dropdown-content')
+        const element = list.querySelectorAll('li:not(.is-disabled)')[nextIndex]
         if (!element) return
-
         const visMin = list.scrollTop
         const visMax = list.scrollTop + list.clientHeight - element.clientHeight
-
         if (element.offsetTop < visMin) {
           list.scrollTop = element.offsetTop
         } else if (element.offsetTop >= visMax) {
@@ -193,72 +181,113 @@ export default {
             element.offsetTop - list.clientHeight + element.clientHeight
         }
       } else {
-        this.shown = true
+        // if dropdown is not showing, show it.
+        show.value = true
       }
-    },
-    /**
-     * Calculate if the dropdown is vertically visible when activated,
-     * otherwise it is openened upwards.
-     */
-    calcDropdownInViewportVertical() {
-      this.$nextTick(() => {
+    }
+
+    const isListInViewportVertically = ref(true)
+    function calcDropdownInViewportVertical() {
+      nextTick(() => {
         /**
          * this.$refs.dropdown may be undefined
          * when Autocomplete is conditional rendered
          */
-        if (this.$refs.dropdown === undefined) return
-
-        const rect = this.$refs.dropdown.getBoundingClientRect()
-
-        this.isListInViewportVertically =
+        if (dropdownEl.value === undefined) return
+        // @ts-ignore
+        const rect = dropdownEl.value.getBoundingClientRect()
+        isListInViewportVertically.value =
           rect.top >= 0 &&
           rect.bottom <=
             (window.innerHeight || document.documentElement.clientHeight)
       })
-    },
-  },
-}
-</script>
-<style scoped>
-.autocomplete__container {
-  position: relative;
-}
-.autocomplete__container input {
-  width: 100%;
-}
-.dropdown-menu {
-  position: absolute;
-  z-index: 1;
-  display: block;
-  background-color: white;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+    }
+    watch(show, (newVal) => {
+      if (newVal) {
+        calcDropdownInViewportVertical()
+      }
+    })
 
+    const adaptedSelects = computed<AdaptedOption[]>(() => {
+      return props.selected.map((selectedOpt) =>
+        props.optionAdapter(selectedOpt)
+      )
+    })
+
+    const adaptedOptions = computed<AdaptedOption[]>(() => {
+      if (!props.multiple)
+        return props.options.map((option) => props.optionAdapter(option))
+      return props.options.map((option) => {
+        const adaptedOption = props.optionAdapter(option)
+        adaptedOption.selected = adaptedSelects.value.some(
+          (i) => i.id === adaptedOption.id
+        )
+        return adaptedOption
+      })
+    })
+
+    const filteredOptions = computed<AdaptedOption[]>(() => {
+      if (!props.useFilter || !isDirty.value) return adaptedOptions.value
+      return adaptedOptions.value.filter((i) =>
+        props.filter(inputValue.value, i)
+      )
+    })
+
+    function select(item: AdaptedOption) {
+      let payload
+      if (props.multiple) {
+        payload = [...props.selected]
+        const foundIndex =
+          adaptedSelects.value.length > 0
+            ? adaptedSelects.value.findIndex((i) => i.id === item.id)
+            : -1
+
+        if (foundIndex > -1) {
+          payload.splice(foundIndex, 1)
+        } else {
+          payload.push(item.value)
+        }
+      } else {
+        inputValue.value = item.label
+        payload = item.value
+        if (props.blurOnSelect) inputEl.value.blur()
+        else inputEl.value.focus()
+        close()
+      }
+
+      emit('update:selected', payload)
+      emit('select', item.value)
+    }
+
+    function safeSalect(item: AdaptedOption) {
+      if (show.value) {
+        select(item)
+      }
+    }
+
+    return {
+      timeId,
+      show,
+      inputEl,
+      inputValue,
+      close,
+      hoverIndex,
+      dropdownEl,
+      keyboardNavigate,
+      calcDropdownInViewportVertical,
+      isListInViewportVertically,
+      adaptedOptions,
+      filteredOptions,
+      select,
+      safeSalect,
+    }
+  },
+})
+</script>
+
+<style>
 .dropdown-content {
   overflow: auto;
   max-height: 200px;
-  border-radius: 0.375rem;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
-}
-
-.dropdown-item {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  color: #374151;
-  display: block;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  user-select: none;
-  text-align: left;
-}
-.dropdown-item:hover,
-.dropdown-item.is-active {
-  color: #161e2e;
-  background-color: #f4f5f7;
 }
 </style>

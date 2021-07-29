@@ -1,14 +1,18 @@
 export default {
-  beforeMount(el, binding) {
-    el.__ClickOutsideHandler__ = (event: Event) => {
+  mounted(el, binding) {
+    let targetEl = el
+    if (binding.arg === 'parent') targetEl = el.parentElement
+    targetEl.__ClickOutsideHandler__ = (event: Event) => {
       // check if event's target is the el or contained by el
-      if (!(el === event.target || el.contains(event.target))) {
+      if (!(targetEl === event.target || targetEl.contains(event.target))) {
         binding.value(event)
       }
     }
-    document.body.addEventListener('click', el.__ClickOutsideHandler__)
+    document.body.addEventListener('click', targetEl.__ClickOutsideHandler__)
   },
-  beforeUnmount(el) {
-    document.body.removeEventListener('click', el.__ClickOutsideHandler__)
+  beforeUnmount(el, binding) {
+    let targetEl = el
+    if (binding.arg === 'parent') targetEl = el.parentElement
+    document.body.removeEventListener('click', targetEl.__ClickOutsideHandler__)
   }
 }

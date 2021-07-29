@@ -6,6 +6,9 @@
     <router-link to="/table">
       Table
     </router-link> |
+    <router-link to="/autocomplete">
+      Autocomplete
+    </router-link> |
     <router-link to="/toggle">
       Toggle
     </router-link> |

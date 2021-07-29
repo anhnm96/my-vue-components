@@ -13,6 +13,8 @@
     <slot
       name="controls"
       :index="activeIndex"
+      :hasPrev="hasPrev"
+      :hasNext="hasNext"
       :prev="prev"
       :next="next"
     />
@@ -59,13 +61,24 @@ export default defineComponent({
     const itemWidth = ref(0)
 
     const itemsToShow = computed(() => {
+      if (!el.value) return 0
       return Math.round(
         el.value.getBoundingClientRect().width / itemWidth.value
       )
     })
 
+    const hasPrev = computed<boolean>(() => {
+      return activeIndex.value > 0
+    })
+
+    const hasNext = computed<boolean>(() => {
+      return activeIndex.value < carouselItems.value.length - itemsToShow.value
+    })
+
     function prev() {
-      if (activeIndex.value === 0 && props.repeat) {
+      // check if carouselItems are enough to slide
+      if (carouselItems.value.length < itemsToShow.value) return
+      if (!hasPrev.value && props.repeat) {
         activeIndex.value = carouselItems.value.length - itemsToShow.value
         return
       }
@@ -77,13 +90,14 @@ export default defineComponent({
     }
 
     function next() {
-      const lastAllowIndex = carouselItems.value.length - itemsToShow.value
-
-      if (activeIndex.value === lastAllowIndex && props.repeat) {
+      // check if carouselItems are enough to slide
+      if (carouselItems.value.length < itemsToShow.value) return
+      if (!hasNext.value && props.repeat) {
         activeIndex.value = 0
         return
       }
 
+      const lastAllowIndex = carouselItems.value.length - itemsToShow.value
       const gap =
         props.itemsToList === -1 ? itemsToShow.value : props.itemsToList
       const nextActiveIndex = activeIndex.value + gap
@@ -97,13 +111,15 @@ export default defineComponent({
 
     // expose these data to parent CarouselList
     const parentData = inject(CarouselListKey)
-    Object.assign(parentData, { activeIndex, prev, next })
+    Object.assign(parentData, { activeIndex, hasPrev, hasNext, prev, next })
 
     function refresh() {
       itemWidth.value = carouselItems.value[0].getBoundingClientRect().width
       // make sure we don't over translateX
       if (activeIndex.value > carouselItems.value.length - itemsToShow.value)
         activeIndex.value = carouselItems.value.length - itemsToShow.value
+      // fallback check in case of carouselItems.length < itemsToShow
+      if (activeIndex.value < 0) activeIndex.value = 0
     }
 
     // use resizeObserver to recalculate CarouselItem width
@@ -121,7 +137,7 @@ export default defineComponent({
       return -(activeIndex.value * itemWidth.value)
     })
 
-    return { el, prev, next, translation, activeIndex }
+    return { el, hasNext, hasPrev, prev, next, translation, activeIndex }
   },
 })
 </script>
