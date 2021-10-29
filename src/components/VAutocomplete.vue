@@ -23,7 +23,7 @@
       @keydown.tab.prevent="safeSalect(filteredOptions[hoverIndex])"
       @focus="show = true"
       @click="show = true"
-    >
+    />
     <div
       v-if="show"
       ref="dropdownEl"
@@ -53,7 +53,10 @@
           >
             <div
               class="block px-4 py-2 text-sm text-left truncate cursor-pointer select-none"
-              :class="[index === hoverIndex && 'opacity-50 bg-gray-200', item.selected && 'bg-blue-300 text-blue-500']"
+              :class="[
+                index === hoverIndex && 'opacity-50 bg-gray-200',
+                item.selected && 'bg-blue-300 text-blue-500',
+              ]"
               @click="select(item)"
             >
               {{ item.label }}
@@ -202,25 +205,24 @@ export default defineComponent({
             (window.innerHeight || document.documentElement.clientHeight)
       })
     }
-    watch(show, (newVal) => {
+    watch(show, newVal => {
       if (newVal) {
         calcDropdownInViewportVertical()
       }
     })
 
     const adaptedSelects = computed<AdaptedOption[]>(() => {
-      return props.selected.map((selectedOpt) =>
-        props.optionAdapter(selectedOpt)
-      )
+      // @ts-ignore
+      return props.selected.map(selectedOpt => props.optionAdapter(selectedOpt))
     })
 
     const adaptedOptions = computed<AdaptedOption[]>(() => {
       if (!props.multiple)
-        return props.options.map((option) => props.optionAdapter(option))
-      return props.options.map((option) => {
+        return props.options.map(option => props.optionAdapter(option))
+      return props.options.map(option => {
         const adaptedOption = props.optionAdapter(option)
         adaptedOption.selected = adaptedSelects.value.some(
-          (i) => i.id === adaptedOption.id
+          i => i.id === adaptedOption.id
         )
         return adaptedOption
       })
@@ -228,18 +230,17 @@ export default defineComponent({
 
     const filteredOptions = computed<AdaptedOption[]>(() => {
       if (!props.useFilter || !isDirty.value) return adaptedOptions.value
-      return adaptedOptions.value.filter((i) =>
-        props.filter(inputValue.value, i)
-      )
+      return adaptedOptions.value.filter(i => props.filter(inputValue.value, i))
     })
 
     function select(item: AdaptedOption) {
       let payload
       if (props.multiple) {
+        // @ts-ignore
         payload = [...props.selected]
         const foundIndex =
           adaptedSelects.value.length > 0
-            ? adaptedSelects.value.findIndex((i) => i.id === item.id)
+            ? adaptedSelects.value.findIndex(i => i.id === item.id)
             : -1
 
         if (foundIndex > -1) {
