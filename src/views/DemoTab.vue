@@ -2,24 +2,24 @@
   <div id="app">
     <Tabs initial-active-tab="profile">
       <div :class="$style.section">
-        <Tab id="home">
+        <Tab name="home">
           Home
         </Tab>
-        <Tab id="profile">
+        <Tab name="profile">
           Profile
         </Tab>
-        <Tab id="settings">
+        <Tab name="settings">
           Settings
         </Tab>
       </div>
       <div :class="$style.section">
-        <TabPanel id="home">
+        <TabPanel name="home">
           Home content
         </TabPanel>
-        <TabPanel id="profile">
+        <TabPanel name="profile">
           Profile content
         </TabPanel>
-        <TabPanel id="settings">
+        <TabPanel name="settings">
           Settings content
         </TabPanel>
       </div>
@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import { Tabs, Tab, TabPanel } from '@/components/Tab'
+import { Tabs, Tab, TabPanel } from '@/components/Tab2'
+// import { Tabs, Tab, TabPanel } from '@/components/Tab'
 export default {
   name: 'App',
   components: {
