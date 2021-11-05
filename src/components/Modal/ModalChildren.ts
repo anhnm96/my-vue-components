@@ -1,5 +1,5 @@
 import { defineComponent, h } from 'vue'
-import { getRandomUUID } from '@/helpers/getnRandomUUID'
+import { getRandomUUID } from '@/helpers'
 // @ts-ignore
 import { useModal } from './Modal.vue'
 

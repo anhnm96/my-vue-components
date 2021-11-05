@@ -1,8 +1,12 @@
-import { Ref, InjectionKey } from 'vue'
+import { Ref, InjectionKey, ComponentInternalInstance, ComputedRef } from 'vue'
 
 interface TabsContext {
-  activeId: Ref<string>
-  activateTab: (id: string) => any
+  tabsId: string
+  orientation: ComputedRef<'vertical' | 'horizontal'>
+  tabs: ComponentInternalInstance[]
+  panels: ComponentInternalInstance[]
+  activeIndex: Ref<number>
+  activateTab: (id: number) => void
 }
 
 export const TabsKey: InjectionKey<TabsContext> = Symbol('Tabs')

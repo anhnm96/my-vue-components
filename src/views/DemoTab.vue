@@ -1,49 +1,67 @@
 <template>
   <div id="app">
-    <Tabs initial-active-tab="profile">
-      <div :class="$style.section">
-        <Tab name="home">
-          Home
+    <TabGroup>
+      <TabList class="flex p-1 space-x-1 bg-blue-900 bg-opacity-20 rounded-xl">
+        <Tab
+          v-for="(tab, index) in tabs"
+          :key="index"
+          v-slot="{ selected }"
+          as="template"
+        >
+          <button
+            :class="[
+              'w-full py-2.5 text-sm leading-5 font-medium text-blue-700 rounded-lg focus:outline-none focus:ring-2 ring-offset-2 ring-offset-blue-400 ring-white ring-opacity-60',
+              selected
+                ? 'bg-white shadow'
+                : 'text-blue-100 hover:bg-white hover:text-white',
+            ]"
+          >
+            {{ tab }}
+          </button>
         </Tab>
-        <Tab name="profile">
-          Profile
-        </Tab>
-        <Tab name="settings">
-          Settings
-        </Tab>
-      </div>
-      <div :class="$style.section">
-        <TabPanel name="home">
+      </TabList>
+      <div class="section">
+        <TabPanel>
           Home content
         </TabPanel>
-        <TabPanel name="profile">
+        <TabPanel>
           Profile content
         </TabPanel>
-        <TabPanel name="settings">
+        <TabPanel>
           Settings content
         </TabPanel>
       </div>
-    </Tabs>
+    </TabGroup>
   </div>
 </template>
 
 <script>
-import { Tabs, Tab, TabPanel } from '@/components/Tab2'
+import { ref } from 'vue'
+import { TabGroup, TabList, Tab, TabPanel } from '@/components/Tab2'
 // import { Tabs, Tab, TabPanel } from '@/components/Tab'
 export default {
   name: 'App',
   components: {
-    Tabs,
+    TabGroup,
+    TabList,
     Tab,
     TabPanel,
+  },
+  setup() {
+    const tabs = ref(['Home', 'Profile', 'Settings'])
+
+    return { tabs }
   },
 }
 </script>
 
-<style module>
+<style>
 .section {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
+}
+.tab {
+  @apply w-full py-2.5 text-sm leading-5 font-medium text-blue-700 rounded-lg focus:outline-none focus:ring-2 ring-offset-2 ring-offset-blue-400 ring-white ring-opacity-60;
 }
 </style>

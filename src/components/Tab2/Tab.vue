@@ -1,31 +1,41 @@
 <template>
-  <button
-    :id="`tab-${name}`"
+  <component
+    :is="as"
+    :id="`tab-${tabsId}-${index}`"
     role="tab"
-    :aria-controls="`tab-panel-${name}`"
-    :aria-selected="isSelected"
-    :tabindex="isSelected ? 0 : -1"
-    @click="activateTab(name)"
+    :aria-controls="`tab-panel-${tabsId}-${index}`"
+    :aria-selected="selected"
+    :tabindex="selected ? 0 : -1"
+    @click="activateTab(index)"
   >
-    <slot />
-  </button>
+    <slot :selected="selected" />
+  </component>
 </template>
 
 <script>
-import { inject, computed } from 'vue'
+import { ref, inject, computed, getCurrentInstance, onMounted } from 'vue'
 import { TabsKey } from './symbols'
 export default {
   name: 'Tab',
   props: {
-    name: String,
+    as: {
+      type: [Object, String],
+      default: 'button',
+    },
   },
-  setup(props) {
-    const { activeId, activateTab } = inject(TabsKey)
-    const isSelected = computed(() => {
-      return activeId.value === props.name
+  setup() {
+    const { tabsId, activeIndex, activateTab, tabs } = inject(TabsKey)
+
+    const instance = getCurrentInstance()
+    const index = ref()
+    onMounted(() => {
+      index.value = tabs.length
+      tabs.push(instance)
     })
 
-    return { isSelected, activateTab }
+    const selected = computed(() => activeIndex.value === index.value)
+
+    return { selected, activateTab, tabsId, index }
   },
 }
 </script>
